@@ -30,34 +30,36 @@ function getCursorPosition(canvas, event) {
 
 class Game {
     constructor() {
-        const container = document.querySelector("#game-container");
-        this.ctx = container.getContext("2d");
+        this.container = document.querySelector("#game-container");
+        this.ctx = this.container.getContext("2d");
         this.entities = [];
+        this.events = [];
 
-        // hack
-        this.mx = 0;
-        this.my = 0;
-        this.clicked = false;
-
-        container.addEventListener("click", (event) => {
-            const { x, y } = getCursorPosition(container, event);
-            this.mx = x;
-            this.my = y;
-            this.clicked = true;
+        this.container.addEventListener("click", (event) => {
+            this.events.push({
+                type: "click",
+                event: event,
+            });
         });
     }
 
     update() {
-        if (this.clicked) {
-            this.entities.push(new Box(this.mx, this.my));
+        // clear the events queue thing
+        while (this.events.length > 0) {
+            const { type, event } = this.events.shift();
+
+            // process event types...
+            switch (type) {
+            case "click":
+                const { x, y } = getCursorPosition(this.container, event);
+                this.entities.push(new Box(x, y));
+                break;
+            }
         }
 
         for (const entity of this.entities) {
             entity.update();
         }
-
-        // another dirty hack
-        this.clicked = false;
     }
 
     render(ctx) {
