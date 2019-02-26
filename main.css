@@ -1,0 +1,17 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    background: #f2f2f2;
+    align-content: center;
+    justify-content: center;
+}
+
+#game-container {
+    display: block;
+    width: 800px;
+    height: auto;
+}
