@@ -30,7 +30,7 @@ function lookupTile(id) {
 
 export class GameMap {
     constructor() {
-        registerTile('https://i.imgur.com/gyIbaAd.png');
+        registerTile('https://i.imgur.com/FoeO51W.png');
 
         this.tileData = [];
         this.width = 64;
@@ -58,7 +58,7 @@ export class GameMap {
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
                 const id = this.tileData[x + y * this.height];
-                const tileSize = 48;
+                const tileSize = 192;
 
                 const tile = lookupTile(id);
                 if (tile) {
