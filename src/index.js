@@ -1,39 +1,20 @@
-class Entity {
-    constructor(x, y) {
-        this.pos = {x:x, y:y};
-        this.delta = {x:0, y:0};
-    }
-}
-
-class Box extends Entity {
-    update() {
-        this.pos.x++;
-        if (this.pos.x >= 800) {
-            this.pos.x = 0;
-        }
-    }
-
-    render(ctx) {
-        ctx.fillStyle = "#ff00ff";
-
-        const {x, y} = this.pos;
-        ctx.fillRect(x, y, 32, 32);
-    }
-}
+import { GameState } from './state';
 
 function getCursorPosition(canvas, event) {
     let rect = canvas.getBoundingClientRect();
     let x = event.clientX - rect.left;
     let y = event.clientY - rect.top;
     return {x:x, y:y};
-};
+}
 
 class Game {
     constructor() {
         this.container = document.querySelector("#game-container");
         this.ctx = this.container.getContext("2d");
-        this.entities = [];
         this.events = [];
+
+        // initial game state...
+        this.currentState = new GameState();
 
         this.container.addEventListener("click", (event) => {
             this.events.push({
@@ -52,13 +33,14 @@ class Game {
             switch (type) {
             case "click":
                 const { x, y } = getCursorPosition(this.container, event);
-                this.entities.push(new Box(x, y));
+                console.log('clicked at ', x, y);
                 break;
             }
         }
 
-        for (const entity of this.entities) {
-            entity.update();
+        const curr = this.currentState;
+        if (curr) {
+            curr.update();
         }
     }
 
@@ -66,16 +48,21 @@ class Game {
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, 800, 600);
 
-        for (const entity of this.entities) {
-            entity.render(ctx);
+        const curr = this.currentState;
+        if (curr) {
+            curr.render(ctx);
         }
     }
 
     start() {
+        // TODO: fix this timestep.
         const targetFPS = 60.0;
         setInterval(() => {
+            const ctx = this.ctx;
+            ctx.font = "16px Verdana";
+
             this.update();
-            this.render(this.ctx);
+            this.render(ctx);
         }, 1000 / targetFPS);
     }
 }
