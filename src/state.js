@@ -41,7 +41,9 @@ export class GameState {
     }
 
     render(ctx) {
-        this.hud.render(ctx);
         this.map.render(ctx);
+
+        // hud renders over everything.
+        this.hud.render(ctx);
     }
 }
