@@ -1,30 +1,24 @@
+import Matter from 'matter-js';
+
 const MaxHealth = 100;
 
 export class Entity {
-    constructor(x, y) {
-        this.pos = { x, y };
-        this.delta = { x: 1, y: 0 };
-        this.accel = 0;
+    constructor(x, y, isStatic) {
         this.health = MaxHealth;
+        this.body = Matter.Bodies.rectangle(x, y, 32, 32, {isStatic: isStatic});
     }
-
+    
     update() {
     }
 
     lerp() {
-        // clamp accel
-        if (this.accel >= 1) this.accel = 1;
-        if (this.accel <= 0) this.accel = 0;
-    
-        this.pos.x += this.delta.x * this.accel;
-        this.pos.y += this.delta.y * this.accel;
     }
 
     render(ctx) {}
 
     renderHealthBar(ctx) {
         ctx.fillStyle = "#ff0000";
-        const { x, y } = this.pos;
+        const { x, y } = this.body.position;
 
         const barHeight = 8;
         const barWidth = this.health;
@@ -33,6 +27,10 @@ export class Entity {
 }
 
 export class NexusThingy extends Entity {
+    constructor(x, y) {
+        super(x, y, false);
+    }
+    
     update() {
 
     }
@@ -40,7 +38,7 @@ export class NexusThingy extends Entity {
     render(ctx) {
         this.renderHealthBar(ctx);
 
-        const { x, y } = this.pos;
+        const { x, y } = this.body.position;
         ctx.fillStyle = "#00ff00";
         ctx.fillRect(x, y, 128, 128);
     }
@@ -49,7 +47,7 @@ export class NexusThingy extends Entity {
 // https://imgur.com/j7VTlvc
 export class GermThingy extends Entity {
     constructor(x, y) {
-        super(x, y);
+        super(x, y, false);
 
         const img = new Image();
         img.src = 'https://i.imgur.com/fCKP3ZT.png';
@@ -57,15 +55,13 @@ export class GermThingy extends Entity {
     }
 
     update() {
-        this.lerp();
-        this.delta.x = 1;
-        this.accel += 0.01;
+
     }
 
     render(ctx) {
         this.renderHealthBar(ctx);
 
-        const { x, y } = this.pos;
+        const { x, y } = this.body.position;
         const size = 50;
         ctx.drawImage(this.img, x, y, size, size); 
     }

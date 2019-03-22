@@ -7,12 +7,14 @@
   "author": "Felix Angell <felixangell@members.fsf.org>",
   "license": "MIT",
   "scripts": {
-    "build": "webpack --dev"
+    "build": "webpack --dev",
+    "w": "webpack --mode development --watch --watch-poll"
   },
   "dependencies": {
     "@babel/core": "^7.3.4",
     "@babel/preset-env": "^7.3.4",
     "babel-loader": "^8.0.5",
+    "matter-js": "^0.14.2",
     "webpack": "^4.29.6"
   },
   "devDependencies": {
