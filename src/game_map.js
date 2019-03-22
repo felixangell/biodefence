@@ -1,6 +1,9 @@
 import Matter from 'matter-js';
 import { GermThingy, NexusThingy } from "./entity";
 
+// This is likely to change. We store
+// the id of the tile and the image that
+// the tile uses.
 export class Tile {
     constructor(id, img) {
         this.id = id;
@@ -8,12 +11,20 @@ export class Tile {
     }
     
     update() { }
+
+    // render draws the tile to the given
+    // context at the coordinates x, y.
     render(ctx, x, y) {
         ctx.drawImage(this.img, x, y);
     }
 }
 
+// this is for when registering a tile,
+// we increment this counter.
 let lastTileId = 0;
+
+// a very simple 'caching' system so that we
+// can re-use tile instances.
 let tileRegister = new Map();
 
 function registerTile(imgLink) {
@@ -31,26 +42,42 @@ function lookupTile(id) {
 
 export class GameMap {
     constructor() {
+        // for now we register a test tile.
         registerTile('https://i.imgur.com/FoeO51W.png');
 
+        // a 1d array of the tile data, i.e.
+        // the tile ids [ 0 0 0 0, 1 0 1 0 ]
+        // would represent a 4x2 map.
         this.tileData = [];
+
+        // how many tiles in size the game map is.
         this.width = 64;
         this.height = 64;
+        
+        // fill the map up with 0 tiles
         for (let i = 0; i < this.width * this.height; i++) {
             this.tileData[i] = 0;
         }
 
+        // our physics engine is created here,
+        // and we disable the gravity as the game
+        // is top down.
         this.engine = Matter.Engine.create();
         // disable gravity.
         this.engine.world.gravity.scale = 0;
 
         Matter.Engine.run(this.engine);
         
+        // entitiy list, with a few test entities
+        // added.
         this.entities = [];
-        this.addEntity(new NexusThingy(256, 256));
+        this.addEntity(new CentralImmuneSystem(256, 256));
         this.addEntity(new GermThingy(50, 50));
     }
 
+    // addEntity will add the given entity to the world,
+    // but most importantly it adds the entities physics
+    // body to the physics engines world register.
     addEntity(e) {
         Matter.World.add(this.engine.world, e.body);
         this.entities.push(e);
@@ -63,6 +90,10 @@ export class GameMap {
     }
 
     render(ctx) {
+        // here we render the game map
+        // looping through each tile, looking the 
+        // tile id up in the tile cache
+        // and rendering it, if it exists.
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
                 const id = this.tileData[x + y * this.height];
@@ -75,6 +106,8 @@ export class GameMap {
             }
         }
 
+        // we have to render the entities _after_
+        // we render the tilemap.
         for (const e of this.entities) {
             e.render(ctx);
         }
