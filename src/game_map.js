@@ -1,3 +1,4 @@
+import Matter from 'matter-js';
 import { GermThingy, NexusThingy } from "./entity";
 
 export class Tile {
@@ -39,13 +40,20 @@ export class GameMap {
             this.tileData[i] = 0;
         }
 
-        this.entities = [
-            // spawn a nexus thingy at 256, 256
-            new NexusThingy(256, 256),
+        this.engine = Matter.Engine.create();
+        // disable gravity.
+        this.engine.world.gravity.scale = 0;
 
-            // spawn a germ thingy at 50, 50
-            new GermThingy(50, 50),
-        ];
+        Matter.Engine.run(this.engine);
+        
+        this.entities = [];
+        this.addEntity(new NexusThingy(256, 256));
+        this.addEntity(new GermThingy(50, 50));
+    }
+
+    addEntity(e) {
+        Matter.World.add(this.engine.world, e.body);
+        this.entities.push(e);
     }
 
     update() {

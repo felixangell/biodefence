@@ -6,6 +6,10 @@ you'll need:
 * git
 * yarn
 
+## notes
+
+physics: https://github.com/liabru/matter-js
+
 ## building
 
     $ git clone http://github.com/felixangell/project-aids
