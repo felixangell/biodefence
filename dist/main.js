@@ -108,6 +108,18 @@ eval("var g;\n\n// This works in non-strict mode\ng = (function() {\n\treturn th
 
 /***/ }),
 
+/***/ "./src/HUD.js":
+/*!********************!*\
+  !*** ./src/HUD.js ***!
+  \********************/
+/*! exports provided: HUD */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"HUD\", function() { return HUD; });\nclass HUD {\n  constructor() {\n    // age starts at 1?\n    this.age = 1;\n    this.last = new Date();\n  }\n\n  update() {\n    const SECOND = 1000; // 5 seconds in a year.\n\n    const ageInterval = 5 * SECOND; // every 500ms, we age.\n\n    if (new Date() - this.last > ageInterval) {\n      this.age++;\n      this.last = new Date();\n    }\n  }\n\n  render(ctx) {\n    ctx.fillStyle = \"#000000\";\n    ctx.fillRect(0, 0, 800, 48);\n    ctx.fillStyle = \"#ffffff\";\n    ctx.fillText(`age ${this.age}`, 32, 32);\n  }\n\n}\n\n//# sourceURL=webpack:///./src/HUD.js?");
+
+/***/ }),
+
 /***/ "./src/entity.js":
 /*!***********************!*\
   !*** ./src/entity.js ***!
@@ -152,7 +164,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _sta
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"GameState\", function() { return GameState; });\n/* harmony import */ var _game_map__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./game_map */ \"./src/game_map.js\");\n\n\nclass HUD {\n  constructor() {\n    // age starts at 1?\n    this.age = 1;\n    this.last = new Date();\n  }\n\n  update() {\n    const SECOND = 1000; // 5 seconds in a year.\n\n    const ageInterval = 5 * SECOND; // every 500ms, we age.\n\n    if (new Date() - this.last > ageInterval) {\n      this.age++;\n      this.last = new Date();\n    }\n  }\n\n  render(ctx) {\n    ctx.fillStyle = \"#000000\";\n    ctx.fillRect(0, 0, 800, 48);\n    ctx.fillStyle = \"#ffffff\";\n    ctx.fillText(`age ${this.age}`, 32, 32);\n  }\n\n}\n\nclass GameState {\n  constructor() {\n    this.hud = new HUD();\n    this.map = new _game_map__WEBPACK_IMPORTED_MODULE_0__[\"GameMap\"]();\n  }\n\n  update() {\n    this.hud.update();\n    this.map.update();\n  }\n\n  render(ctx) {\n    this.map.render(ctx); // hud renders over everything.\n\n    this.hud.render(ctx);\n  }\n\n}\n\n//# sourceURL=webpack:///./src/state.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"GameState\", function() { return GameState; });\n/* harmony import */ var _game_map__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./game_map */ \"./src/game_map.js\");\n/* harmony import */ var _HUD__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./HUD */ \"./src/HUD.js\");\n\n\nclass GameState {\n  constructor() {\n    this.hud = new _HUD__WEBPACK_IMPORTED_MODULE_1__[\"HUD\"]();\n    this.map = new _game_map__WEBPACK_IMPORTED_MODULE_0__[\"GameMap\"]();\n  }\n\n  update() {\n    this.hud.update();\n    this.map.update();\n  }\n\n  render(ctx) {\n    this.map.render(ctx); // hud renders over everything.\n\n    this.hud.render(ctx);\n  }\n\n}\n\n//# sourceURL=webpack:///./src/state.js?");
 
 /***/ })
 
