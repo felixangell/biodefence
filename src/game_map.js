@@ -1,5 +1,6 @@
 import Matter from 'matter-js';
 import { CentralImmuneSystem, ForeignGerm } from "./entity";
+import Camera from './camera';
 
 // This is likely to change. We store
 // the id of the tile and the image that
@@ -14,8 +15,8 @@ export class Tile {
 
     // render draws the tile to the given
     // context at the coordinates x, y.
-    render(ctx, x, y) {
-        ctx.drawImage(this.img, x, y);
+    render(cam, ctx, x, y) {
+        ctx.drawImage(this.img, x - cam.pos.x, y - cam.pos.y);
     }
 }
 
@@ -54,6 +55,8 @@ export class GameMap {
         this.width = 64;
         this.height = 64;
         
+        this.cam = new Camera();
+
         // fill the map up with 0 tiles
         for (let i = 0; i < this.width * this.height; i++) {
             this.tileData[i] = 0;
@@ -101,7 +104,7 @@ export class GameMap {
 
                 const tile = lookupTile(id);
                 if (tile) {
-                    tile.render(ctx, x * tileSize, y * tileSize);
+                    tile.render(this.cam, ctx, x * tileSize, y * tileSize);
                 }
             }
         }
@@ -109,7 +112,7 @@ export class GameMap {
         // we have to render the entities _after_
         // we render the tilemap.
         for (const e of this.entities) {
-            e.render(ctx);
+            e.render(this.cam, ctx);
         }
     }
 }

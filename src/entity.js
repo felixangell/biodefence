@@ -18,17 +18,17 @@ export class Entity {
     update() {
     }
 
-    render(ctx) {}
+    render(cam, ctx) {}
 
     // renders the entities health bar above
     // the head of the entity.
-    renderHealthBar(ctx) {
+    renderHealthBar(cam, ctx) {
         ctx.fillStyle = "#ff0000";
         const { x, y } = this.body.position;
 
         const barHeight = 8;
         const barWidth = this.health;
-        ctx.fillRect(x, y - (barHeight * 2), barWidth, barHeight);
+        ctx.fillRect(x - cam.pos.x, y - cam.pos.y - (barHeight * 2), barWidth, barHeight);
     }
 }
 
@@ -40,12 +40,12 @@ export class CentralImmuneSystem extends Entity {
 
     update() {}
 
-    render(ctx) {
-        this.renderHealthBar(ctx);
+    render(cam, ctx) {
+        this.renderHealthBar(cam, ctx);
 
         const { x, y } = this.body.position;
         ctx.fillStyle = "#00ff00";
-        ctx.fillRect(x, y, 128, 128);
+        ctx.fillRect(x - cam.pos.x, y - cam.pos.y, 128, 128);
     }
 }
 
@@ -65,8 +65,8 @@ export class ForeignGerm extends Entity {
 
     update() {}
 
-    render(ctx) {
-        this.renderHealthBar(ctx);
+    render(cam, ctx) {
+        this.renderHealthBar(cam, ctx);
 
         if (!this.identified) {
             // TODO
@@ -86,6 +86,6 @@ export class ForeignGerm extends Entity {
 
         const { x, y } = this.body.position;
         const size = 50;
-        ctx.drawImage(this.img, x, y, size, size);
+        ctx.drawImage(this.img, x - cam.pos.x, y - cam.pos.y, size, size);
     }
 }
