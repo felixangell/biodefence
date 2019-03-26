@@ -1,14 +1,14 @@
 export class HUD {
     constructor() {
-        // age starts at 1?
-        this.age = 1;
+        // age starts at 0
+        this.age = 0;
         this.last = new Date();
     }
 
     update() {
         const SECOND = 1000;
 
-        // n seconds in a year.
+        // 45 seconds for each year 1-5.
         const ageInterval = 45 * SECOND;
         
         if (this.age > 5 && this.age <= 10){ // Ages 5-10 take 30 seconds each for a total of 150 seconds or 2.50 minutes.
