@@ -46,6 +46,12 @@ export class GameState {
             break;
         case 'd':
             break;
+
+        // space key pressed, return
+        // camera back to CIS.
+        case ' ':
+            this.map.focusOnCIS();
+            break;
         }
     }
 

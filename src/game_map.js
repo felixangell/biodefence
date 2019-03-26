@@ -74,8 +74,28 @@ export class GameMap {
         // entitiy list, with a few test entities
         // added.
         this.entities = [];
-        this.addEntity(new CentralImmuneSystem(256, 256));
+
+        this.cis = new CentralImmuneSystem(256, 256);
+        this.addEntity(this.cis);
         this.addEntity(new ForeignGerm(50, 50));
+    }
+
+    focusOnCIS() {
+        const { x, y } = this.cis.body.position;
+        console.log('focus on ', x, y);
+
+        // TODO screen dimensions shouldnt be hardcoded here.
+        // ALSO we should take into account the bodies
+        // size so that we can perfectly centre it.
+        let xOff = (800 / 2);
+        let yOff = (600 / 2);
+
+        // work out where we need to look for the 
+        // point to be in the centre of the screen.
+        let px = x - xOff;
+        let py = y - yOff;
+
+        this.cam.focusOnPoint(px, py);
     }
 
     // addEntity will add the given entity to the world,
