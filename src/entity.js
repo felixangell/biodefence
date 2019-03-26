@@ -55,7 +55,7 @@ export class ForeignGerm extends Entity {
         super(x, y, false);
 
         // this germ has not been identified yet!
-        this.identified = true;//false;
+        this.identified = false;
 
         // FIXME proper image loading.
         const img = new Image();
@@ -89,7 +89,7 @@ export class ForeignGerm extends Entity {
                 //retain the alpha value
                 pix[i+3] = pix[i+3];
               }
-          ctx.putImageData(imgData,100,100);
+          ctx.putImageData(imgData,this.pos.x,this.pos.y);//,x - cam.pos.x, y - cam.pos.y, size, size);
           return;
           }
 
