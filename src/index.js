@@ -1,51 +1,49 @@
 import { GameState } from './state';
 
-// this calculates the x and y position of
-// the mouse click relevant to the canvas.
-function getCursorPosition(canvas, event) {
-    let rect = canvas.getBoundingClientRect();
-    let x = event.clientX - rect.left;
-    let y = event.clientY - rect.top;
-    return {x:x, y:y};
-}
-
 class Game {
     constructor() {
-        this.container = document.querySelector("#game-container");
-        this.ctx = this.container.getContext("2d");
+        this.container = document.querySelector('#game-container');
+        this.ctx = this.container.getContext('2d');
         this.events = [];
 
         // initial game state...
         this.currentState = new GameState();
 
-        // i think im going to have any event listeners
-        // added push their events to an event array
-        // which is handled in the games update loop!
-        // see update()
-        this.container.addEventListener("click", (event) => {
-            this.events.push({
-                type: "click",
-                event: event,
-            });
+        // all events are passed into the current
+        // state with the type, event instance, as
+        // well as the container the event was made from
+        this.container.addEventListener('keypress', (event) => {
+            if (this.currentState) {
+                this.currentState.events.push({
+                    type: 'keypress',
+                    event: event,
+                    container: this.container,
+                });
+            }
+        });
+
+        this.container.addEventListener('mousemove', (event) => {
+            if (this.currentState) {
+                this.currentState.events.push({
+                    type: 'mousemove',
+                    event: event,
+                    container: this.container,
+                });
+            }
+        })
+
+        this.container.addEventListener('click', (event) => {
+            if (this.currentState) {
+                this.currentState.events.push({
+                    type: 'click',
+                    event: event,
+                    container: this.container,
+                });
+            }
         });
     }
 
     update() {
-        // the events from the event listeners
-        // are added to this queue and polled
-        // from first to last added.
-        while (this.events.length > 0) {
-            const { type, event } = this.events.shift();
-            
-            switch (type) {
-
-            case "click":
-                const { x, y } = getCursorPosition(this.container, event);
-                console.log('clicked at ', x, y);
-                break;
-            }
-        }
-
         // updates the current state if set.
         const curr = this.currentState;
         if (curr) {
