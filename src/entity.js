@@ -14,13 +14,13 @@ export class Entity {
         this.health = DefaultEntityHealth;
         this.body = Matter.Bodies.rectangle(x, y, 32, 32, {isStatic: isStatic});
     }
-    
+
     update() {
     }
 
     render(ctx) {}
 
-    // renders the entities health bar above 
+    // renders the entities health bar above
     // the head of the entity.
     renderHealthBar(ctx) {
         ctx.fillStyle = "#ff0000";
@@ -37,7 +37,7 @@ export class CentralImmuneSystem extends Entity {
     constructor(x, y) {
         super(x, y, false);
     }
-    
+
     update() {}
 
     render(ctx) {
@@ -71,11 +71,21 @@ export class ForeignGerm extends Entity {
         if (!this.identified) {
             // TODO
             // render the silhouette instead
+            var img = this.img;
+            var canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            var pix = ctx.getImageData(0,0,canvas.width,canvas.height);
+            console.log(pix.data[0]);
+            console.log(pix.data[1]);
+            console.log(pix.data[2]);
+            console.log(pix.data[3]);
+            //console.log(img);
             return
         }
 
         const { x, y } = this.body.position;
         const size = 50;
-        ctx.drawImage(this.img, x, y, size, size); 
+        ctx.drawImage(this.img, x, y, size, size);
     }
 }
