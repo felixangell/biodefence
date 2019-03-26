@@ -78,6 +78,9 @@ export class GameMap {
         this.cis = new CentralImmuneSystem(256, 256);
         this.addEntity(this.cis);
         this.addEntity(new ForeignGerm(50, 50));
+
+        // default to focus on the CIS.
+        this.focusOnCIS();
     }
 
     focusOnCIS() {
