@@ -1,5 +1,5 @@
 import Matter from 'matter-js';
-import { GermThingy, NexusThingy } from "./entity";
+import { CentralImmuneSystem, ForeignGerm } from "./entity";
 
 // This is likely to change. We store
 // the id of the tile and the image that
@@ -72,7 +72,7 @@ export class GameMap {
         // added.
         this.entities = [];
         this.addEntity(new CentralImmuneSystem(256, 256));
-        this.addEntity(new GermThingy(50, 50));
+        this.addEntity(new ForeignGerm(50, 50));
     }
 
     // addEntity will add the given entity to the world,
