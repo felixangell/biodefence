@@ -55,7 +55,7 @@ export class ForeignGerm extends Entity {
         super(x, y, false);
 
         // this germ has not been identified yet!
-        this.identified = false;
+        this.identified = true;//false;
 
         // FIXME proper image loading.
         const img = new Image();
@@ -72,17 +72,26 @@ export class ForeignGerm extends Entity {
             // TODO
             // render the silhouette instead
             var img = this.img;
-            var canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            var pix = ctx.getImageData(0,0,canvas.width,canvas.height);
-            console.log(pix.data[0]);
-            console.log(pix.data[1]);
-            console.log(pix.data[2]);
-            console.log(pix.data[3]);
+            //var canvas = document.createElement('canvas');
+            //canvas.width = img.width;
+            //canvas.height = img.height;
+            var imgData = ctx.getImageData(0,0,img.width,img.height);
+            var pix = imgData.data;
             //console.log(img);
-            return
-        }
+            //return
+            for (var i=0, n = pix.length; i < n; i+= 4){
+                //set red to 0
+                pix[i] = 0;
+                //set green to 0
+                pix[i+1] = 0;
+                //set blue to 0
+                pix[i+2] = 0;
+                //retain the alpha value
+                pix[i+3] = pix[i+3];
+              }
+          ctx.putImageData(imgData,100,100);
+          return;
+          }
 
         const { x, y } = this.body.position;
         const size = 50;
