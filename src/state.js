@@ -97,42 +97,45 @@ export class GameState {
         // FIXME interpolation can be done to make
         // this smoother.
         {
-            const moveSpeed = 2;
+            const moveSpeed = 6;
             const boundsSize = 50;
 
             // TODO get the width and heights from the
             // container size.
 
+            const container = document.querySelector('#game-container');
+            const { width, height } = container;
+
             const topViewBounds = {
                 x: 0, y: 0,
-                w: 800, h: boundsSize,
+                w: width, h: boundsSize,
             };
             if (circleIntersectsRect(this.lastMouseBounds, topViewBounds)) {
-                this.map.cam.pos.y -= moveSpeed;
+                this.map.cam.move(0, -moveSpeed);
             }
     
             const rightViewBounds = {
-                x: 800 - boundsSize, y: 0,
-                w: boundsSize, h: 600,
+                x: width - boundsSize, y: 0,
+                w: boundsSize, h: height,
             };
             if (circleIntersectsRect(this.lastMouseBounds, rightViewBounds)) {
-                this.map.cam.pos.x += moveSpeed;
+                this.map.cam.move(moveSpeed, 0);
             }
             
             const leftViewBounds = {
                 x: 0, y: 0,
-                w: boundsSize, h: 600,
+                w: boundsSize, h: height,
             };
             if (circleIntersectsRect(this.lastMouseBounds, leftViewBounds)) {
-                this.map.cam.pos.x -= moveSpeed;
+                this.map.cam.move(-moveSpeed, 0);
             }
     
             const bottomViewBounds = {
-                x: 0, y: 600 - boundsSize,
-                w: 800, h: boundsSize,
+                x: 0, y: height - boundsSize,
+                w: width, h: boundsSize,
             };
             if (circleIntersectsRect(this.lastMouseBounds, bottomViewBounds)) {
-                this.map.cam.pos.y += moveSpeed;
+                this.map.cam.move(0, moveSpeed);
             }
         }
         

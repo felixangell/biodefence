@@ -54,8 +54,8 @@ class Game {
     render(ctx) {
         // fill a white square behind all of the
         // rendering.
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, 800, 600);
+        ctx.fillStyle = "#ff0000";
+        ctx.fillRect(0, 0, this.container.width, this.container.height);
 
         // renders the current state if set.
         const curr = this.currentState;

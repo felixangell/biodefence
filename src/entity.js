@@ -1,4 +1,4 @@
-import Matter from 'matter-js';
+import Matter, {Body, Common} from 'matter-js';
 
 // by default, _all_ entities have
 // a health of 100 unless specified otherwise.
@@ -35,7 +35,7 @@ export class Entity {
 // This is where units are generated from by the player.
 export class CentralImmuneSystem extends Entity {
     constructor(x, y) {
-        super(x, y, false);
+        super(x, y, true);
     }
     
     update() {}
@@ -63,7 +63,17 @@ export class ForeignGerm extends Entity {
         this.img = img;
     }
 
-    update() {}
+    attack(entity) {
+        let force = 0.02 * this.body.mass * Math.random();
+
+        Body.applyForce(this.body, this.body.position, { 
+            x: force, 
+            y: force,
+        });
+    }
+
+    update() {
+    }
 
     render(cam, ctx) {
         this.renderHealthBar(cam, ctx);
