@@ -1,6 +1,8 @@
-import Matter from 'matter-js';
+import Matter, {Events} from 'matter-js';
 import { CentralImmuneSystem, ForeignGerm } from "./entity";
 import Camera from './camera';
+
+const TileSize = 192;
 
 // This is likely to change. We store
 // the id of the tile and the image that
@@ -51,11 +53,17 @@ export class GameMap {
         // would represent a 4x2 map.
         this.tileData = [];
 
+        this.bodies = new Map();
+
         // how many tiles in size the game map is.
         this.width = 64;
         this.height = 64;
 
-        this.cam = new Camera();
+        let viewport = {
+            width: this.width * TileSize,
+            height: this.height * TileSize,
+        };
+        this.cam = new Camera(viewport);
 
         // fill the map up with 0 tiles
         for (let i = 0; i < this.width * this.height; i++) {
@@ -73,12 +81,37 @@ export class GameMap {
 
         // entitiy list, with a few test entities
         // added.
-        this.entities = [];
+        this.entities = new Map();
 
-        this.cis = new CentralImmuneSystem(256, 256);
+        const xCentre = (this.width * TileSize) / 2;
+        const yCentre = (this.height * TileSize) / 2;
+
+        this.cis = new CentralImmuneSystem(1280, 720);
         this.addEntity(this.cis);
-        this.addEntity(new ForeignGerm(50, 50));
-        this.addEntity(new ForeignGerm(70, 70)); //Testing purposes
+
+        Events.on(this.engine, 'collisionActive', (event) => {
+            for (const body of event.pairs) {
+                const a = this.entities.get(body.bodyA);
+                const b = this.entities.get(body.bodyB);
+
+                a.hit(b);
+                b.hit(a);
+            }
+        });
+
+        let randInRange = (min, max) => {
+            return Math.random() * (max - min) + min;
+        };
+
+        for (let i = 0; i < 100; i++) {
+            let x = randInRange(0, 1280);
+            let y = randInRange(0, 720);
+            const germ = new ForeignGerm(x, y);
+            // for now presume they are identified.
+            germ.identified = true;
+            germ.attack(this.cis);
+            this.addEntity(germ);
+        }
 
         // default to focus on the CIS.
         this.focusOnCIS();
@@ -86,13 +119,13 @@ export class GameMap {
 
     focusOnCIS() {
         const { x, y } = this.cis.body.position;
-        console.log('focus on ', x, y);
 
-        // TODO screen dimensions shouldnt be hardcoded here.
-        // ALSO we should take into account the bodies
+        const { width, height } = document.querySelector('#game-container');
+
+        // TODO we should take into account the bodies
         // size so that we can perfectly centre it.
-        let xOff = (800 / 2);
-        let yOff = (600 / 2);
+        let xOff = (width / 2);
+        let yOff = (height / 2);
 
         // work out where we need to look for the
         // point to be in the centre of the screen.
@@ -106,13 +139,24 @@ export class GameMap {
     // but most importantly it adds the entities physics
     // body to the physics engines world register.
     addEntity(e) {
-        Matter.World.add(this.engine.world, e.body);
-        this.entities.push(e);
+        Matter.World.addBody(this.engine.world, e.body);
+        this.entities.set(e.body, e);
+    }
+
+    removeEntity(e) {
+        Matter.World.remove(this.engine.world, e.body);
+        this.entities.delete(e.body);
     }
 
     update() {
-        for (const e of this.entities) {
-            e.update();
+        for (const [body, e] of this.entities) {
+            // if we've died we want to remove the entity
+            // from the game.
+            if (e.health <= 0) {
+                this.removeEntity(e);
+            } else {
+                e.update();
+            }
         }
     }
 
@@ -124,18 +168,17 @@ export class GameMap {
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
                 const id = this.tileData[x + y * this.height];
-                const tileSize = 192;
 
                 const tile = lookupTile(id);
                 if (tile) {
-                    tile.render(this.cam, ctx, x * tileSize, y * tileSize);
+                    tile.render(this.cam, ctx, x * TileSize, y * TileSize);
                 }
             }
         }
 
         // we have to render the entities _after_
         // we render the tilemap.
-        for (const e of this.entities) {
+        for (const [body, e] of this.entities) {
             e.render(this.cam, ctx);
         }
     }
