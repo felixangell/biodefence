@@ -2,6 +2,10 @@ export class HUD {
     constructor() {
         // age starts at 0
         this.age = 0;
+        
+        // TODO what range is hydration?
+        this.hydration = 100;
+
         this.last = new Date();
     }
 
@@ -44,10 +48,30 @@ export class HUD {
 
         const panelHeight = height / 14;
 
+        // how many pixels are between each item.
+        const itemPad = 30;
+
+        // xOff is where the hud starts rendering on the x axis
+        let xOff = panelHeight;
+
         ctx.fillStyle = "#000000";
         ctx.fillRect(0, 0, width, panelHeight);
 
-        ctx.fillStyle = "#ffffff";
-        ctx.fillText(`age ${this.age}`, panelHeight, 30);
+        let properties = {
+            'age': this.age,
+            'hydration': this.hydration,
+        };
+
+        let accumWidth = 0;
+        for (const [name, val] of Object.entries(properties)) {
+            const hudString = `${name} ${val}`;
+
+            const { width, height } = ctx.measureText(hudString);
+
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(hudString, xOff + accumWidth, 30);
+
+            accumWidth += width + itemPad;
+        }
     }
 }

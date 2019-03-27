@@ -76,7 +76,7 @@ export class GameMap {
         this.engine = Matter.Engine.create();
         // disable gravity.
         this.engine.world.gravity.scale = 0;
-
+        
         Matter.Engine.run(this.engine);
         
         // entitiy list, with a few test entities
