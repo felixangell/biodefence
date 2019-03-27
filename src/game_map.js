@@ -81,13 +81,23 @@ export class GameMap {
         
         // entitiy list, with a few test entities
         // added.
-        this.entities = [];
+        this.entities = new Map();
 
         const xCentre = (this.width * TileSize) / 2;
         const yCentre = (this.height * TileSize) / 2;
 
         this.cis = new CentralImmuneSystem(1280, 720);
         this.addEntity(this.cis);
+
+        Events.on(this.engine, 'collisionStart', (event) => {
+            for (const body of event.pairs) {
+                const a = this.entities.get(body.bodyA);
+                const b = this.entities.get(body.bodyB);
+                
+                a.hit(b);
+                b.hit(a);
+            }
+        });
 
         let randInRange = (min, max) => {
             return Math.random() * (max - min) + min;
@@ -129,13 +139,24 @@ export class GameMap {
     // but most importantly it adds the entities physics
     // body to the physics engines world register.
     addEntity(e) {
-        Matter.World.add(this.engine.world, e.body);
-        this.entities.push(e);
+        Matter.World.addBody(this.engine.world, e.body);
+        this.entities.set(e.body, e);
+    }
+
+    removeEntity(e) {
+        Matter.World.remove(this.engine.world, e.body);
+        this.entities.delete(e.body);
     }
 
     update() {
-        for (const e of this.entities) {
-            e.update();
+        for (const [body, e] of this.entities) {
+            // if we've died we want to remove the entity
+            // from the game.
+            if (e.health <= 0) {
+                this.removeEntity(e);
+            } else {
+                e.update();
+            }
         }
     }
 
@@ -157,7 +178,7 @@ export class GameMap {
 
         // we have to render the entities _after_
         // we render the tilemap.
-        for (const e of this.entities) {
+        for (const [body, e] of this.entities) {
             e.render(this.cam, ctx);
         }
     }
