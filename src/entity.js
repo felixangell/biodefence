@@ -84,7 +84,9 @@ export class CentralImmuneSystem extends Entity {
     }
 }
 
+
 // https://imgur.com/j7VTlvc
+const img1 = new Image(); // Needs to be global
 export class ForeignGerm extends Entity {
     constructor(x, y) {
         super(x, y, 50, 50, {
@@ -94,13 +96,11 @@ export class ForeignGerm extends Entity {
         this.damage = 6;
 
         // FIXME proper image loading.
-        const img = new Image();
-        img.src = 'https://imgur.com/7cnVX3A';//'https://i.imgur.com/fCKP3ZT.png';
-        this.img = img;
 
-        // this germ has not been identified yet!
-        this.identified = true;
-
+        const imgSil = new Image();
+        img1.src = 'https://i.imgur.com/fCKP3ZT.png'; // normal image
+        imgSil.src = 'https://i.imgur.com/27Ehmxo.png'; // silhouette image
+        this.img = imgSil;
     }
 
     hit(other) {
@@ -127,32 +127,8 @@ export class ForeignGerm extends Entity {
 
     render(cam, ctx) {
         this.renderHealthBar(cam, ctx);
-        /*
-         *
-        */
-        if (!this.identified) {
-            // TODO
-            // render the silhouette instead
-            /*var img = this.img;
-            //var canvas = document.createElement('canvas');
-            //canvas.width = img.width;
-            //canvas.height = img.height;
-            var imgData = ctx.getImageData(this.body.position,this.body.position,img.width,img.height);
-            var pix = imgData.data;
-            //console.log(img);
-            //return
-            for (var i=0, n = pix.length; i < n; i+= 4){
-                //set red to 0
-                pix[i] = 0;
-                //set green to 0
-                pix[i+1] = 0;
-                //set blue to 0
-                pix[i+2] = 0;
-                //retain the alpha value
-                pix[i+3] = pix[i+3];
-              }*/
-          //ctx.putImageData(imgData,this.pos.x,this.pos.y);//,x - cam.pos.x, y - cam.pos.y, size, size);
-          return;
+        if (this.identified) {
+            this.img = img1;
         }
 
         const { x, y } = this.body.position;

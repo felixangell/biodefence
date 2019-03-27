@@ -108,7 +108,7 @@ export class GameMap {
             let y = randInRange(0, 720);
             const germ = new ForeignGerm(x, y);
             // for now presume they are identified.
-            germ.identified = true;
+            germ.identified = false;
             germ.attack(this.cis);
             this.addEntity(germ);
         }
