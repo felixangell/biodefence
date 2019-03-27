@@ -57,8 +57,7 @@ export class CentralImmuneSystem extends Entity {
             tag: 'cis',
         });
 
-        // CIS deals two damage
-        this.damage = 2;
+        this.damage = 100;
     }
     
     update() {
@@ -92,7 +91,7 @@ export class ForeignGerm extends Entity {
             isStatic: false,
             tag: 'germ',
         });
-        this.damage = 1;
+        this.damage = 6;
 
         // this germ has not been identified yet!
         this.identified = false;
