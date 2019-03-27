@@ -5,4 +5,9 @@ export default class Camera {
             y: 0,
         };
     }
+
+    focusOnPoint(x, y) {
+        this.pos.x = x;
+        this.pos.y = y;
+    }
 }
