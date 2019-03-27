@@ -54,24 +54,27 @@ export class ForeignGerm extends Entity {
     constructor(x, y) {
         super(x, y, false);
 
-        // this germ has not been identified yet!
-        this.identified = false;
-        console.log(this.pos);
         // FIXME proper image loading.
         const img = new Image();
-        img.src = 'https://i.imgur.com/fCKP3ZT.png';
+        img.src = 'https://imgur.com/7cnVX3A';//'https://i.imgur.com/fCKP3ZT.png';
         this.img = img;
+
+        // this germ has not been identified yet!
+        this.identified = true;
+
     }
 
     update() {}
 
     render(cam, ctx) {
         this.renderHealthBar(cam, ctx);
-
+        /*
+         *
+        */
         if (!this.identified) {
             // TODO
             // render the silhouette instead
-            var img = this.img;
+            /*var img = this.img;
             //var canvas = document.createElement('canvas');
             //canvas.width = img.width;
             //canvas.height = img.height;
@@ -88,10 +91,10 @@ export class ForeignGerm extends Entity {
                 pix[i+2] = 0;
                 //retain the alpha value
                 pix[i+3] = pix[i+3];
-              }
+              }*/
           //ctx.putImageData(imgData,this.pos.x,this.pos.y);//,x - cam.pos.x, y - cam.pos.y, size, size);
           return;
-          }
+        }
 
         const { x, y } = this.body.position;
         const size = 50;

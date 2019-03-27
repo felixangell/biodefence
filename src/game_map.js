@@ -10,7 +10,7 @@ export class Tile {
         this.id = id;
         this.img = img;
     }
-    
+
     update() { }
 
     // render draws the tile to the given
@@ -54,7 +54,7 @@ export class GameMap {
         // how many tiles in size the game map is.
         this.width = 64;
         this.height = 64;
-        
+
         this.cam = new Camera();
 
         // fill the map up with 0 tiles
@@ -70,7 +70,7 @@ export class GameMap {
         this.engine.world.gravity.scale = 0;
 
         Matter.Engine.run(this.engine);
-        
+
         // entitiy list, with a few test entities
         // added.
         this.entities = [];
@@ -78,6 +78,7 @@ export class GameMap {
         this.cis = new CentralImmuneSystem(256, 256);
         this.addEntity(this.cis);
         this.addEntity(new ForeignGerm(50, 50));
+        this.addEntity(new ForeignGerm(70, 70)); //Testing purposes
 
         // default to focus on the CIS.
         this.focusOnCIS();
@@ -93,7 +94,7 @@ export class GameMap {
         let xOff = (800 / 2);
         let yOff = (600 / 2);
 
-        // work out where we need to look for the 
+        // work out where we need to look for the
         // point to be in the centre of the screen.
         let px = x - xOff;
         let py = y - yOff;
@@ -117,7 +118,7 @@ export class GameMap {
 
     render(ctx) {
         // here we render the game map
-        // looping through each tile, looking the 
+        // looping through each tile, looking the
         // tile id up in the tile cache
         // and rendering it, if it exists.
         for (let y = 0; y < this.height; y++) {
