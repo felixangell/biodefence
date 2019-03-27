@@ -89,7 +89,7 @@ export class GameMap {
         this.cis = new CentralImmuneSystem(1280, 720);
         this.addEntity(this.cis);
 
-        Events.on(this.engine, 'collisionStart', (event) => {
+        Events.on(this.engine, 'collisionActive', (event) => {
             for (const body of event.pairs) {
                 const a = this.entities.get(body.bodyA);
                 const b = this.entities.get(body.bodyB);

@@ -40,7 +40,12 @@ export class Entity {
 
         const barHeight = 8;
         const barWidth = this.health;
-        ctx.fillRect(x - cam.pos.x, y - cam.pos.y - (barHeight * 2), barWidth, barHeight);
+        
+        // calculate the x position for the bar to be rendered at
+        // to be centre aligned.
+        const xOff = (this.width - barWidth) / 2;
+
+        ctx.fillRect((x + xOff) - cam.pos.x, y - cam.pos.y - (barHeight * 2), barWidth, barHeight);
     }
 }
 
