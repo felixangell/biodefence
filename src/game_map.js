@@ -12,7 +12,7 @@ export class Tile {
         this.id = id;
         this.img = img;
     }
-    
+
     update() { }
 
     // render draws the tile to the given
@@ -58,7 +58,7 @@ export class GameMap {
         // how many tiles in size the game map is.
         this.width = 64;
         this.height = 64;
-        
+
         let viewport = {
             width: this.width * TileSize,
             height: this.height * TileSize,
@@ -76,9 +76,9 @@ export class GameMap {
         this.engine = Matter.Engine.create();
         // disable gravity.
         this.engine.world.gravity.scale = 0;
-        
+
         Matter.Engine.run(this.engine);
-        
+
         // entitiy list, with a few test entities
         // added.
         this.entities = new Map();
@@ -93,7 +93,7 @@ export class GameMap {
             for (const body of event.pairs) {
                 const a = this.entities.get(body.bodyA);
                 const b = this.entities.get(body.bodyB);
-                
+
                 a.hit(b);
                 b.hit(a);
             }
@@ -107,8 +107,8 @@ export class GameMap {
             let x = randInRange(0, 1280);
             let y = randInRange(0, 720);
             const germ = new ForeignGerm(x, y);
-            // for now presume they are identified.
-            germ.identified = true;
+            // for now presume they aren't identified.
+            germ.identified = false;
             germ.attack(this.cis);
             this.addEntity(germ);
         }
@@ -119,15 +119,15 @@ export class GameMap {
 
     focusOnCIS() {
         const { x, y } = this.cis.body.position;
-        
-        const { width, height } = document.querySelector('#game-container');    
-    
+
+        const { width, height } = document.querySelector('#game-container');
+
         // TODO we should take into account the bodies
         // size so that we can perfectly centre it.
         let xOff = (width / 2);
         let yOff = (height / 2);
 
-        // work out where we need to look for the 
+        // work out where we need to look for the
         // point to be in the centre of the screen.
         let px = x - xOff;
         let py = y - yOff;
@@ -162,7 +162,7 @@ export class GameMap {
 
     render(ctx) {
         // here we render the game map
-        // looping through each tile, looking the 
+        // looping through each tile, looking the
         // tile id up in the tile cache
         // and rendering it, if it exists.
         for (let y = 0; y < this.height; y++) {
