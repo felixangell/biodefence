@@ -86,7 +86,6 @@ export class CentralImmuneSystem extends Entity {
 
 
 // https://imgur.com/j7VTlvc
-const img1 = new Image(); // Needs to be global
 export class ForeignGerm extends Entity {
     constructor(x, y) {
         super(x, y, 50, 50, {
@@ -95,12 +94,13 @@ export class ForeignGerm extends Entity {
         });
         this.damage = 6;
 
-        // FIXME proper image loading.
+        this.defaultImage = new Image();
+        this.defaultImage.src = 'https://i.imgur.com/fCKP3ZT.png'; // normal image
 
-        const imgSil = new Image();
-        img1.src = 'https://i.imgur.com/fCKP3ZT.png'; // normal image
-        imgSil.src = 'https://i.imgur.com/27Ehmxo.png'; // silhouette image
-        this.img = imgSil;
+        this.imgSil = new Image();
+        this.imgSil.src = 'https://i.imgur.com/27Ehmxo.png'; // silhouette image
+
+        this.img = this.imgSil;
     }
 
     hit(other) {
@@ -123,13 +123,13 @@ export class ForeignGerm extends Entity {
     }
 
     update() {
+
     }
 
     render(cam, ctx) {
         this.renderHealthBar(cam, ctx);
-        if (this.identified) {
-            this.img = img1;
-        }
+        
+        this.img = this.identified ? this.defaultImage : this.imgSil;
 
         const { x, y } = this.body.position;
         ctx.drawImage(this.img, x - cam.pos.x, y - cam.pos.y, this.width, this.height);

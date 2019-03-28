@@ -7,7 +7,7 @@
   "author": "Felix Angell <felixangell@members.fsf.org>",
   "license": "MIT",
   "scripts": {
-    "d": "webpack-dev-server --mode development --watch",
+    "d": "webpack-dev-server --mode development --watch --hot --content-base ./ --port 3000",
     "build": "webpack --dev",
     "w": "webpack --mode development --watch --watch-poll"
   },
