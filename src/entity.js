@@ -45,7 +45,7 @@ export class Entity {
         // to be centre aligned.
         const xOff = (this.width - barWidth) / 2;
 
-        ctx.fillRect((x + xOff) - cam.pos.x, y - cam.pos.y - (barHeight * 2), barWidth, barHeight);
+        ctx.fillRect((x + xOff - (this.width / 2)) - cam.pos.x, (y - (this.height / 2)) - cam.pos.y - (barHeight * 2), barWidth, barHeight);
     }
 }
 
@@ -80,7 +80,7 @@ export class CentralImmuneSystem extends Entity {
 
         const { x, y } = this.body.position;
         ctx.fillStyle = "#00ff00";
-        ctx.fillRect(x - cam.pos.x, y - cam.pos.y, this.width, this.height);
+        ctx.fillRect((x - (this.width / 2)) - cam.pos.x, (y - (this.height / 2)) - cam.pos.y, this.width, this.height);
     }
 }
 
@@ -132,6 +132,6 @@ export class ForeignGerm extends Entity {
         this.img = this.identified ? this.defaultImage : this.imgSil;
 
         const { x, y } = this.body.position;
-        ctx.drawImage(this.img, x - cam.pos.x, y - cam.pos.y, this.width, this.height);
+        ctx.drawImage(this.img, (x - (this.width / 2)) - cam.pos.x, (y - (this.height / 2)) - cam.pos.y, this.width, this.height);
     }
 }

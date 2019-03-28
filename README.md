@@ -18,6 +18,9 @@ Source files are in the `src` directory:
 - index.js - this is where to start!
 - state.js - simple game_state boilerplate stuff
 
+Entities in the physics engine are rendered from the centre? So we take off half the width andh eight
+from the x/y position when rendering.
+
 ### game loop
 There is a game loop in `src/index.js`, specifically the start method of the Game class. This
 sets up a loop that runs (hard coded) at 60 fps, i.e. 60 iterations a second.
