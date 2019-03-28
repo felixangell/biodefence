@@ -27,12 +27,12 @@ export class Entity {
     // was hit (collided) with the
     // entity other.
     hit(other) {}
-    
+
     update() {}
 
     render(cam, ctx) {}
 
-    // renders the entities health bar above 
+    // renders the entities health bar above
     // the head of the entity.
     renderHealthBar(cam, ctx) {
         ctx.fillStyle = "#ff0000";
@@ -40,7 +40,7 @@ export class Entity {
 
         const barHeight = 8;
         const barWidth = this.health;
-        
+
         // calculate the x position for the bar to be rendered at
         // to be centre aligned.
         const xOff = (this.width - barWidth) / 2;
@@ -59,7 +59,7 @@ export class CentralImmuneSystem extends Entity {
 
         this.damage = 100;
     }
-    
+
     update() {
         if (this.health < 0) {
             // game over!
@@ -84,7 +84,9 @@ export class CentralImmuneSystem extends Entity {
     }
 }
 
+
 // https://imgur.com/j7VTlvc
+const img1 = new Image(); // Needs to be global
 export class ForeignGerm extends Entity {
     constructor(x, y) {
         super(x, y, 50, 50, {
@@ -93,13 +95,12 @@ export class ForeignGerm extends Entity {
         });
         this.damage = 6;
 
-        // this germ has not been identified yet!
-        this.identified = false;
-
         // FIXME proper image loading.
-        const img = new Image();
-        img.src = 'https://i.imgur.com/fCKP3ZT.png';
-        this.img = img;
+
+        const imgSil = new Image();
+        img1.src = 'https://i.imgur.com/fCKP3ZT.png'; // normal image
+        imgSil.src = 'https://i.imgur.com/27Ehmxo.png'; // silhouette image
+        this.img = imgSil;
     }
 
     hit(other) {
@@ -115,8 +116,8 @@ export class ForeignGerm extends Entity {
     attack(entity) {
         let force = 0.02 * this.body.mass * Math.random();
 
-        Body.applyForce(this.body, this.body.position, { 
-            x: force, 
+        Body.applyForce(this.body, this.body.position, {
+            x: force,
             y: force,
         });
     }
@@ -126,14 +127,11 @@ export class ForeignGerm extends Entity {
 
     render(cam, ctx) {
         this.renderHealthBar(cam, ctx);
-
-        if (!this.identified) {
-            // TODO
-            // render the silhouette instead
-            return
+        if (this.identified) {
+            this.img = img1;
         }
 
         const { x, y } = this.body.position;
-        ctx.drawImage(this.img, x - cam.pos.x, y - cam.pos.y, this.width, this.height); 
+        ctx.drawImage(this.img, x - cam.pos.x, y - cam.pos.y, this.width, this.height);
     }
 }
