@@ -1,4 +1,5 @@
 # game...
+A nightly build of the master branch is deployed [here](https://bu-game.netlify.com/)
 
 ## requirements
 you'll need:
