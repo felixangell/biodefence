@@ -38,6 +38,7 @@ export class Entity {
         ctx.fillStyle = "#ff0000";
         const { x, y } = this.body.position;
 
+        // maybe the bar height should be relative to the size of the entity?
         const barHeight = 8;
         const barWidth = this.health;
 
