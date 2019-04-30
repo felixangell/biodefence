@@ -1,20 +1,32 @@
-import { GameState } from './state';
+import MenuState from './menu_state';
+import { StateManager, State, GameState } from './state';
+
+const debug = true;
 
 class Game {
     constructor() {
         this.container = document.querySelector('#game-container');
         this.ctx = this.container.getContext('2d');
-        this.events = [];
 
         // initial game state...
-        this.currentState = new GameState();
+        this.stateManager = new StateManager();
+
+        if (!debug) {
+            this.stateManager.forceState(new MenuState());
+        } else {
+            this.stateManager.forceState(new GameState());
+        }
+
+        const { currState } = this.stateManager;
+
+        console.log('currState is', currState);
 
         // all events are passed into the current
         // state with the type, event instance, as
         // well as the container the event was made from
         this.container.addEventListener('keypress', (event) => {
-            if (this.currentState) {
-                this.currentState.events.push({
+            if (currState) {
+                currState.events.push({
                     type: 'keypress',
                     event: event,
                     container: this.container,
@@ -23,8 +35,8 @@ class Game {
         });
 
         this.container.addEventListener('mousemove', (event) => {
-            if (this.currentState) {
-                this.currentState.events.push({
+            if (currState) {
+                currState.events.push({
                     type: 'mousemove',
                     event: event,
                     container: this.container,
@@ -33,8 +45,8 @@ class Game {
         })
 
         this.container.addEventListener('click', (event) => {
-            if (this.currentState) {
-                this.currentState.events.push({
+            if (currState) {
+                currState.events.push({
                     type: 'click',
                     event: event,
                     container: this.container,
@@ -44,10 +56,11 @@ class Game {
     }
 
     update() {
-        // updates the current state if set.
-        const curr = this.currentState;
-        if (curr) {
-            curr.update();
+        if (this.stateManager) {
+            const { currState } = this.stateManager;
+            if (currState) {
+                currState.update();
+            }
         }
     }
 
@@ -58,9 +71,11 @@ class Game {
         ctx.fillRect(0, 0, this.container.width, this.container.height);
 
         // renders the current state if set.
-        const curr = this.currentState;
-        if (curr) {
-            curr.render(ctx);
+        if (this.stateManager) {
+            const { currState } = this.stateManager;
+            if (currState) {
+                currState.render(ctx);
+            }
         }
     }
 
@@ -73,6 +88,12 @@ class Game {
 
             // this is a good font for now?
             ctx.font = "16px Verdana";
+
+            // check if there are any pending
+            // state changes to process.
+            if (this.stateManager) {
+                this.stateManager.update();
+            }
 
             this.update();
             this.render(ctx);

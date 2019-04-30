@@ -13,8 +13,8 @@ export class HUD {
         const SECOND = 1000;
 
         // 45 seconds for each year 1-5.
-        const ageInterval = 45 * SECOND;
-        
+        let ageInterval = 45 * SECOND;
+
         if (this.age > 5 && this.age <= 10) { 
             // Ages 5-10 take 30 seconds each for a 
             // total of 150 seconds or 2.50 minutes.
@@ -37,9 +37,9 @@ export class HUD {
         // take around 21 minutes if the user reaches age 80.
 
         // Every n seconds we ages.
-        if ((new Date() - this.last) > (ageInterval)) {
+        if ((new Date().getTime() - this.last) > (ageInterval)) {
             this.age++;
-            this.last = new Date();
+            this.last = new Date().getTime();
         }
     }
 

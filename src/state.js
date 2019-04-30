@@ -26,34 +26,41 @@ function circleIntersectsRect(circle,rect){
     return (dx*dx+dy*dy<=(circle.r*circle.r));
 }
 
-export class GameState {
+class StateManager {
     constructor() {
-        this.events = [];
-        this.hud = new HUD();
-        this.map = new GameMap();
+        this.currState = null;
+        this.prevState = null;
+        this.pendingState = null;
+    }
+
+    forceState(state) {
+        this.currState = state;
+    }
+
+    // requests to change state to the given 
+    // state
+    requestState(state) {
+        this.pendingState = state;
+    }
+
+    update() {
+        if (this.pendingState != null) {
+            this.currState = this.pendingState;
+            this.pendingState = null;
+        }
+    }
+}
+
+class State {
+    constructor(stateManager) {
+        this.stateManager = stateManager;
         this.lastMouseBounds = {
             x: 0, y: 0, r: 0,
         };
+        this.events = [];
     }
 
-    handleKeys(event) {
-        switch (event.key) {
-        case 'w':
-            break;
-        case 'a':
-            break;
-        case 's':
-            break;
-        case 'd':
-            break;
-
-        // space key pressed, return
-        // camera back to CIS.
-        case ' ':
-            this.map.focusOnCIS();
-            break;
-        }
-    }
+    handleKeys(event) { }
 
     handleMouseMove(event, x, y) {
         this.lastMouseBounds = {
@@ -90,8 +97,44 @@ export class GameState {
         }
     }
 
+    update() {}
+    render(ctx) {}
+}
+
+class GameState extends State {
+    constructor(stateManager) {
+        super(stateManager);
+        this.hud = new HUD();
+        this.map = new GameMap();
+    }
+
+    handleKeys(event) {
+        super.handleKeys(event);
+
+        switch (event.key) {
+        case 'w':
+            break;
+        case 'a':
+            break;
+        case 's':
+            break;
+        case 'd':
+            break;
+
+        // space key pressed, return
+        // camera back to CIS.
+        case ' ':
+            this.map.focusOnCIS();
+            break;
+        }
+    }
+
+    handleMouseMove(event, x, y) {
+        super.handleMouseMove(event, x, y);
+    }
+
     update() {
-        this.pollEvents();
+        super.pollEvents();
         
         // check for camera bounds intersection
         // FIXME interpolation can be done to make
@@ -150,3 +193,5 @@ export class GameState {
         this.hud.render(ctx);
     }
 }
+
+export { StateManager, State, GameState };
