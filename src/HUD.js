@@ -2,14 +2,19 @@ export class HUD {
     constructor() {
         // age starts at 0
         this.age = 0;
-        
+     
+        // we have zero lipids to start with?
+        this.lipids = 0;
+
         // TODO what range is hydration?
         this.hydration = 100;
+        this.nutrition = 100;
 
-        this.last = new Date();
+        this.ageTimer = new Date();
+        this.lipidTimer = new Date();
     }
 
-    update() {
+    agePlayer() {
         const SECOND = 1000;
 
         // 45 seconds for each year 1-5.
@@ -37,10 +42,67 @@ export class HUD {
         // take around 21 minutes if the user reaches age 80.
 
         // Every n seconds we ages.
-        if ((new Date().getTime() - this.last) > (ageInterval)) {
+        if ((new Date().getTime() - this.ageTimer) > (ageInterval)) {
             this.age++;
-            this.last = new Date().getTime();
+            this.ageTimer = new Date().getTime();
         }
+    }
+
+    // gets how many lipids to generate
+    // based off the nutrition level.
+    getLipidGenerationCount() {
+        if (this.nutrition >= 75) {
+            return 20;
+        } else if (this.nutrition >= 50) {
+            return 15;
+        } else if (this.nutrition >= 25) {
+            return 10;
+        }
+        // 0 - 24.
+        return 5;
+    }
+
+    // gets the generation rate of the lipds
+    // in seconds.
+    getLipidGenRate() {
+        if (this.hydration >= 75) {
+            return 2;
+        } else if (this.hydration >= 50) {
+            return 4;
+        } else if (this.hydration >= 25) {
+            return 6;
+        }
+        // 0 - 24.
+        return 8;
+    }
+
+    generateLipids() {
+        // there is a table in the documentation which
+        // details the rates
+        let lipidAmount = this.getLipidGenerationCount();
+        let lipidGenerationRate = this.getLipidGenRate();
+
+        const SECOND = 1000;
+        if ((new Date().getTime() - this.lipidTimer) > lipidGenerationRate * SECOND) {
+            this.lipids += lipidAmount;
+            this.lipidTimer = new Date().getTime();
+        }
+    }
+
+    // live as in to be alive, to live!
+    // this function deteriorates the nutrition
+    // and the hydration of the player.
+    live() {
+        // for now we just deteriorate by a random ish 
+        // small value.
+        this.hydration -= Math.random() * 0.01;
+        this.nutrition -= Math.random() * 0.01;
+    }
+
+    update() {
+        this.agePlayer();
+        this.generateLipids();
+        this.live();
     }
 
     render(ctx) {
@@ -59,7 +121,9 @@ export class HUD {
 
         let properties = {
             'age': this.age,
-            'hydration': this.hydration,
+            'hydration': this.hydration.toFixed(2),
+            'nutrition': this.nutrition.toFixed(2),
+            'lipids': this.lipids,
         };
 
         let accumWidth = 0;
