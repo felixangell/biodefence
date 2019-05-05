@@ -13,9 +13,15 @@ you'll need:
     $ git clone http://github.com/felixangell/project-aids
     $ cd project-aids/
     $ yarn
+
+### watch
+This will compile the javascript as you update it. So as you are you changing the code
+this will run in the background and compile any new changes. All you have to do is reload
+the web browser.
+
     $ yarn d
 
-Now if you open `localhost:3000` in your browser the game should be running.
+If you open `localhost:3000` in your browser the game should be running.
 
 ## notes
 Rendering via. the [HTML5 canvas](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D)
