@@ -1,11 +1,27 @@
 # game...
 A nightly build of the master branch is deployed [here](https://bu-game.netlify.com/)
 
-## requirements
+## building
+### requirements
 you'll need:
 
 * git
 * yarn
+
+### build & run
+
+    $ git clone http://github.com/felixangell/project-aids
+    $ cd project-aids/
+    $ yarn
+
+### watch
+This will compile the javascript as you update it. So as you are you changing the code
+this will run in the background and compile any new changes. All you have to do is reload
+the web browser.
+
+    $ yarn d
+
+If you open `localhost:3000` in your browser the game should be running.
 
 ## notes
 Rendering via. the [HTML5 canvas](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D)
@@ -31,12 +47,3 @@ of rendering the objects and entities to the canvas via. the provided graphics c
 ### state system
 For now a single game state is hard coded in as it's the only state that is necessary to
 focus on currently (`GameState`).
-
-## building
-
-    $ git clone http://github.com/felixangell/project-aids
-    $ cd project-aids/
-    $ yarn
-    $ yarn build
-
-Then open the index.html file in your browser and it should work.
