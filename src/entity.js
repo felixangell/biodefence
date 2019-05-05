@@ -1,4 +1,5 @@
 import Matter, {Body, Common} from 'matter-js';
+import loadResource from './image_loader';
 
 // by default, _all_ entities have
 // a health of 100 unless specified otherwise.
@@ -94,12 +95,10 @@ export class ForeignGerm extends Entity {
             tag: 'germ',
         });
         this.damage = 6;
+        this.identified = false;
 
-        this.defaultImage = new Image();
-        this.defaultImage.src = 'https://i.imgur.com/fCKP3ZT.png'; // normal image
-
-        this.imgSil = new Image();
-        this.imgSil.src = 'https://i.imgur.com/27Ehmxo.png'; // silhouette image
+        this.defaultImage = loadResource('bacteria.png');
+        this.imgSil = loadResource('bacteria_s.png');
 
         this.img = this.imgSil;
     }

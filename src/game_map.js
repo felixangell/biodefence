@@ -1,6 +1,7 @@
 import Matter, {Events} from 'matter-js';
 import { CentralImmuneSystem, ForeignGerm } from "./entity";
 import Camera from './camera';
+import loadResource from './image_loader';
 
 const TileSize = 192;
 
@@ -30,13 +31,11 @@ let lastTileId = 0;
 // can re-use tile instances.
 let tileRegister = new Map();
 
-function registerTile(imgLink) {
-    const img = new Image();
-    img.src = imgLink;
-    img.onload = () => {
+function registerTile(imgPath) {
+    loadResource(imgPath, (img) => {
         let tile = new Tile(lastTileId++, img);
         tileRegister.set(tile.id, tile);
-    };
+    });
 }
 
 function lookupTile(id) {
@@ -46,7 +45,7 @@ function lookupTile(id) {
 export class GameMap {
     constructor() {
         // for now we register a test tile.
-        registerTile('https://i.imgur.com/FoeO51W.png');
+        registerTile('ground_tile.jpg');
 
         // a 1d array of the tile data, i.e.
         // the tile ids [ 0 0 0 0, 1 0 1 0 ]
@@ -107,8 +106,6 @@ export class GameMap {
             let x = randInRange(0, 1280);
             let y = randInRange(0, 720);
             const germ = new ForeignGerm(x, y);
-            // for now presume they are identified.
-            germ.identified = false;
             germ.attack(this.cis);
             this.addEntity(germ);
         }
