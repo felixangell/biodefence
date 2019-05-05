@@ -1,5 +1,5 @@
 import { GameMap } from './game_map';
-import { HUD } from './HUD';
+import HUD from './HUD';
 
 // this calculates the x and y position of
 // the mouse click relevant to the canvas.
