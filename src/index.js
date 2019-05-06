@@ -102,8 +102,6 @@ class Game {
     }
 }
 
-let game = null;
-
 window.onload = () => {
     let context = new AudioContext();
     const gameContainer = document.getElementById('game-container');
@@ -114,6 +112,9 @@ window.onload = () => {
         getResource('bacteria_s.png');
     });
 
+    let game = new Game();
+    game.start();
+
     gameContainer.addEventListener('click', () => {
         if (game != null) {
             console.log('done already!');
@@ -122,7 +123,5 @@ window.onload = () => {
 
         console.log('starting game!');
         context.resume();
-        game = new Game();
-        game.start();
     });
 };

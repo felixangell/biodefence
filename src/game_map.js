@@ -177,7 +177,8 @@ export class GameMap {
                     e.deathSound.play();
                 }
                 this.removeEntity(e);
-                
+
+                // NASTY ISH HACK.
                 // gross check here to see if the CIS died.
                 // 
                 // basically when the CIS dies, we start a timer
