@@ -1,3 +1,4 @@
 #!/bin/bash
 yarn
-yarn build
+yarn prod
+cp index.html dist/index.html
