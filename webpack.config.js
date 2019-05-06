@@ -13,11 +13,11 @@ module.exports = {
   },
   devServer: {
     port: 3000,
-    contentBase: './dist',
+    contentBase: './public',
     hot: true,
     hotOnly: true,
     open: false,
-    publicPath: 'http://localhost:3000/dist/',
+    publicPath: 'http://localhost:3000/',
     compress: true,
   }
 }
