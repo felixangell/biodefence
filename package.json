@@ -9,6 +9,7 @@
   "scripts": {
     "d": "webpack-dev-server",
     "build": "webpack --dev",
+    "prod": "webpack --release -v",
     "w": "webpack --watch --watch-poll",
     "s": "serve"
   },
