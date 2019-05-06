@@ -3,6 +3,7 @@ import { CentralImmuneSystem, ForeignGerm } from "./entity";
 import Camera from './camera';
 import getResource from './image_loader';
 import GameOverState from './game_over_state';
+import { ReviveCISPowerup } from './powerup';
 
 const TileSize = 192;
 
@@ -22,6 +23,10 @@ export class Tile {
     render(cam, ctx, x, y) {
         ctx.drawImage(this.img, x - cam.pos.x, y - cam.pos.y);
     }
+}
+
+function randInRange(min, max) {
+    return Math.random() * (max - min) + min;
 }
 
 // this is for when registering a tile,
@@ -103,20 +108,19 @@ export class GameMap {
             }
         });
 
-        let randInRange = (min, max) => {
-            return Math.random() * (max - min) + min;
-        };
-
-        for (let i = 0; i < 100; i++) {
-            let x = randInRange(0, 1280);
-            let y = randInRange(0, 720);
-            const germ = new ForeignGerm(x, y);
-            germ.attack(this.cis);
-            this.addEntity(germ);
-        }
+        this.elapsedTime = new Date().getTime();
 
         // default to focus on the CIS.
         this.focusOnCIS();
+    }
+
+    // TODO allow spawning of specific type of bacteria
+    spawnBacteria() {
+        let x = randInRange(0, 1280);
+        let y = randInRange(0, 720);
+        const germ = new ForeignGerm(x, y);
+        germ.attack(this.cis);
+        this.addEntity(germ);
     }
 
     focusOnCIS() {
@@ -143,7 +147,7 @@ export class GameMap {
             // powerups going at once.
             const active = this.activePowerups.get(powerup.title);
             if (active.length >= powerup.activeLimit) {
-                return;
+                return false;
             }
         } else {
             this.activePowerups.set(powerup.title, []);
@@ -151,6 +155,7 @@ export class GameMap {
 
         this.activePowerups.get(powerup.title).push(powerup);
         powerup.onInvoke(this);
+        return true;
     }
 
     // addEntity will add the given entity to the world,

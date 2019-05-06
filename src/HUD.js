@@ -1,4 +1,9 @@
-import { ShieldPowerup } from "./powerup";
+import { ShieldPowerup, ReviveCISPowerup } from "./powerup";
+
+const DEBUG = true;
+
+// how long a second in the game is.
+const SECOND = DEBUG ? 100 : 1000;
 
 // the HUD contains all of the heads up display
 // components, including the players
@@ -9,8 +14,6 @@ import { ShieldPowerup } from "./powerup";
 // cards which pop up on the screen to explain something to the player.
 
 function lookupAgeInterval(age) {
-    const SECOND = 1000;
-
     if (age > 40) {
         return 10 * SECOND;
     }
@@ -73,6 +76,10 @@ class InfoCard {
     }
 }
 
+function randInRange(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
 class HUD {
     constructor(gameMap) {
         // age starts at 0
@@ -91,7 +98,6 @@ class HUD {
         this.lipidTimer = new Date().getTime();
         this.infoCardTimer = new Date().getTime();
 
-        const SECOND = 1000;
         this.timerIntervals = {
             // how long a card shows for
             cardDefaultDuration: 9 * SECOND,
@@ -119,7 +125,6 @@ class HUD {
         // and we delete the entry so it can be replaced later.
         if (this.cardLimiter.has(data.id)) {
             const addedTime = this.cardLimiter.get(data.id);
-            const SECOND = 1000;
             if ((new Date().getTime() - addedTime) < 30 * SECOND) {
                 return;
             }
@@ -152,12 +157,22 @@ class HUD {
     }
 
     spawnPowerup(powerup) {
-        this.map.addPowerup(powerup);
-        this.queueInfoCard(new InfoCard({
-            id: 6969,
-            title: 'Shield powerup!',
-            desc: '',
-        }));
+        if (this.map.addPowerup(powerup)) {
+            console.log('spawned a powerup', powerup.constructor.name);
+            this.queueInfoCard(new InfoCard({
+                id: 6969,
+                title: 'Shield powerup!',
+                desc: '',
+            }));
+        }
+    }
+
+    startLevel() {
+        // spawn 25 every age?
+        let spawnCount = randInRange(0, (this.age+1) * 25);
+        for (let i = 0; i < spawnCount; i++) {
+            this.map.spawnBacteria();
+        }
     }
 
     agePlayer() {
@@ -167,14 +182,17 @@ class HUD {
         // TODO/DOCS spawn this at random times
         // and then pick a random duration for the shield
         // between how long?
-        this.spawnPowerup(new ShieldPowerup(2.5));
+        // this.spawnPowerup(new ShieldPowerup(2.5));
         
         // An average game based off of these values should 
         // take around 21 minutes if the user reaches age 80.
 
         // Every n seconds we ages.
         if ((new Date().getTime() - this.ageTimer) > (ageInterval)) {
+            this.startLevel();
+            
             this.age++;
+
             this.ageTimer = new Date().getTime();
         }
     }
@@ -213,7 +231,6 @@ class HUD {
         let lipidAmount = this.getLipidGenerationCount();
         let lipidGenerationRate = this.getLipidGenRate();
 
-        const SECOND = 1000;
         if ((new Date().getTime() - this.lipidTimer) > lipidGenerationRate * SECOND) {
             this.lipids += lipidAmount;
             this.lipidTimer = new Date().getTime();

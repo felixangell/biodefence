@@ -38,6 +38,11 @@ class ReviveCISPowerup extends Powerup {
         super('Revive');
         this.duration = 10;
     }
+
+    onInvoke(gameMap) {
+        const { cis } = gameMap;
+        cis.revive();
+    }
 }
 
 export { 

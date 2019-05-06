@@ -55,6 +55,13 @@ export class Entity {
         }
     }
 
+    revive() {
+        // TODO should this be instant or happen gradually
+        // over time, but still relatively fast. e.g. revives
+        // a point every 0.5 second?
+        this.health = DefaultEntityHealth;
+    }
+
     shieldFor(duration) {
         this.shieldTimer = new Date().getTime();
         this.shieldDuration = duration;
@@ -92,10 +99,40 @@ export class CentralImmuneSystem extends Entity {
         this.deathSound = new Howl({src:'./res/sfx/cis_death.wav'});
         this.hitShieldSound = new Howl({src:'./res/sfx/shield_hit.wav'});
         this.damage = 100;
+        
+        // counter for reviving.
+        this.startReviveTime = null;
+
+        this.spawnTime = new Date().getTime();
+    }
+
+    revive() {
+        // start the counter!
+        this.startReviveTime = new Date().getTime();
     }
 
     update() {
         super.update();
+
+        // handles the reviving counter.
+        if (this.startReviveTime) {
+            // a point every millisecond.
+            const healPointInterval = 1;
+
+            // if a {healPointerInterval} has passed
+            // heal the CIS, or if we're past full health
+            // delete the timer
+            const healPoint = (new Date().getTime() - this.startReviveTime) > healPointInterval;
+            if (healPoint) {
+                if (this.health < DefaultEntityHealth) {
+                    // health 10 points at a time.
+                    this.health += 10;
+                    this.startReviveTime = new Date().getTime();
+                } else {
+                    this.startReviveTime = null;
+                }
+            }
+        }
 
         if (this.health <= 0) {
             // game over!
@@ -180,13 +217,18 @@ export class ForeignGerm extends Entity {
         this.health = 0;
     }
 
+    grow() {
+        this.size *= 1.25;
+        Body.scale(this.body, size, size);
+    }
+
     hit(other) {
         switch (other.body.tag) {
         case 'cis':
             super.damaged(this.health);
             break;
         case 'germ':
-            if (this.timeAlive > other.timeAlive) {
+            if (this.size > other.size || this.timeAlive > other.timeAlive) {
                 other.silentlyDie();
                 this.size *= 1.25;
                 bacteriaMergeSound.play();
@@ -216,6 +258,10 @@ export class ForeignGerm extends Entity {
         // a bit gross, but the bacteria slows down
         // when identified + does less damage
         if (this.identified) {
+            // TODO rather than set this, scale it and
+            // do it once.
+            // probably invoke a identify() function
+            // once that does this for us.
             this.speed = 0.03;
             this.damage = 4;
         }
