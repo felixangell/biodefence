@@ -134,6 +134,18 @@ export class CentralImmuneSystem extends Entity {
 }
 
 let bacteriaSound = new Howl({src:'./res/sfx/bacteria_die1.wav'});
+let bacteriaMergeSound = new Howl({src:'./res/sfx/merge_sound.wav'});
+
+function randRange(min, max) {
+    return (Math.random() * max - min) + min;
+}
+
+function randDirection() {
+    return {
+        x: randRange(-1.0, 1.0),
+        y: randRange(-1.0, 1.0),
+    };
+}
 
 // https://imgur.com/j7VTlvc
 export class ForeignGerm extends Entity {
@@ -142,35 +154,83 @@ export class ForeignGerm extends Entity {
             isStatic: false,
             tag: 'germ',
         });
-        this.damage = 6;
+        
         this.identified = false;
+
+        this.damage = 6;
+        this.size = 1.0; // size multiplier.
+        this.speed = 0.05;
+
+        // time alive + a slightly random offset
+        // this is how we base the merging of bacteria
+        this.timeAlive = new Date().getTime() - Math.random();
 
         this.deathSound = bacteriaSound;
 
         this.defaultImage = getResource('bacteria.png');
         this.imgSil = getResource('bacteria_s.png');
 
+        this.dirTimer = new Date().getTime();
+        this.changePath();
+
         this.img = this.imgSil;
     }
 
+    silentlyDie() {
+        this.health = 0;
+    }
+
     hit(other) {
-        if (other.body.tag === 'cis') {
-            // we hit the CIS, this bacterias health should die
+        switch (other.body.tag) {
+        case 'cis':
             super.damaged(this.health);
+            break;
+        case 'germ':
+            if (this.timeAlive > other.timeAlive) {
+                other.silentlyDie();
+                this.size *= 1.25;
+                bacteriaMergeSound.play();
+            }
+            break;
         }
     }
 
     attack(entity) {
-        let force = 0.02 * this.body.mass * Math.random();
+        // TODO gravitate them towards the CIS.
+    }
 
+    // move in a random path
+    changePath() {
+        const dir = randDirection();
+        let xf = (this.body.mass * (dir.x * this.speed)) * randRange(-0.1, 0.1);
+        let yf = (this.body.mass * (dir.y * this.speed)) * randRange(-0.1, 0.1);
         Body.applyForce(this.body, this.body.position, {
-            x: force,
-            y: force,
+            x: xf,
+            y: yf,
         });
     }
 
     update() {
         super.update();
+        
+        // a bit gross, but the bacteria slows down
+        // when identified + does less damage
+        if (this.identified) {
+            this.speed = 0.03;
+            this.damage = 4;
+        }
+
+        const moveChangeTime = 0.3;
+
+        const SECOND = 1000;
+        if ((new Date().getTime() - this.dirTimer) > moveChangeTime * SECOND) {
+            if (randRange(0, 500) > 450) {
+                this.identified = true;
+            }
+
+            this.changePath();
+            this.dirTimer = new Date().getTime();
+        }
     }
 
     render(cam, ctx) {
@@ -179,6 +239,8 @@ export class ForeignGerm extends Entity {
         this.img = this.identified ? this.defaultImage : this.imgSil;
 
         const { x, y } = this.body.position;
-        ctx.drawImage(this.img, (x - (this.width / 2)) - cam.pos.x, (y - (this.height / 2)) - cam.pos.y, this.width, this.height);
+        const xPos = (x - (this.width / 2)) - cam.pos.x;
+        const yPos = (y - (this.height / 2)) - cam.pos.y;
+        ctx.drawImage(this.img, xPos, yPos, this.width * this.size, this.height * this.size);
     }
 }
