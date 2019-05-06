@@ -1,9 +1,13 @@
 import Matter, {Body, Common} from 'matter-js';
-import loadResource from './image_loader';
+import getResource from './image_loader';
+import {Howl, Howler} from 'howler';
 
 // by default, _all_ entities have
 // a health of 100 unless specified otherwise.
 const DefaultEntityHealth = 100;
+
+let deathSound = new Howl({src:'./res/sfx/default_death_sound.wav'});
+let shieldDownSound = new Howl({src:'./res/sfx/shield_down.wav'});
 
 export class Entity {
 
@@ -21,7 +25,16 @@ export class Entity {
         this.height = height;
         this.damage = 1;
 
+        // by default this our death sound.
+        this.deathSound = deathSound;
         this.body = Matter.Bodies.rectangle(x, y, width, height, options);
+    }
+
+    damaged(amount) {
+        if (this.shielded) {
+            return;
+        }
+        this.health -= amount;
     }
 
     // invoked when this entity
@@ -29,7 +42,24 @@ export class Entity {
     // entity other.
     hit(other) {}
 
-    update() {}
+    update() {
+        if (this.shieldTimer) {
+            const SECOND = 1000;
+            const elapsed = (new Date().getTime() - this.shieldTimer);
+            if (elapsed > (this.shieldDuration * SECOND)) {
+                this.shielded = false;
+                // shield down!
+                shieldDownSound.play();
+                this.shieldTimer = null;
+            }
+        }
+    }
+
+    shieldFor(duration) {
+        this.shieldTimer = new Date().getTime();
+        this.shieldDuration = duration;
+        this.shielded = true;
+    }
 
     render(cam, ctx) {}
 
@@ -59,11 +89,15 @@ export class CentralImmuneSystem extends Entity {
             tag: 'cis',
         });
 
+        this.deathSound = new Howl({src:'./res/sfx/cis_death.wav'});
+        this.hitShieldSound = new Howl({src:'./res/sfx/shield_hit.wav'});
         this.damage = 100;
     }
 
     update() {
-        if (this.health < 0) {
+        super.update();
+
+        if (this.health <= 0) {
             // game over!
             this.health = 0;
         }
@@ -73,7 +107,10 @@ export class CentralImmuneSystem extends Entity {
         // only germs will damage the health of
         // the CIS.
         if (other.body.tag === 'germ') {
-            this.health -= other.damage;
+            super.damaged(other.damage);
+        }
+        if (this.shielded) {
+            this.hitShieldSound.play();
         }
     }
 
@@ -82,10 +119,21 @@ export class CentralImmuneSystem extends Entity {
 
         const { x, y } = this.body.position;
         ctx.fillStyle = "#00ff00";
-        ctx.fillRect((x - (this.width / 2)) - cam.pos.x, (y - (this.height / 2)) - cam.pos.y, this.width, this.height);
+
+        const xPos = (x - (this.width / 2)) - cam.pos.x;
+        const yPos = (y - (this.height / 2)) - cam.pos.y;
+        ctx.fillRect(xPos, yPos, this.width, this.height);
+
+        if (this.shielded) {
+            ctx.fillStyle = "#0000ff";
+            const border = 4;
+            ctx.strokeRect(xPos-border, yPos-border, this.width + (border*2), this.height + (border*2));
+            ctx.stroke();
+        }
     }
 }
 
+let bacteriaSound = new Howl({src:'./res/sfx/bacteria_die1.wav'});
 
 // https://imgur.com/j7VTlvc
 export class ForeignGerm extends Entity {
@@ -97,8 +145,10 @@ export class ForeignGerm extends Entity {
         this.damage = 6;
         this.identified = false;
 
-        this.defaultImage = loadResource('bacteria.png');
-        this.imgSil = loadResource('bacteria_s.png');
+        this.deathSound = bacteriaSound;
+
+        this.defaultImage = getResource('bacteria.png');
+        this.imgSil = getResource('bacteria_s.png');
 
         this.img = this.imgSil;
     }
@@ -106,10 +156,7 @@ export class ForeignGerm extends Entity {
     hit(other) {
         if (other.body.tag === 'cis') {
             // we hit the CIS, this bacterias health should die
-
-            // TODO we need to see how much damage the CIS
-            // would deal to this bacteria?
-            this.health = 0;
+            super.damaged(this.health);
         }
     }
 
@@ -123,7 +170,7 @@ export class ForeignGerm extends Entity {
     }
 
     update() {
-
+        super.update();
     }
 
     render(cam, ctx) {

@@ -16,6 +16,7 @@
     "@babel/core": "^7.3.4",
     "@babel/preset-env": "^7.3.4",
     "babel-loader": "^8.0.5",
+    "howler": "^2.1.2",
     "matter-js": "^0.14.2",
     "webpack": "^4.29.6",
     "webpack-dev-server": "^3.2.1"
