@@ -13,7 +13,7 @@ module.exports = {
   },
   devServer: {
     port: 3000,
-    contentBase: './public',
+    contentBase: './',
     hot: true,
     hotOnly: true,
     open: false,
