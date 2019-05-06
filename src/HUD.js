@@ -1,3 +1,5 @@
+import { ShieldPowerup } from "./powerup";
+
 // the HUD contains all of the heads up display
 // components, including the players
 // age, lipid count (currency),
@@ -5,6 +7,26 @@
 //
 // in addition to this, it contains the 'information'
 // cards which pop up on the screen to explain something to the player.
+
+function lookupAgeInterval(age) {
+    const SECOND = 1000;
+
+    if (age > 40) {
+        return 10 * SECOND;
+    }
+    else if (age > 20) {
+        return 15 * SECOND;
+    }
+    else if (age > 10) {
+        return 20 * SECOND;
+    }
+    else if (age > 5) {
+        return 30 * SECOND;
+    }
+
+    // ages 1 - 5.
+    return 45 * SECOND;
+}
 
 class InfoCard {
     constructor(data) {
@@ -52,9 +74,11 @@ class InfoCard {
 }
 
 class HUD {
-    constructor() {
+    constructor(gameMap) {
         // age starts at 0
         this.age = 0;
+
+        this.map = gameMap;
      
         // we have zero lipids to start with?
         this.lipids = 0;
@@ -126,30 +150,24 @@ class HUD {
 
         console.log('enqueued card', data.title);
     }
-    
+
+    spawnPowerup(powerup) {
+        this.map.addPowerup(powerup);
+        this.queueInfoCard(new InfoCard({
+            id: 6969,
+            title: 'Shield powerup!',
+            desc: '',
+        }));
+    }
+
     agePlayer() {
-        const SECOND = 1000;
+        // get the interval for the current age.
+        const ageInterval = lookupAgeInterval(this.age);
 
-        // 45 seconds for each year 1-5.
-        let ageInterval = 45 * SECOND;
-
-        if (this.age > 5 && this.age <= 10) { 
-            // Ages 5-10 take 30 seconds each for a 
-            // total of 150 seconds or 2.50 minutes.
-            ageInterval = 30 * SECOND;
-        } else if (this.age > 10 && this.age <= 20) { 
-            // Ages 10-20 take 20 seconds each for a 
-            // total of 200 seconds or 3.33 minutes.
-            ageInterval = 20 * SECOND;       
-        } else if (this.age > 20 && this.age <= 40) {
-            // Ages 20-40 take 15 seconds each for a 
-            // total of 300 seconds or 5 minutes.
-            ageInterval = 15 * SECOND;
-        } else if (this.age > 40 && this.age <= 80) {
-            // Ages 40-80 take 10 seconds each for 
-            // a total of 400 seconds or 6.66 minutes.
-            ageInterval = 10 * SECOND;
-        }
+        // TODO/DOCS spawn this at random times
+        // and then pick a random duration for the shield
+        // between how long?
+        this.spawnPowerup(new ShieldPowerup(2.5));
         
         // An average game based off of these values should 
         // take around 21 minutes if the user reaches age 80.
@@ -208,7 +226,7 @@ class HUD {
     live() {
         // for now we just deteriorate by a random ish 
         // small value.
-        this.hydration -= Math.random() * 0.01;
+        this.hydration -= Math.random();
         this.nutrition -= Math.random() * 0.01;
 
         // clamp the values so they can't go below zero.

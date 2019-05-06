@@ -1,8 +1,7 @@
 import { State } from './state';
 
 class MenuState extends State {
-    constructor(stateManager) {
-        super(stateManager);
+    constructor() {
         this.selectedIndex = 0;
     }
 

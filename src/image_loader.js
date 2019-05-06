@@ -3,7 +3,7 @@ let imageCache = new Map();
 // loadImage, will look in the res folder,
 // so to reference res/file.png, you would
 // simply pass 'file.png' as the filename param.
-function loadResource(filename, loaded) {
+function getResource(filename, loaded) {
     if (imageCache.has(filename)) {
         const image = imageCache.get(filename);
         if (loaded) loaded(image);
@@ -21,4 +21,4 @@ function loadResource(filename, loaded) {
     return res;
 }
 
-export default loadResource;
+export default getResource;

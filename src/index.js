@@ -1,5 +1,6 @@
 import MenuState from './menu_state';
-import { StateManager, State, GameState } from './state';
+import { StateManager, State } from './state';
+import GameState from './game_state';
 
 const debug = true;
 
@@ -101,4 +102,27 @@ class Game {
     }
 }
 
-new Game().start();
+let game = null;
+
+window.onload = () => {
+    let context = new AudioContext();
+    const gameContainer = document.getElementById('game-container');
+
+    Promise.resolve(() => {
+        getResource('ground_tile.jpg');
+        getResource('bacteria.png');
+        getResource('bacteria_s.png');
+    });
+
+    gameContainer.addEventListener('click', () => {
+        if (game != null) {
+            console.log('done already!');
+            return;
+        }
+
+        console.log('starting game!');
+        context.resume();
+        game = new Game();
+        game.start();
+    });
+};

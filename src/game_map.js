@@ -1,7 +1,8 @@
 import Matter, {Events} from 'matter-js';
 import { CentralImmuneSystem, ForeignGerm } from "./entity";
 import Camera from './camera';
-import loadResource from './image_loader';
+import getResource from './image_loader';
+import GameOverState from './game_over_state';
 
 const TileSize = 192;
 
@@ -32,7 +33,7 @@ let lastTileId = 0;
 let tileRegister = new Map();
 
 function registerTile(imgPath) {
-    loadResource(imgPath, (img) => {
+    getResource(imgPath, (img) => {
         let tile = new Tile(lastTileId++, img);
         tileRegister.set(tile.id, tile);
     });
@@ -43,7 +44,9 @@ function lookupTile(id) {
 }
 
 export class GameMap {
-    constructor() {
+    constructor(stateManager) {
+        this.stateManager = stateManager;
+
         // for now we register a test tile.
         registerTile('ground_tile.jpg');
 
@@ -57,6 +60,8 @@ export class GameMap {
         // how many tiles in size the game map is.
         this.width = 64;
         this.height = 64;
+
+        this.activePowerups = new Map();
 
         let viewport = {
             width: this.width * TileSize,
@@ -132,6 +137,22 @@ export class GameMap {
         this.cam.focusOnPoint(px, py);
     }
 
+    addPowerup(powerup) {
+        if (this.activePowerups.has(powerup.title)) {
+            // ensure that we don't have too many
+            // powerups going at once.
+            const active = this.activePowerups.get(powerup.title);
+            if (active.length >= powerup.activeLimit) {
+                return;
+            }
+        } else {
+            this.activePowerups.set(powerup.title, []);
+        }
+
+        this.activePowerups.get(powerup.title).push(powerup);
+        powerup.onInvoke(this);
+    }
+
     // addEntity will add the given entity to the world,
     // but most importantly it adds the entities physics
     // body to the physics engines world register.
@@ -150,9 +171,33 @@ export class GameMap {
             // if we've died we want to remove the entity
             // from the game.
             if (e.health <= 0) {
+                // play the death sound if the entity
+                // has one.
+                if (e.deathSound) {
+                    e.deathSound.play();
+                }
                 this.removeEntity(e);
+                
+                // gross check here to see if the CIS died.
+                // 
+                // basically when the CIS dies, we start a timer
+                // to let the explosion sound finish
+                // before we jump right into the death state.
+                if (e.constructor.name === 'CentralImmuneSystem') {
+                    this.gameOverTimer = new Date().getTime();
+                }
             } else {
                 e.update();
+            }
+        }
+
+        // if we have a gameover timer set,
+        // wait for 15 seconds to pass and then
+        // transition into the gameover state.
+        if (this.gameOverTimer) {
+            const SECOND = 1000;
+            if ((new Date().getTime() - this.gameOverTimer) > 5 * SECOND) {
+                this.stateManager.requestState(new GameOverState());
             }
         }
     }
