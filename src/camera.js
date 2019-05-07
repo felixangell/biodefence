@@ -1,8 +1,9 @@
 export default class Camera {
-    constructor(viewport) {
+    constructor(viewport, mapDimensions) {
         // viewport is the size of the entire
         // game map in pixels.
         this.viewport = viewport;
+        this.mapDimensions = mapDimensions;
 
         this.pos = {
             x: 0,
@@ -24,10 +25,10 @@ export default class Camera {
         if (this.pos.y + y < 0) {
             return;
         }
-        if (this.pos.x + x > this.viewport.width) {
+        if (this.pos.x + x > this.mapDimensions.width) {
             return;
         }
-        if (this.pos.y + y > this.viewport.height) {
+        if (this.pos.y + y > this.mapDimensions.height) {
             return;
         }
 

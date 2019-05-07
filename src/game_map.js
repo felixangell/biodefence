@@ -4,6 +4,7 @@ import Camera from './camera';
 import getResource from './image_loader';
 import GameOverState from './game_over_state';
 import WanderingBacteria from './bacteria';
+import Spawner from './spawner';
 
 const TileSize = 192;
 
@@ -22,11 +23,17 @@ export class Tile {
     // context at the coordinates x, y.
     render(cam, ctx, x, y) {
         ctx.drawImage(this.img, x - cam.pos.x, y - cam.pos.y);
+
+        if (window.sessionStorage.getItem('debug') === 'true') {
+            ctx.fillStyle = "#ff00ff";
+            ctx.strokeRect(x - cam.pos.x, y - cam.pos.y, this.img.width, this.img.height);
+            ctx.stroke();
+        }
     }
 }
 
-function randInRange(min, max) {
-    return Math.random() * (max - min) + min;
+function randRange(min, max) {
+    return (Math.random() * (max - min)) + min;
 }
 
 // this is for when registering a tile,
@@ -63,16 +70,40 @@ export class GameMap {
         this.bodies = new Map();
 
         // how many tiles in size the game map is.
-        this.width = 64;
-        this.height = 64;
+        this.width = 16;
+        this.height = 16;
 
         this.activePowerups = new Map();
 
+        const { width, height } = document.getElementById('game-container');
+
         let viewport = {
+            width: width,
+            height: height,
+        };
+        this.cam = new Camera(viewport, {
             width: this.width * TileSize,
             height: this.height * TileSize,
-        };
-        this.cam = new Camera(viewport);
+        });
+
+        this.spawners = [];
+
+        // this could be changed depending on the difficulty
+        // of the game, i.e. the more spawners the harder!
+        const spawnerBoxCount = 4;
+        const size = spawnerBoxCount / 2;
+        
+        console.log(viewport);
+        const mapWidth = this.width * TileSize;
+        const regionSize = mapWidth / size;
+
+        const offs = (2 * TileSize);
+        for (let y = 0; y < size; y++) {
+            for (let x = 0; x < size; x++) {
+                console.log(x, y, regionSize);
+                this.spawners.push(new Spawner(x * regionSize + offs, y * regionSize + offs, this));
+            }
+        }
 
         // fill the map up with 0 tiles
         for (let i = 0; i < this.width * this.height; i++) {
@@ -115,8 +146,8 @@ export class GameMap {
     }
 
     spawnBacteria() {
-        let x = randInRange(0, 1280);
-        let y = randInRange(0, 720);
+        let x = randRange(0, 1280);
+        let y = randRange(0, 720);
 
         const germ = new WanderingBacteria(x, y);
         germ.attack(this.cis);
@@ -171,6 +202,13 @@ export class GameMap {
         this.entities.delete(e.body);
     }
 
+    tickSpawners() {
+        for (let spawner of this.spawners) {
+            console.log('le spawner est', spawner);
+            spawner.doTick();
+        }
+    }
+
     update() {
         for (const [body, e] of this.entities) {
             // if we've died we want to remove the entity
@@ -206,17 +244,25 @@ export class GameMap {
     }
 
     render(ctx) {
+        const tiledViewport = {
+            width: Math.ceil(this.cam.viewport.width / TileSize) + 1,
+            height: Math.ceil(this.cam.viewport.height / TileSize) + 1,
+        };
+
+        let camTx = Math.floor(this.cam.pos.x / TileSize);
+        let camTy = Math.floor(this.cam.pos.y / TileSize);
+
         // here we render the game map
         // looping through each tile, looking the
         // tile id up in the tile cache
         // and rendering it, if it exists.
-        for (let y = 0; y < this.height; y++) {
-            for (let x = 0; x < this.width; x++) {
+        for (let y = camTy; y < camTy + tiledViewport.height; y++) {
+            for (let x = camTx; x < camTx + tiledViewport.width; x++) {
                 const id = this.tileData[x + y * this.height];
 
                 const tile = lookupTile(id);
                 if (tile) {
-                    tile.render(this.cam, ctx, x * TileSize, y * TileSize);
+                   tile.render(this.cam, ctx, x * TileSize, y * TileSize);
                 }
             }
         }
@@ -226,5 +272,16 @@ export class GameMap {
         for (const [body, e] of this.entities) {
             e.render(this.cam, ctx);
         }
+
+        // we have to render these above the entities
+        // we dothis since the spawners are only ever
+        // rendered in debug so they must be visible over
+        // the entity to be able to see them!
+        for (const spawner of this.spawners) {
+            spawner.render(this.cam, ctx);
+        }
+
+        ctx.fillStyle = "#ffff00";
+        ctx.fillText(`${camTx}, ${camTy}`, 128, 128);
     }
 }

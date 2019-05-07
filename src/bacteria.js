@@ -8,7 +8,7 @@ let bacteriaSound = new Howl({src:'./res/sfx/bacteria_die1.wav', volume: 0.6});
 let bacteriaMergeSound = new Howl({src:'./res/sfx/merge_sound.wav', volume: 0.15});
 
 function randRange(min, max) {
-    return (Math.random() * max - min) + min;
+    return (Math.random() * (max - min)) + min;
 }
 
 function randDirection() {
@@ -91,6 +91,8 @@ class WanderingBacteria extends Entity {
     // move in a random path
     changePath() {
         const dir = randDirection();
+        console.log('random dir is', dir);
+
         let xf = (this.body.mass * (dir.x * this.speed)) * randRange(-0.1, 0.1);
         let yf = (this.body.mass * (dir.y * this.speed)) * randRange(-0.1, 0.1);
         Body.applyForce(this.body, this.body.position, {
