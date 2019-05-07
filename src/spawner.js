@@ -1,4 +1,5 @@
 import WanderingBacteria from "./bacteria";
+import Antibody from './antibody';
 
 let spawnerCount = 0;
 
@@ -40,6 +41,11 @@ class Spawner {
     }
 
     spawn(e) {
+        // we've spawned enough
+        if (this.numSpawns >= this.spawnLimit) {
+            return;
+        }
+
         this.map.addEntity(e);
         this.numSpawns++;
     }
@@ -54,7 +60,6 @@ class Spawner {
         let y = randRange(this.y - rad, this.y + rad);
 
         console.log('spawning entity at', x, y);
-
         this.spawn(new WanderingBacteria(x, y));
         this.tick++;
     }

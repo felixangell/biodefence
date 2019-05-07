@@ -38,8 +38,20 @@ class GameState extends State {
         this.bgMusic.loop();
 
         window.addEventListener('keypress', (evt) => {
+            switch (evt.key) {
+            case 'm':
+                if (this.bgMusic.playing()) {
+
+                }
+                this.bgMusic.playing() ? this.bgMusic.pause() : this.bgMusic.play();
+                break;
+            case 'd':
+                // lol
+                const opp = window.sessionStorage.getItem('debug') === 'true' ? 'false' : 'true';
+                window.sessionStorage.setItem('debug', opp);
+                break;
+            }
             if (evt.key == 'm') {
-                this.bgMusic.play();
             }
         })
         

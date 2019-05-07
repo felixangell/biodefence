@@ -26,7 +26,6 @@ class WanderingBacteria extends Entity {
             isStatic: false,
             tag: 'germ',
         });
-        
         this.identified = false;
 
         this.damage = 6;
@@ -72,15 +71,18 @@ class WanderingBacteria extends Entity {
     hit(other) {
         switch (other.body.tag) {
         case 'cis':
+            // we die!
             super.damaged(this.health);
             break;
         case 'germ':
             if (this.size > other.size || this.timeAlive > other.timeAlive) {
-                this.grow();
-                bacteriaMergeSound.play();
                 other.silentlyDie();
+                bacteriaMergeSound.play();
+                this.grow();
             }
             break;
+        default:
+            this.damaged(other.damage);
         }
     }
 
@@ -90,11 +92,14 @@ class WanderingBacteria extends Entity {
 
     // move in a random path
     changePath() {
+        // generate a random direction -1, to 1
         const dir = randDirection();
-        console.log('random dir is', dir);
 
+        // slow it down a bit!
         let xf = (this.body.mass * (dir.x * this.speed)) * randRange(-0.1, 0.1);
         let yf = (this.body.mass * (dir.y * this.speed)) * randRange(-0.1, 0.1);
+
+        // apply the force
         Body.applyForce(this.body, this.body.position, {
             x: xf,
             y: yf,
@@ -129,7 +134,8 @@ class WanderingBacteria extends Entity {
     }
 
     render(cam, ctx) {
-        this.renderHealthBar(cam, ctx);
+        // TODO only render healthbar when we hover or click an entity?
+        // this.renderHealthBar(cam, ctx);
         
         this.img = this.identified ? this.defaultImage : this.imgSil;
 

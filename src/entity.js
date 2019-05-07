@@ -24,10 +24,15 @@ class Entity {
         this.width = width;
         this.height = height;
         this.damage = 1;
+        this.identified = true;
 
         // by default this our death sound.
         this.deathSound = deathSound;
         this.body = Matter.Bodies.rectangle(x, y, width, height, options);
+
+        // the icon image that will be shown
+        // when the entity is clicked.
+        this.iconImage = getResource('default_icon.png');
     }
 
     // will damage this entity by amount, though

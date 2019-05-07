@@ -75,6 +75,10 @@ export class GameMap {
 
         this.activePowerups = new Map();
 
+        // TODO allow this to support multiple
+        // event listeners
+        this.on = new Map();
+
         const { width, height } = document.getElementById('game-container');
 
         let viewport = {
@@ -97,7 +101,12 @@ export class GameMap {
         const mapWidth = this.width * TileSize;
         const regionSize = mapWidth / size;
 
-        const offs = (2 * TileSize);
+        let offs = 0;
+        if (window.sessionStorage.getItem('debug') === 'true') {
+            // move the spawners closer in when debugging
+            offs = (2 * TileSize);
+        }
+
         for (let y = 0; y < size; y++) {
             for (let x = 0; x < size; x++) {
                 console.log(x, y, regionSize);
@@ -122,9 +131,6 @@ export class GameMap {
         // entitiy list, with a few test entities
         // added.
         this.entities = new Map();
-
-        const xCentre = (this.width * TileSize) / 2;
-        const yCentre = (this.height * TileSize) / 2;
 
         this.cis = new CentralImmuneSystem(1280, 720);
         this.addEntity(this.cis);
@@ -157,7 +163,7 @@ export class GameMap {
     focusOnCIS() {
         const { x, y } = this.cis.body.position;
 
-        const { width, height } = document.querySelector('#game-container');
+        const { width, height } = document.getElementById('game-container');
 
         // TODO we should take into account the bodies
         // size so that we can perfectly centre it.
@@ -173,9 +179,9 @@ export class GameMap {
     }
 
     addPowerup(powerup) {
+        // ensure that we don't have too many
+        // powerups going at once.
         if (this.activePowerups.has(powerup.title)) {
-            // ensure that we don't have too many
-            // powerups going at once.
             const active = this.activePowerups.get(powerup.title);
             if (active.length >= powerup.activeLimit) {
                 return false;
@@ -185,6 +191,10 @@ export class GameMap {
         }
 
         this.activePowerups.get(powerup.title).push(powerup);
+        // trigger any listeners
+        if (this.on.has('powerupGained')) {
+            this.on.get('powerupGained')(powerup);
+        }
         powerup.onInvoke(this);
         return true;
     }
@@ -193,6 +203,10 @@ export class GameMap {
     // but most importantly it adds the entities physics
     // body to the physics engines world register.
     addEntity(e) {
+        if (this.on.has('entityAdd')) {
+            this.on.get('entityAdd')(e);
+        }
+
         Matter.World.addBody(this.engine.world, e.body);
         this.entities.set(e.body, e);
     }
