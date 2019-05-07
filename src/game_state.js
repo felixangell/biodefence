@@ -33,6 +33,7 @@ class GameState extends State {
         this.bgMusic = new Howl({src:'./res/sfx/soundtrack.mp3'});
         this.bgMusic.play();
         this.bgMusic.loop();
+        Howler.volume(0.6);
         
         this.map = new GameMap(this.stateManager);
         this.hud = new HUD(this.map);

@@ -1,5 +1,6 @@
 import Matter, {Events} from 'matter-js';
-import { CentralImmuneSystem, ForeignGerm } from "./entity";
+import CentralImmuneSystem from "./cis";
+import ForeignGerm from './bacteria';
 import Camera from './camera';
 import getResource from './image_loader';
 import GameOverState from './game_over_state';
@@ -178,9 +179,6 @@ export class GameMap {
             if (e.health <= 0) {
                 // play the death sound if the entity
                 // has one.
-                if (e.deathSound) {
-                    e.deathSound.play();
-                }
                 this.removeEntity(e);
 
                 // NASTY ISH HACK.

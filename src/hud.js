@@ -90,9 +90,9 @@ class HUD {
         // we have zero lipids to start with?
         this.lipids = 0;
 
-        // TODO what range is hydration?
-        this.hydration = 100;
-        this.nutrition = 100;
+        // we start at 25.
+        this.hydration = 25;
+        this.nutrition = 25;
 
         this.ageTimer = new Date().getTime();
         this.lipidTimer = new Date().getTime();

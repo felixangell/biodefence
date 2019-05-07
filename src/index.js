@@ -122,7 +122,10 @@ window.onload = () => {
     let context = new AudioContext();
     const gameContainer = document.getElementById('game-container');
 
+    // FIXME this can be cleaner!
     Promise.resolve(() => {
+        getResource('cis.png');
+        getResource('cis_shielded.png');
         getResource('ground_tile.jpg');
         getResource('bacteria.png');
         getResource('bacteria_s.png');
@@ -130,6 +133,8 @@ window.onload = () => {
 
     let game = new Game();
     game.start();
+
+    /*
 
     gameContainer.addEventListener('click', () => {
         if (game != null) {
@@ -139,5 +144,5 @@ window.onload = () => {
 
         console.log('starting game!');
         context.resume();
-    });
+    });*/
 };
