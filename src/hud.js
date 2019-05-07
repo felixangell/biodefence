@@ -167,12 +167,10 @@ class HUD {
         }
     }
 
-    startLevel() {
-        // spawn 25 every age?
-        let spawnCount = randInRange(0, (this.age+1) * 25);
-        for (let i = 0; i < spawnCount; i++) {
-            this.map.spawnBacteria();
-        }
+    // this is invoked everytime we age.
+    // on age, we spawn more enemies, etc.
+    initNewLevel() {
+        
     }
 
     agePlayer() {
@@ -189,7 +187,7 @@ class HUD {
 
         // Every n seconds we ages.
         if ((new Date().getTime() - this.ageTimer) > (ageInterval)) {
-            this.startLevel();
+            this.initNewLevel();
             
             this.age++;
 

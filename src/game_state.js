@@ -30,10 +30,18 @@ class GameState extends State {
     }
 
     init() {
-        this.bgMusic = new Howl({src:'./res/sfx/soundtrack.mp3'});
-        this.bgMusic.play();
-        this.bgMusic.loop();
+        window.sessionStorage.setItem('debug', 'true');
+
         Howler.volume(0.6);
+        
+        this.bgMusic = new Howl({src:'./res/sfx/soundtrack.mp3'});
+        this.bgMusic.loop();
+
+        window.addEventListener('keypress', (evt) => {
+            if (evt.key == 'm') {
+                this.bgMusic.play();
+            }
+        })
         
         this.map = new GameMap(this.stateManager);
         this.hud = new HUD(this.map);

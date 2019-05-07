@@ -5,7 +5,8 @@ import getResource from './image_loader';
 // This is where units are generated from by the player.
 class CentralImmuneSystem extends Entity {
     constructor(x, y) {
-        super(x, y, 128, 128, {
+        // gross hardcoded width, but hey ho
+        super(x, y, 213, 227, {
             isStatic: true,
             tag: 'cis',
         });
@@ -79,6 +80,12 @@ class CentralImmuneSystem extends Entity {
 
         const image = this.shielded ? this.shieldedImage : this.image;
         ctx.drawImage(image, xPos, yPos);
+        
+        if (window.sessionStorage.getItem('debug') === 'true') {
+            ctx.fillStyle = "#ff00ff";
+            ctx.strokeRect(xPos, yPos, this.width, this.height);
+            ctx.stroke();
+        }
     }
 }
 

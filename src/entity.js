@@ -90,7 +90,15 @@ class Entity {
         // to be centre aligned.
         const xOff = (this.width - barWidth) / 2;
 
-        ctx.fillRect((x + xOff - (this.width / 2)) - cam.pos.x, (y - (this.height / 2)) - cam.pos.y - (barHeight * 2), barWidth, barHeight);
+        const xPos = (x + xOff - (this.width / 2)) - cam.pos.x;
+        const yPos = (y - (this.height / 2)) - cam.pos.y - (barHeight * 2);
+        ctx.fillRect(xPos, yPos, barWidth, barHeight);
+
+        if (window.sessionStorage.getItem('debug') === 'true') {
+            ctx.fillStyle = "#ff00ff";
+            ctx.strokeRect(xPos, yPos, barWidth, barHeight);
+            ctx.stroke();
+        }
     }
 }
 

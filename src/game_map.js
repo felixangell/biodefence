@@ -1,10 +1,9 @@
 import Matter, {Events} from 'matter-js';
 import CentralImmuneSystem from "./cis";
-import ForeignGerm from './bacteria';
 import Camera from './camera';
 import getResource from './image_loader';
 import GameOverState from './game_over_state';
-import { ReviveCISPowerup } from './powerup';
+import WanderingBacteria from './bacteria';
 
 const TileSize = 192;
 
@@ -115,11 +114,11 @@ export class GameMap {
         this.focusOnCIS();
     }
 
-    // TODO allow spawning of specific type of bacteria
     spawnBacteria() {
         let x = randInRange(0, 1280);
         let y = randInRange(0, 720);
-        const germ = new ForeignGerm(x, y);
+
+        const germ = new WanderingBacteria(x, y);
         germ.attack(this.cis);
         this.addEntity(germ);
     }

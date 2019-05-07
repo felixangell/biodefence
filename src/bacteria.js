@@ -18,10 +18,11 @@ function randDirection() {
     };
 }
 
-// https://imgur.com/j7VTlvc
-class ForeignGerm extends Entity {
+// WanderingBacteria will travel aimlessly 
+// through the map
+class WanderingBacteria extends Entity {
     constructor(x, y) {
-        super(x, y, 50, 50, {
+        super(x, y, 48, 43, {
             isStatic: false,
             tag: 'germ',
         });
@@ -31,6 +32,10 @@ class ForeignGerm extends Entity {
         this.damage = 6;
         this.size = 1.0; // size multiplier.
         this.speed = 0.05;
+        this.scaleCount = 0;
+
+        // we can't get any more than 4* bigger.
+        this.maxScale = 4;
 
         // time alive + a slightly random offset
         // this is how we base the merging of bacteria
@@ -52,8 +57,16 @@ class ForeignGerm extends Entity {
     }
 
     grow() {
+        if (this.scaleCount >= this.maxScale) {
+            // we're too big!
+            return;
+        }
+
         this.size *= 1.25;
-        Body.scale(this.body, size, size);
+        this.width *= this.size;
+        this.height *= this.size;
+        Body.scale(this.body, this.size, this.size);
+        this.scaleCount++;
     }
 
     hit(other) {
@@ -63,9 +76,9 @@ class ForeignGerm extends Entity {
             break;
         case 'germ':
             if (this.size > other.size || this.timeAlive > other.timeAlive) {
-                other.silentlyDie();
-                this.size *= 1.25;
+                this.grow();
                 bacteriaMergeSound.play();
+                other.silentlyDie();
             }
             break;
         }
@@ -119,10 +132,17 @@ class ForeignGerm extends Entity {
         this.img = this.identified ? this.defaultImage : this.imgSil;
 
         const { x, y } = this.body.position;
+        
         const xPos = (x - (this.width / 2)) - cam.pos.x;
         const yPos = (y - (this.height / 2)) - cam.pos.y;
-        ctx.drawImage(this.img, xPos, yPos, this.width * this.size, this.height * this.size);
+        ctx.drawImage(this.img, xPos, yPos, this.width, this.height);
+        
+        if (window.sessionStorage.getItem('debug') === 'true') {
+            ctx.fillStyle = "#ff00ff";
+            ctx.strokeRect(xPos, yPos, this.width, this.height);
+            ctx.stroke();
+        }
     }
 }
 
-export default ForeignGerm;
+export default WanderingBacteria;
