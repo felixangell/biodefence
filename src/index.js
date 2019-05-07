@@ -25,10 +25,26 @@ class Game {
         // all events are passed into the current
         // state with the type, event instance, as
         // well as the container the event was made from
+        this.container.addEventListener('keydown', (event) => {
+            if (currState) {
+                console.log('key down', event.key);
+                currState.keysDown.set(event.key, {
+                    event: event,
+                    container: this.container,
+                });
+            }
+        });
+
+        this.container.addEventListener('keyup', (event) => {
+            if (currState) {
+                currState.keysDown.delete(event.key);
+            }
+        });
+
         this.container.addEventListener('keypress', (event) => {
             if (currState) {
                 currState.events.push({
-                    type: 'keypress',
+                    type: 'keypressed',
                     event: event,
                     container: this.container,
                 });

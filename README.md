@@ -1,5 +1,5 @@
 # game...
-A nightly build of the master branch is deployed [here](https://bu-game.netlify.com/)
+A nightly build of the master branch is deployed [here](https://biodefence.netlify.com/)
 
 ## building
 ### requirements
@@ -10,8 +10,8 @@ you'll need:
 
 ### build & run
 
-    $ git clone http://github.com/felixangell/project-aids
-    $ cd project-aids/
+    $ git clone http://github.com/felixangell/biodefence
+    $ cd biodefence/
     $ yarn
 
 ### watch

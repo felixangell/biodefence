@@ -4,13 +4,22 @@
     box-sizing: border-box;
 }
 
+html, body {
+    height: 100%;
+}
 body {
-    display: flex;
+    margin: 0;
     background: #333;
-    align-content: center;
+}
+
+main {
+    width: 100%;
+    height: 100%;
+    display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 #game-container {
-    display: block;
+    margin: auto;
 }

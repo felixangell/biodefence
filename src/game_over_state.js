@@ -3,11 +3,14 @@ import { State } from './state';
 class GameOverState extends State {
     constructor() {
         super();
-        this.selectedIndex = 0;
     }
 
     handleKeys(events) {
         console.log(events);
+    }
+
+    init() {
+
     }
 
     update() {

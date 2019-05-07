@@ -17,7 +17,7 @@ module.exports = {
     hot: true,
     hotOnly: true,
     open: false,
-    publicPath: 'http://localhost:3000/',
+    publicPath: 'http://localhost:3000/dist/',
     compress: true,
   }
 }

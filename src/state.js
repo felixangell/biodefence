@@ -42,6 +42,10 @@ class State {
             x: 0, y: 0, r: 0,
         };
         this.events = [];
+
+        // key events get their own
+        // map due to being more realtime
+        this.keysDown = new Map();
     }
 
     init() {}
@@ -50,7 +54,7 @@ class State {
         this.stateManager = stateManager;
     }
 
-    handleKeys(event) { }
+    handleKeyPressed(event) {}
 
     handleMouseMove(event, x, y) {
         this.lastMouseBounds = {
@@ -64,7 +68,7 @@ class State {
         // from first to last added.
         while (this.events.length > 0) {
             const { type, event, container } = this.events.shift();
-            
+
             switch (type) {
                 case 'mousemove': {
                     const { x, y } = getCursorPosition(container, event);
@@ -72,14 +76,14 @@ class State {
                     break;
                 }
 
-                case 'keypress': {
-                    this.handleKeys(event);
+                case 'keypressed': {
+                    this.handleKeyPressed(event);
                     break;
                 }
 
                 case 'click': {
                     const { x, y } = getCursorPosition(container, event);
-                    console.log('clicked at ', x, y);
+                    // TODO handle click
                     break;
                 }
 

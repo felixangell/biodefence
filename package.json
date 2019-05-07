@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "a game",
   "main": "main.js",
-  "repository": "git@github.com:felixangell/project-aids",
+  "repository": "git@github.com:felixangell/biodefence",
   "author": "Felix Angell <felixangell@members.fsf.org>",
   "license": "MIT",
   "scripts": {
