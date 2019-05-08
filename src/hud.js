@@ -144,6 +144,7 @@ class HUD {
     // this is invoked everytime we age.
     // on age, we spawn more enemies, etc.
     initNewLevel() {
+        this.map.onAgeIncrease(this.age);
         this.map.tickSpawners();    
     }
 

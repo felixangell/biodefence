@@ -119,7 +119,6 @@ class Game {
 }
 
 window.onload = () => {
-    let context = new AudioContext();
     const gameContainer = document.getElementById('game-container');
 
     // FIXME this can be cleaner!

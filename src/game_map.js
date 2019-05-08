@@ -151,6 +151,10 @@ export class GameMap {
         this.focusOnCIS();
     }
 
+    onAgeIncrease(newAge) {
+        // TODO
+    }
+
     spawnBacteria() {
         let x = randRange(0, 1280);
         let y = randRange(0, 720);
