@@ -2,14 +2,9 @@ import { ShieldPowerup, ReviveCISPowerup } from "./powerup";
 import InfoCard from './info_card';
 import EntityPreview from './entity_preview';
 
-const DEBUG = false;
-
 // card duration in seconds
 // how long it will be in the notif bar for.
 const DEFAULT_CARD_DURATION = 4;
-
-// how long a second in the game is.
-const SECOND = DEBUG ? 100 : 1000;
 
 // the HUD contains all of the heads up display
 // components, including the players
@@ -20,6 +15,7 @@ const SECOND = DEBUG ? 100 : 1000;
 // cards which pop up on the screen to explain something to the player.
 
 function lookupAgeInterval(age) {
+    const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
     if (age > 40) {
         return 10 * SECOND;
     }
@@ -98,6 +94,8 @@ class HUD {
 
     queueInfoCard(card) {
         const { data } = card;
+
+        const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
 
         // this is for rate limiting the cards just incase
         // we spam the queue.
@@ -210,6 +208,7 @@ class HUD {
         let lipidAmount = this.getLipidGenerationCount();
         let lipidGenerationRate = this.getLipidGenRate();
 
+        const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
         if ((new Date().getTime() - this.lipidTimer) > lipidGenerationRate * SECOND) {
             this.lipids += lipidAmount;
             this.lipidTimer = new Date().getTime();
@@ -231,6 +230,7 @@ class HUD {
     }
 
     infoCardTriggers() {
+        const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
         // delete the card after {cardDefaultDuration} seconds.
         for (const [key, card] of this.currentCard) {
             if ((new Date().getTime() - card.timer) > (card.data.duration * SECOND)) {

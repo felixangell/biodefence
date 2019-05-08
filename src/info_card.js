@@ -1,5 +1,3 @@
-const SECOND = 1000;
-
 let cardCount = 0;
 
 class InfoCard {

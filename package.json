@@ -19,6 +19,7 @@
     "babel-loader": "^8.0.5",
     "howler": "^2.1.2",
     "matter-js": "^0.14.2",
+    "webgl-2d": "^0.0.2",
     "webpack": "^4.29.6",
     "webpack-dev-server": "^3.2.1"
   },

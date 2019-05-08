@@ -12,6 +12,11 @@ class Game {
         // initial game state...
         this.stateManager = new StateManager();
 
+        this.gameLoop = this.gameLoop.bind(this);
+        this.lastFrameTimeMs = 0;
+        this.maxFPS = 60;
+        this.timestep = 1000 / 60;
+
         if (!debug) {
             this.stateManager.forceState(new MenuState());
         } else {
@@ -96,31 +101,29 @@ class Game {
         }
     }
 
+    gameLoop(timestamp) {
+        const ctx = this.ctx;
+
+        // this is a good font for now?
+        ctx.font = "18px Verdana";
+
+        // check if there are any pending
+        // state changes to process.
+        if (this.stateManager) {
+            this.stateManager.update();
+        }
+
+        this.update();
+        this.render(ctx);
+        requestAnimationFrame(this.gameLoop);
+    }
+
     start() {
-        // TODO: fix this timestep.
-
-        const targetFPS = 60.0;
-        setInterval(() => {
-            const ctx = this.ctx;
-
-            // this is a good font for now?
-            ctx.font = "16px Verdana";
-
-            // check if there are any pending
-            // state changes to process.
-            if (this.stateManager) {
-                this.stateManager.update();
-            }
-
-            this.update();
-            this.render(ctx);
-        }, 1000 / targetFPS);
+        requestAnimationFrame(this.gameLoop);
     }
 }
 
 window.onload = () => {
-    const gameContainer = document.getElementById('game-container');
-
     // FIXME this can be cleaner!
     Promise.resolve(() => {
         getResource('cis.png');

@@ -31,6 +31,7 @@ class GameState extends State {
 
     init() {
         window.sessionStorage.setItem('debug', 'true');
+        window.sessionStorage.setItem('secondDuration', '1000');
 
         Howler.volume(0.6);
         
@@ -67,19 +68,6 @@ class GameState extends State {
 
     handleKeys() {
         const keyState = this.keysDown;
-
-        if (keyState.has('w')) {
-            this.map.cam.move(0, -camSettings.moveSpeed);
-        }
-        else if (keyState.has('a')) {
-            this.map.cam.move(-camSettings.moveSpeed, 0);
-        }
-        else if (keyState.has('s')) {
-            this.map.cam.move(0, camSettings.moveSpeed);
-        }
-        else if (keyState.has('d')) {
-            this.map.cam.move(camSettings.moveSpeed, 0);
-        }
     }
 
     handleMouseMove(event, x, y) {

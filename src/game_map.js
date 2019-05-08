@@ -85,10 +85,11 @@ export class GameMap {
             width: width,
             height: height,
         };
-        this.cam = new Camera(viewport, {
+        const mapDimension = {
             width: this.width * TileSize,
             height: this.height * TileSize,
-        });
+        };
+        this.cam = new Camera(viewport, mapDimension);
 
         this.spawners = [];
 
@@ -123,6 +124,7 @@ export class GameMap {
         // and we disable the gravity as the game
         // is top down.
         this.engine = Matter.Engine.create();
+        this.engine.enableSleeping = true;
         // disable gravity.
         this.engine.world.gravity.scale = 0;
 
@@ -132,7 +134,7 @@ export class GameMap {
         // added.
         this.entities = new Map();
 
-        this.cis = new CentralImmuneSystem(1280, 720);
+        this.cis = new CentralImmuneSystem(mapDimension.width / 2, mapDimension.height / 2);
         this.addEntity(this.cis);
 
         Events.on(this.engine, 'collisionActive', (event) => {
@@ -222,7 +224,6 @@ export class GameMap {
 
     tickSpawners() {
         for (let spawner of this.spawners) {
-            console.log('le spawner est', spawner);
             spawner.doTick();
         }
     }
@@ -254,7 +255,7 @@ export class GameMap {
         // wait for 15 seconds to pass and then
         // transition into the gameover state.
         if (this.gameOverTimer) {
-            const SECOND = 1000;
+            const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
             if ((new Date().getTime() - this.gameOverTimer) > 5 * SECOND) {
                 this.stateManager.requestState(new GameOverState());
             }
@@ -300,6 +301,6 @@ export class GameMap {
         }
 
         ctx.fillStyle = "#ffff00";
-        ctx.fillText(`${camTx}, ${camTy}`, 128, 128);
+        ctx.fillText(`${camTx}, ${camTy}, entities: ${this.entities.size}, bodies: ${this.engine.world.bodies.length}`, 128, 128);
     }
 }

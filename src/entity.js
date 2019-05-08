@@ -54,8 +54,16 @@ class Entity {
     hit(other) {}
 
     update() {
+        const { x, y } = this.body.position;
+        if (x < -this.width) {
+            this.damaged(this.health);
+        }
+        if (y < -this.height) {
+            this.damaged(this.health);
+        }
+        
         if (this.shieldTimer) {
-            const SECOND = 1000;
+            const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
             const elapsed = (new Date().getTime() - this.shieldTimer);
             if (elapsed > (this.shieldDuration * SECOND)) {
                 this.shielded = false;

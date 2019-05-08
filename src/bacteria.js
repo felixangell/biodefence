@@ -61,7 +61,14 @@ class WanderingBacteria extends Entity {
             return;
         }
 
-        this.size *= 1.25;
+        // we only play the merge sound after
+        // the first merge. 
+        if (this.scaleCount > 1) {
+            bacteriaMergeSound.play();
+        }
+
+        this.size += 0.15;
+
         this.width *= this.size;
         this.height *= this.size;
         Body.scale(this.body, this.size, this.size);
@@ -75,9 +82,11 @@ class WanderingBacteria extends Entity {
             super.damaged(this.health);
             break;
         case 'germ':
-            if (this.size > other.size || this.timeAlive > other.timeAlive) {
+            if (this.size >= other.size && this.timeAlive > other.timeAlive) {
                 other.silentlyDie();
-                bacteriaMergeSound.play();
+                this.grow();
+            } else if (this.timeAlive >= other.timeAlive) {
+                other.silentlyDie();
                 this.grow();
             }
             break;
@@ -98,7 +107,6 @@ class WanderingBacteria extends Entity {
         // slow it down a bit!
         let xf = (this.body.mass * (dir.x * this.speed)) * randRange(-0.1, 0.1);
         let yf = (this.body.mass * (dir.y * this.speed)) * randRange(-0.1, 0.1);
-
         // apply the force
         Body.applyForce(this.body, this.body.position, {
             x: xf,
@@ -122,7 +130,7 @@ class WanderingBacteria extends Entity {
 
         const moveChangeTime = 0.3;
 
-        const SECOND = 1000;
+        const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
         if ((new Date().getTime() - this.dirTimer) > moveChangeTime * SECOND) {
             if (randRange(0, 500) > 450) {
                 this.identified = true;
