@@ -1,6 +1,7 @@
 import { State } from './state';
 import { GameMap } from './game_map';
 import HUD from './hud';
+import { ShieldPowerup } from './powerup';
 
 // return true if the rectangle and circle are colliding
 // this is used for the camera movement
@@ -35,15 +36,12 @@ class GameState extends State {
 
         Howler.volume(0.6);
         
-        this.bgMusic = new Howl({src:'./res/sfx/soundtrack.mp3'});
+        this.bgMusic = new Howl({src:'./res/sfx/soundtrack.ogg'});
         this.bgMusic.loop();
 
         window.addEventListener('keypress', (evt) => {
             switch (evt.key) {
             case 'm':
-                if (this.bgMusic.playing()) {
-
-                }
                 this.bgMusic.playing() ? this.bgMusic.pause() : this.bgMusic.play();
                 break;
             case 'd':
@@ -52,9 +50,10 @@ class GameState extends State {
                 window.sessionStorage.setItem('debug', opp);
                 break;
             }
-            if (evt.key == 'm') {
+            if (evt.key == 's') {
+                this.map.addPowerup(new ShieldPowerup(50));
             }
-        })
+        });
         
         this.map = new GameMap(this.stateManager);
         this.hud = new HUD(this.map);

@@ -6,8 +6,9 @@ import {Howl} from 'howler';
 // a health of 100 unless specified otherwise.
 const DefaultEntityHealth = 100;
 
-let deathSound = new Howl({src:'./res/sfx/default_death_sound.wav'});
-let shieldDownSound = new Howl({src:'./res/sfx/shield_down.wav'});
+let deathSound = new Howl({src:'./res/sfx/default_death_sound.ogg'});
+let shieldUpSound = new Howl({src:'./res/sfx/shield_up.ogg'});
+let shieldDownSound = new Howl({src:'./res/sfx/shield_down.ogg'});
 
 class Entity {
 
@@ -85,6 +86,7 @@ class Entity {
         this.shieldTimer = new Date().getTime();
         this.shieldDuration = duration;
         this.shielded = true;
+        shieldUpSound.play();
     }
 
     render(cam, ctx) {}

@@ -4,8 +4,8 @@ import {Body} from 'matter-js';
 import {Howl} from 'howler';
 import getResource from './image_loader';
 
-let bacteriaSound = new Howl({src:'./res/sfx/bacteria_die1.wav', volume: 0.6});
-let bacteriaMergeSound = new Howl({src:'./res/sfx/merge_sound.wav', volume: 0.15});
+let bacteriaSound = new Howl({src:'./res/sfx/bacteria_die1.ogg', volume: 0.6});
+let bacteriaMergeSound = new Howl({src:'./res/sfx/merge_sound.ogg', volume: 0.15});
 
 function randRange(min, max) {
     return (Math.random() * (max - min)) + min;

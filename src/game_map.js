@@ -202,6 +202,8 @@ export class GameMap {
             this.on.get('powerupGained')(powerup);
         }
         powerup.onInvoke(this);
+        // FIXME
+        this.activePowerups.delete(powerup.title);
         return true;
     }
 
@@ -218,6 +220,16 @@ export class GameMap {
     }
 
     removeEntity(e) {
+        // NASTY ISH HACK.
+        // gross check here to see if the CIS died.
+        // 
+        // basically when the CIS dies, we start a timer
+        // to let the explosion sound finish
+        // before we jump right into the death state.
+        if (e.constructor.name === 'CentralImmuneSystem') {
+            this.gameOverTimer = new Date().getTime();
+        }
+
         Matter.World.remove(this.engine.world, e.body);
         this.entities.delete(e.body);
     }
@@ -233,19 +245,7 @@ export class GameMap {
             // if we've died we want to remove the entity
             // from the game.
             if (e.health <= 0) {
-                // play the death sound if the entity
-                // has one.
                 this.removeEntity(e);
-
-                // NASTY ISH HACK.
-                // gross check here to see if the CIS died.
-                // 
-                // basically when the CIS dies, we start a timer
-                // to let the explosion sound finish
-                // before we jump right into the death state.
-                if (e.constructor.name === 'CentralImmuneSystem') {
-                    this.gameOverTimer = new Date().getTime();
-                }
             } else {
                 e.update();
             }
