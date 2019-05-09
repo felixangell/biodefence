@@ -6,8 +6,9 @@ import {Howl} from 'howler';
 // a health of 100 unless specified otherwise.
 const DefaultEntityHealth = 100;
 
-let deathSound = new Howl({src:'./res/sfx/default_death_sound.wav'});
-let shieldDownSound = new Howl({src:'./res/sfx/shield_down.wav'});
+let deathSound = new Howl({src:'./res/sfx/default_death_sound.ogg'});
+let shieldUpSound = new Howl({src:'./res/sfx/shield_up.ogg'});
+let shieldDownSound = new Howl({src:'./res/sfx/shield_down.ogg'});
 
 class Entity {
 
@@ -24,10 +25,15 @@ class Entity {
         this.width = width;
         this.height = height;
         this.damage = 1;
+        this.identified = true;
 
         // by default this our death sound.
         this.deathSound = deathSound;
         this.body = Matter.Bodies.rectangle(x, y, width, height, options);
+
+        // the icon image that will be shown
+        // when the entity is clicked.
+        this.iconImage = getResource('default_icon.png');
     }
 
     // will damage this entity by amount, though
@@ -49,8 +55,16 @@ class Entity {
     hit(other) {}
 
     update() {
+        const { x, y } = this.body.position;
+        if (x < -this.width) {
+            this.damaged(this.health);
+        }
+        if (y < -this.height) {
+            this.damaged(this.health);
+        }
+        
         if (this.shieldTimer) {
-            const SECOND = 1000;
+            const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
             const elapsed = (new Date().getTime() - this.shieldTimer);
             if (elapsed > (this.shieldDuration * SECOND)) {
                 this.shielded = false;
@@ -72,6 +86,7 @@ class Entity {
         this.shieldTimer = new Date().getTime();
         this.shieldDuration = duration;
         this.shielded = true;
+        shieldUpSound.play();
     }
 
     render(cam, ctx) {}

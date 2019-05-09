@@ -2,7 +2,7 @@ import {Howl} from 'howler';
 import Entity from "./entity";
 import getResource from './image_loader';
 
-let deadAntibodySound = new Howl({src:'./res/sfx/antibody_die.wav'})
+let deadAntibodySound = new Howl({src:'./res/sfx/antibody_die.ogg'})
 
 class Antibody extends Entity {
     constructor(x, y) {

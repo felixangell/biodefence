@@ -5226,6 +5226,11 @@ wbuf@^1.1.0, wbuf@^1.7.3:
   dependencies:
     minimalistic-assert "^1.0.0"
 
+webgl-2d@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/webgl-2d/-/webgl-2d-0.0.2.tgz#619be18a4e87a92c93946fe6d01c7c75aab4e42f"
+  integrity sha1-YZvhik6HqSyTlG/m0Bx8daq05C8=
+
 webpack-cli@^3.2.3:
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/webpack-cli/-/webpack-cli-3.2.3.tgz#13653549adfd8ccd920ad7be1ef868bacc22e346"

@@ -14,8 +14,8 @@ class CentralImmuneSystem extends Entity {
         this.image = getResource('cis.png');
         this.shieldedImage = getResource('cis_shielded.png');
 
-        this.deathSound = new Howl({src:'./res/sfx/cis_death.wav'});
-        this.hitShieldSound = new Howl({src:'./res/sfx/shield_hit.wav'});
+        this.deathSound = new Howl({src:'./res/sfx/cis_death.ogg'});
+        this.hitShieldSound = new Howl({src:'./res/sfx/shield_hit.ogg'});
         this.damage = 100;
         
         // counter for reviving.

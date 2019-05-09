@@ -4,8 +4,8 @@ import {Body} from 'matter-js';
 import {Howl} from 'howler';
 import getResource from './image_loader';
 
-let bacteriaSound = new Howl({src:'./res/sfx/bacteria_die1.wav', volume: 0.6});
-let bacteriaMergeSound = new Howl({src:'./res/sfx/merge_sound.wav', volume: 0.15});
+let bacteriaSound = new Howl({src:'./res/sfx/bacteria_die1.ogg', volume: 0.6});
+let bacteriaMergeSound = new Howl({src:'./res/sfx/merge_sound.ogg', volume: 0.15});
 
 function randRange(min, max) {
     return (Math.random() * (max - min)) + min;
@@ -26,7 +26,6 @@ class WanderingBacteria extends Entity {
             isStatic: false,
             tag: 'germ',
         });
-        
         this.identified = false;
 
         this.damage = 6;
@@ -62,7 +61,14 @@ class WanderingBacteria extends Entity {
             return;
         }
 
-        this.size *= 1.25;
+        // we only play the merge sound after
+        // the first merge. 
+        if (this.scaleCount > 1) {
+            bacteriaMergeSound.play();
+        }
+
+        this.size += 0.15;
+
         this.width *= this.size;
         this.height *= this.size;
         Body.scale(this.body, this.size, this.size);
@@ -72,15 +78,20 @@ class WanderingBacteria extends Entity {
     hit(other) {
         switch (other.body.tag) {
         case 'cis':
+            // we die!
             super.damaged(this.health);
             break;
         case 'germ':
-            if (this.size > other.size || this.timeAlive > other.timeAlive) {
-                this.grow();
-                bacteriaMergeSound.play();
+            if (this.size >= other.size && this.timeAlive > other.timeAlive) {
                 other.silentlyDie();
+                this.grow();
+            } else if (this.timeAlive >= other.timeAlive) {
+                other.silentlyDie();
+                this.grow();
             }
             break;
+        default:
+            this.damaged(other.damage);
         }
     }
 
@@ -90,11 +101,13 @@ class WanderingBacteria extends Entity {
 
     // move in a random path
     changePath() {
+        // generate a random direction -1, to 1
         const dir = randDirection();
-        console.log('random dir is', dir);
 
+        // slow it down a bit!
         let xf = (this.body.mass * (dir.x * this.speed)) * randRange(-0.1, 0.1);
         let yf = (this.body.mass * (dir.y * this.speed)) * randRange(-0.1, 0.1);
+        // apply the force
         Body.applyForce(this.body, this.body.position, {
             x: xf,
             y: yf,
@@ -117,7 +130,7 @@ class WanderingBacteria extends Entity {
 
         const moveChangeTime = 0.3;
 
-        const SECOND = 1000;
+        const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
         if ((new Date().getTime() - this.dirTimer) > moveChangeTime * SECOND) {
             if (randRange(0, 500) > 450) {
                 this.identified = true;
@@ -129,7 +142,8 @@ class WanderingBacteria extends Entity {
     }
 
     render(cam, ctx) {
-        this.renderHealthBar(cam, ctx);
+        // TODO only render healthbar when we hover or click an entity?
+        // this.renderHealthBar(cam, ctx);
         
         this.img = this.identified ? this.defaultImage : this.imgSil;
 

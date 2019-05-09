@@ -75,16 +75,21 @@ export class GameMap {
 
         this.activePowerups = new Map();
 
+        // TODO allow this to support multiple
+        // event listeners
+        this.on = new Map();
+
         const { width, height } = document.getElementById('game-container');
 
         let viewport = {
             width: width,
             height: height,
         };
-        this.cam = new Camera(viewport, {
+        const mapDimension = {
             width: this.width * TileSize,
             height: this.height * TileSize,
-        });
+        };
+        this.cam = new Camera(viewport, mapDimension);
 
         this.spawners = [];
 
@@ -97,7 +102,12 @@ export class GameMap {
         const mapWidth = this.width * TileSize;
         const regionSize = mapWidth / size;
 
-        const offs = (2 * TileSize);
+        let offs = 0;
+        if (window.sessionStorage.getItem('debug') === 'true') {
+            // move the spawners closer in when debugging
+            offs = (2 * TileSize);
+        }
+
         for (let y = 0; y < size; y++) {
             for (let x = 0; x < size; x++) {
                 console.log(x, y, regionSize);
@@ -114,6 +124,7 @@ export class GameMap {
         // and we disable the gravity as the game
         // is top down.
         this.engine = Matter.Engine.create();
+        this.engine.enableSleeping = true;
         // disable gravity.
         this.engine.world.gravity.scale = 0;
 
@@ -123,10 +134,7 @@ export class GameMap {
         // added.
         this.entities = new Map();
 
-        const xCentre = (this.width * TileSize) / 2;
-        const yCentre = (this.height * TileSize) / 2;
-
-        this.cis = new CentralImmuneSystem(1280, 720);
+        this.cis = new CentralImmuneSystem(mapDimension.width / 2, mapDimension.height / 2);
         this.addEntity(this.cis);
 
         Events.on(this.engine, 'collisionActive', (event) => {
@@ -145,6 +153,10 @@ export class GameMap {
         this.focusOnCIS();
     }
 
+    onAgeIncrease(newAge) {
+        // TODO
+    }
+
     spawnBacteria() {
         let x = randRange(0, 1280);
         let y = randRange(0, 720);
@@ -157,7 +169,7 @@ export class GameMap {
     focusOnCIS() {
         const { x, y } = this.cis.body.position;
 
-        const { width, height } = document.querySelector('#game-container');
+        const { width, height } = document.getElementById('game-container');
 
         // TODO we should take into account the bodies
         // size so that we can perfectly centre it.
@@ -173,9 +185,9 @@ export class GameMap {
     }
 
     addPowerup(powerup) {
+        // ensure that we don't have too many
+        // powerups going at once.
         if (this.activePowerups.has(powerup.title)) {
-            // ensure that we don't have too many
-            // powerups going at once.
             const active = this.activePowerups.get(powerup.title);
             if (active.length >= powerup.activeLimit) {
                 return false;
@@ -185,7 +197,13 @@ export class GameMap {
         }
 
         this.activePowerups.get(powerup.title).push(powerup);
+        // trigger any listeners
+        if (this.on.has('powerupGained')) {
+            this.on.get('powerupGained')(powerup);
+        }
         powerup.onInvoke(this);
+        // FIXME
+        this.activePowerups.delete(powerup.title);
         return true;
     }
 
@@ -193,18 +211,31 @@ export class GameMap {
     // but most importantly it adds the entities physics
     // body to the physics engines world register.
     addEntity(e) {
+        if (this.on.has('entityAdd')) {
+            this.on.get('entityAdd')(e);
+        }
+
         Matter.World.addBody(this.engine.world, e.body);
         this.entities.set(e.body, e);
     }
 
     removeEntity(e) {
+        // NASTY ISH HACK.
+        // gross check here to see if the CIS died.
+        // 
+        // basically when the CIS dies, we start a timer
+        // to let the explosion sound finish
+        // before we jump right into the death state.
+        if (e.constructor.name === 'CentralImmuneSystem') {
+            this.gameOverTimer = new Date().getTime();
+        }
+
         Matter.World.remove(this.engine.world, e.body);
         this.entities.delete(e.body);
     }
 
     tickSpawners() {
         for (let spawner of this.spawners) {
-            console.log('le spawner est', spawner);
             spawner.doTick();
         }
     }
@@ -214,19 +245,7 @@ export class GameMap {
             // if we've died we want to remove the entity
             // from the game.
             if (e.health <= 0) {
-                // play the death sound if the entity
-                // has one.
                 this.removeEntity(e);
-
-                // NASTY ISH HACK.
-                // gross check here to see if the CIS died.
-                // 
-                // basically when the CIS dies, we start a timer
-                // to let the explosion sound finish
-                // before we jump right into the death state.
-                if (e.constructor.name === 'CentralImmuneSystem') {
-                    this.gameOverTimer = new Date().getTime();
-                }
             } else {
                 e.update();
             }
@@ -236,7 +255,7 @@ export class GameMap {
         // wait for 15 seconds to pass and then
         // transition into the gameover state.
         if (this.gameOverTimer) {
-            const SECOND = 1000;
+            const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
             if ((new Date().getTime() - this.gameOverTimer) > 5 * SECOND) {
                 this.stateManager.requestState(new GameOverState());
             }
@@ -282,6 +301,6 @@ export class GameMap {
         }
 
         ctx.fillStyle = "#ffff00";
-        ctx.fillText(`${camTx}, ${camTy}`, 128, 128);
+        ctx.fillText(`${camTx}, ${camTy}, entities: ${this.entities.size}, bodies: ${this.engine.world.bodies.length}`, 128, 128);
     }
 }

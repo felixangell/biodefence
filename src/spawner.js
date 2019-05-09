@@ -1,4 +1,5 @@
 import WanderingBacteria from "./bacteria";
+import Antibody from './antibody';
 
 let spawnerCount = 0;
 
@@ -24,6 +25,13 @@ class Spawner {
 
         // radius in pixels.
         this.radius = 128;
+        this.radiusIncreaseCount = 0;
+        
+        // how many times we increase the radius
+        this.radiusIncreaseLimit = 5;
+
+        // increase by 32 pixels
+        this.radiusIncreaseSize = 32;
 
         // assign the spawner an ID
         this.id = spawnerCount++;
@@ -36,10 +44,23 @@ class Spawner {
 
         // the most amount of bacteria we can spawn
         // in the current tick
-        this.spawnLimit = 10;
+        this.currSpawnLimit = 1;
+        this.maxSpawnLimit = 10;
+    }
+
+    generateSpawnPoint() {
+        let rad = this.radius / 2;
+        let x = randRange(this.x - rad, this.x + rad);
+        let y = randRange(this.y - rad, this.y + rad);
+        return {x, y};
     }
 
     spawn(e) {
+        // we've spawned enough
+        if (this.numSpawns >= this.spawnLimit) {
+            return;
+        }
+
         this.map.addEntity(e);
         this.numSpawns++;
     }
@@ -47,15 +68,24 @@ class Spawner {
     // increments a tick, and changes the properties of the spawner
     doTick() {
         console.log('spawner', this.id, 'ticked!');
+        for (let i = 0; i < this.currSpawnLimit; i++) {
+            let { x, y } = this.generateSpawnPoint();
+            this.spawn(new WanderingBacteria(x, y));
+        }
+        
+        // increase the spawn limit every tick
+        this.currSpawnLimit++;
 
-        let rad = this.radius / 2;
+        if (this.radiusIncreaseCount < this.radiusIncreaseLimit) {
+            // increase the radius a bit with each tick
+            this.radius += this.radiusIncreaseSize;
+            this.radiusIncreaseCount++;
+        }
 
-        let x = randRange(this.x - rad, this.x + rad);
-        let y = randRange(this.y - rad, this.y + rad);
+        if (this.currSpawnLimit > this.maxSpawnLimit) {
+            this.currSpawnLimit = this.maxSpawnLimit;
+        }
 
-        console.log('spawning entity at', x, y);
-
-        this.spawn(new WanderingBacteria(x, y));
         this.tick++;
     }
 

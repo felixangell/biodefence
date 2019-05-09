@@ -1,6 +1,7 @@
 import { State } from './state';
 import { GameMap } from './game_map';
 import HUD from './hud';
+import { ShieldPowerup } from './powerup';
 
 // return true if the rectangle and circle are colliding
 // this is used for the camera movement
@@ -31,17 +32,28 @@ class GameState extends State {
 
     init() {
         window.sessionStorage.setItem('debug', 'true');
+        window.sessionStorage.setItem('secondDuration', '1000');
 
         Howler.volume(0.6);
         
-        this.bgMusic = new Howl({src:'./res/sfx/soundtrack.mp3'});
+        this.bgMusic = new Howl({src:'./res/sfx/soundtrack.ogg'});
         this.bgMusic.loop();
 
         window.addEventListener('keypress', (evt) => {
-            if (evt.key == 'm') {
-                this.bgMusic.play();
+            switch (evt.key) {
+            case 'm':
+                this.bgMusic.playing() ? this.bgMusic.pause() : this.bgMusic.play();
+                break;
+            case 'd':
+                // lol
+                const opp = window.sessionStorage.getItem('debug') === 'true' ? 'false' : 'true';
+                window.sessionStorage.setItem('debug', opp);
+                break;
             }
-        })
+            if (evt.key == 's') {
+                this.map.addPowerup(new ShieldPowerup(50));
+            }
+        });
         
         this.map = new GameMap(this.stateManager);
         this.hud = new HUD(this.map);
@@ -55,19 +67,6 @@ class GameState extends State {
 
     handleKeys() {
         const keyState = this.keysDown;
-
-        if (keyState.has('w')) {
-            this.map.cam.move(0, -camSettings.moveSpeed);
-        }
-        else if (keyState.has('a')) {
-            this.map.cam.move(-camSettings.moveSpeed, 0);
-        }
-        else if (keyState.has('s')) {
-            this.map.cam.move(0, camSettings.moveSpeed);
-        }
-        else if (keyState.has('d')) {
-            this.map.cam.move(camSettings.moveSpeed, 0);
-        }
     }
 
     handleMouseMove(event, x, y) {

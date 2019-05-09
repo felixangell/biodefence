@@ -1,6 +1,6 @@
 class Powerup {
     constructor(title) {
-        this.powerupSound = new Howl({src:'./res/sfx/powerup.wav'});
+        this.powerupSound = new Howl({src:'./res/sfx/powerup.ogg'});
 
         // the duration of the powerup in seconds.
         // if this is 0, then the powerup lasts forever.

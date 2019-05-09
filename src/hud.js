@@ -1,9 +1,10 @@
 import { ShieldPowerup, ReviveCISPowerup } from "./powerup";
+import InfoCard from './info_card';
+import EntityPreview from './entity_preview';
 
-const DEBUG = true;
-
-// how long a second in the game is.
-const SECOND = DEBUG ? 100 : 1000;
+// card duration in seconds
+// how long it will be in the notif bar for.
+const DEFAULT_CARD_DURATION = 4;
 
 // the HUD contains all of the heads up display
 // components, including the players
@@ -14,6 +15,7 @@ const SECOND = DEBUG ? 100 : 1000;
 // cards which pop up on the screen to explain something to the player.
 
 function lookupAgeInterval(age) {
+    const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
     if (age > 40) {
         return 10 * SECOND;
     }
@@ -31,52 +33,7 @@ function lookupAgeInterval(age) {
     return 45 * SECOND;
 }
 
-class InfoCard {
-    constructor(data) {
-        this.data = data;
-
-        const { width, height } = document.querySelector('#game-container');
-        this.width = width / 4;
-        this.height = height / 12; // NOTE: this will be set properly during render.
-        this.titleBarHeight = this.height;
-    }
-
-    render(ctx, x, y) {
-        const { title, desc } = this.data;
-
-        const pad = 20;
-        const maxCharsWidth = 33;
-
-        let lines = [];
-        for (let i = 0; i < desc.length; i += maxCharsWidth) {
-            lines.push(desc.substring(i, i + maxCharsWidth));
-        }
-
-        const lineSpacing = 1.55;
-        const lineHeight = 15 * lineSpacing;
-
-        const cardDescHeight = (lines.length * lineHeight);
-
-        this.height = this.titleBarHeight + cardDescHeight + pad;
-
-        ctx.fillStyle = "#333";
-        ctx.fillRect(x, y, this.width, this.height);
-
-        ctx.fillStyle = "#000";
-        ctx.fillRect(x, y, this.width, this.titleBarHeight);
-
-        ctx.fillStyle = "#fff";
-        ctx.fillText(title.toUpperCase(), x+(pad/2), y+(pad*1.9));
-
-        for (const [i, line] of lines.entries()) {
-            const xPos = x + (pad / 2);
-            const yPos = y + (this.titleBarHeight*1.5) + ((lineHeight) * i);
-            ctx.fillText(line.trim(), xPos, yPos);
-        }
-    }
-}
-
-function randInRange(min, max) {
+function randRange(min, max) {
     return Math.random() * (max - min) + min;
 }
 
@@ -86,6 +43,12 @@ class HUD {
         this.age = 0;
 
         this.map = gameMap;
+
+        this.entityAdded = this.entityAdded.bind(this);
+        this.map.on.set('entityAdd', this.entityAdded);
+
+        this.gainedPowerup = this.gainedPowerup.bind(this);
+        this.map.on.set('powerupGained', this.gainedPowerup);
 
         // we have zero lipids to start with?
         this.lipids = 0;
@@ -100,22 +63,41 @@ class HUD {
         this.lipidTimer = new Date().getTime();
         this.infoCardTimer = new Date().getTime();
 
-        this.timerIntervals = {
-            // how long a card shows for
-            cardDefaultDuration: 9 * SECOND,
-        };
-
         // a list of info cards to render
         // these are stored in a list,
         // dequeued by insertion order (i.e. queue)
         this.infoCards = [];
-        this.currentCard = null;
+
+        this.currentCard = new Map();
+
         this.seenCards = new Map();
         this.cardLimiter = new Map();
+
+        this.preview = null;
+
+        this.initNewLevel();
+    }
+
+    entityAdded(e) {
+        console.log('FIRED!');
+        // just to test we preview the most recently added entity.
+        this.preview = new EntityPreview(e);
+    }
+
+    gainedPowerup(powerup) {
+        console.log('spawned a powerup', powerup.constructor.name);
+        this.queueInfoCard(new InfoCard({
+            id: 6969,
+            title: 'Gained a powerup!!',
+            desc: '',
+            duration: DEFAULT_CARD_DURATION,
+        }));
     }
 
     queueInfoCard(card) {
         const { data } = card;
+
+        const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
 
         // this is for rate limiting the cards just incase
         // we spam the queue.
@@ -148,7 +130,8 @@ class HUD {
         }
 
         // force clear the queue
-        this.currentCard = this.infoCards.shift();
+        const newCard = this.infoCards.shift();
+        this.currentCard.set(newCard.uid, newCard);
 
         // set the timer to start!
         this.infoCardTimer = new Date().getTime();
@@ -158,20 +141,10 @@ class HUD {
         console.log('enqueued card', data.title);
     }
 
-    spawnPowerup(powerup) {
-        if (this.map.addPowerup(powerup)) {
-            console.log('spawned a powerup', powerup.constructor.name);
-            this.queueInfoCard(new InfoCard({
-                id: 6969,
-                title: 'Shield powerup!',
-                desc: '',
-            }));
-        }
-    }
-
     // this is invoked everytime we age.
     // on age, we spawn more enemies, etc.
     initNewLevel() {
+        this.map.onAgeIncrease(this.age);
         this.map.tickSpawners();
     }
 
@@ -192,6 +165,12 @@ class HUD {
             this.initNewLevel();
 
             this.age++;
+            this.queueInfoCard(new InfoCard({
+                id: randRange(0, 10000),
+                title: 'older!',
+                desc: `Happy ${this.age} birthday!`,
+                duration: DEFAULT_CARD_DURATION,
+            }));
 
             this.ageTimer = new Date().getTime();
         }
@@ -231,6 +210,7 @@ class HUD {
         let lipidAmount = this.getLipidGenerationCount();
         let lipidGenerationRate = this.getLipidGenRate();
 
+        const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
         if ((new Date().getTime() - this.lipidTimer) > lipidGenerationRate * SECOND) {
             this.lipids += lipidAmount;
             this.lipidTimer = new Date().getTime();
@@ -252,28 +232,13 @@ class HUD {
     }
 
     infoCardTriggers() {
-        // if the hydration drops below 25, show an info card for it!
-        if (this.hydration <= 80) {
-            this.queueInfoCard(new InfoCard({
-                id: 0,
-                title: 'Drink more water',
-                desc: 'Hydration is very important!! Hydration is very important!! Hydration is very important!! Hydration is very important!! Hydration is very important!! Hydration is very important!! Hydration is very important!!',
-                showOnce: true,
-            }));
-        }
-        if (this.hydration <= 0) {
-            this.queueInfoCard(new InfoCard({
-                id: 1,
-                title: 'Thirsty',
-                desc: 'Your hydration levels are at zero!!',
-                showOnce: true,
-            }));
-        }
-
+        const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
         // delete the card after {cardDefaultDuration} seconds.
-        const { cardDefaultDuration } = this.timerIntervals;
-        if ((new Date().getTime() - this.infoCardTimer) > cardDefaultDuration) {
-            this.currentCard = null;
+        for (const [key, card] of this.currentCard) {
+            if ((new Date().getTime() - card.timer) > (card.data.duration * SECOND)) {
+                console.log('deleting ', card.data, ' after ', card.data.duration * SECOND, 'ms');
+                this.currentCard.delete(card.uid);
+            }
         }
     }
 
@@ -282,6 +247,9 @@ class HUD {
         this.generateLipids();
         this.live();
         this.infoCardTriggers();
+        if (this.preview) {
+            this.preview.update();
+        }
     }
 
     renderStats(ctx) {
@@ -324,10 +292,15 @@ class HUD {
 
         this.renderStats(ctx);
 
-        const card = this.currentCard;
-        if (card != null) {
+        let iter = 0;
+        for (const [uid, card] of this.currentCard) {
             const pad = 50;
-            card.render(ctx, width - card.width - pad, height - card.height - pad);
+            card.render(ctx, width - card.width - pad, (height) - ((card.height + pad) * iter));
+            iter++;
+        }
+
+        if (this.preview) {
+            this.preview.render(ctx);
         }
     }
 }
