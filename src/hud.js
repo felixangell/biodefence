@@ -46,7 +46,7 @@ class InfoCard {
 
         const pad = 20;
         const maxCharsWidth = 33;
-        
+
         let lines = [];
         for (let i = 0; i < desc.length; i += maxCharsWidth) {
             lines.push(desc.substring(i, i + maxCharsWidth));
@@ -86,13 +86,15 @@ class HUD {
         this.age = 0;
 
         this.map = gameMap;
-     
+
         // we have zero lipids to start with?
         this.lipids = 0;
 
         // we start at 25.
         this.hydration = 25;
         this.nutrition = 25;
+
+        this.clock = 0;
 
         this.ageTimer = new Date().getTime();
         this.lipidTimer = new Date().getTime();
@@ -170,7 +172,7 @@ class HUD {
     // this is invoked everytime we age.
     // on age, we spawn more enemies, etc.
     initNewLevel() {
-        this.map.tickSpawners();    
+        this.map.tickSpawners();
     }
 
     agePlayer() {
@@ -181,14 +183,14 @@ class HUD {
         // and then pick a random duration for the shield
         // between how long?
         // this.spawnPowerup(new ShieldPowerup(2.5));
-        
-        // An average game based off of these values should 
+
+        // An average game based off of these values should
         // take around 21 minutes if the user reaches age 80.
 
         // Every n seconds we ages.
         if ((new Date().getTime() - this.ageTimer) > (ageInterval)) {
             this.initNewLevel();
-            
+
             this.age++;
 
             this.ageTimer = new Date().getTime();
@@ -239,7 +241,7 @@ class HUD {
     // this function deteriorates the nutrition
     // and the hydration of the player.
     live() {
-        // for now we just deteriorate by a random ish 
+        // for now we just deteriorate by a random ish
         // small value.
         this.hydration -= Math.random();
         this.nutrition -= Math.random() * 0.01;
@@ -301,6 +303,7 @@ class HUD {
             'hydration': this.hydration.toFixed(2),
             'nutrition': this.nutrition.toFixed(2),
             'lipids': this.lipids,
+            'clock': this.timer,
         };
 
         let accumWidth = 0;
