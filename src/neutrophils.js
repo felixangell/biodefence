@@ -21,13 +21,13 @@ function randDirection() {
 const damageWhenUnidentified = 2;
 const damageWhenIdentified = 1;
 
-// WanderingBacteria will travel aimlessly 
+// NeutrophilsBacteria will travel aimlessly 
 // through the map
-class WanderingBacteria extends Entity {
+class NeutrophilsBacteria extends Entity {
     constructor(x, y) {
         super(x, y, 48, 43, {
             isStatic: false,
-            tag: 'germ',
+            tag: 'neutrophils',
         });
         this.identified = false;
 
@@ -96,11 +96,9 @@ class WanderingBacteria extends Entity {
             // the turret will shoot a bullet at this bacteria
             // so we dont deal damage here.
             break;
-        case 'phagocyte':
-            this.health = 0;
-            break;
         default:
-            alert(`unimplemented tag ${other.body.tag}...`);
+            console.log('unimplemented tag!', other.body.tag);
+            this.damaged(other.damage);
         }
     }
 
@@ -165,4 +163,4 @@ class WanderingBacteria extends Entity {
     }
 }
 
-export default WanderingBacteria;
+export default NeutrophilsBacteria;

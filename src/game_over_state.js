@@ -6,7 +6,6 @@ class GameOverState extends State {
     }
 
     handleKeys(events) {
-        console.log(events);
     }
 
     init() {

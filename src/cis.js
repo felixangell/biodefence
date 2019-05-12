@@ -33,14 +33,18 @@ class CentralImmuneSystem extends Entity {
         // all of the _tags_ that the CIS is immune to.
         this.immunities = new HashSet();
 
+        // DEFAULT IMMUNITIES
+        // by default, these are all friendly
+        // so they dont cause damage to the cis
+        this.immunities.add(
+            'antibody',
+            'phagocyte'
+        );
+
         Engine.listenFor('addImmunity', (evt) => {
             const immunity = evt.detail;
             this.immunities.add(immunity);
         });
-
-        // by default, these are all friendly
-        // so they dont cause damage to the cis
-        this.immunities.add('antibody');
 
         this.image = getResource('cis.png');
         this.shieldedImage = getResource('cis_shielded.png');

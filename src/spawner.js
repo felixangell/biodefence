@@ -35,7 +35,7 @@ class Spawner {
 
         // assign the spawner an ID
         this.id = spawnerCount++;
-        console.log('Created spawner', this.id, ' at', [this.x, this.y]);
+        // console.log('Created spawner', this.id, ' at', [this.x, this.y]);
 
         this.numSpawns = 0;
 
@@ -67,7 +67,7 @@ class Spawner {
 
     // increments a tick, and changes the properties of the spawner
     doTick() {
-        console.log('spawner', this.id, 'ticked!');
+        // console.log('spawner', this.id, 'ticked!');
         for (let i = 0; i < this.currSpawnLimit; i++) {
             let { x, y } = this.generateSpawnPoint();
             this.spawn(new WanderingBacteria(x, y));

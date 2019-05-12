@@ -73,10 +73,10 @@ class Entity {
     update() {
         const { x, y } = this.body.position;
         if (x < -this.width) {
-            this.damaged(this.health);
+            this.die();
         }
         if (y < -this.height) {
-            this.damaged(this.health);
+            this.die();
         }
         
         if (this.shieldTimer) {
@@ -105,6 +105,10 @@ class Entity {
         shieldUpSound.play();
     }
 
+    die() {
+        this.health = 0;
+    }
+
     render(cam, ctx) {}
 
     // renders the entities health bar above
@@ -124,6 +128,8 @@ class Entity {
         const xPos = (x + xOff - (this.width / 2)) - cam.pos.x;
         const yPos = (y - (this.height / 2)) - cam.pos.y - (barHeight * 2);
         ctx.fillRect(xPos, yPos, barWidth, barHeight);
+
+        ctx.fillText(this.health, xPos, yPos);
 
         // add a nice outline to the healthbar
         ctx.strokeStyle = "#000";

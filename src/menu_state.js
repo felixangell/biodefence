@@ -6,7 +6,6 @@ class MenuState extends State {
     }
 
     handleKeys(events) {
-        console.log(events);
     }
 
     update() {

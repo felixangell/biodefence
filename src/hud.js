@@ -85,7 +85,6 @@ class HUD {
     }
 
     gainedPowerup(powerup) {
-        console.log('spawned a powerup', powerup.constructor.name);
         this.queueInfoCard(new InfoCard({
             id: 6969,
             title: 'Gained a powerup!!',
@@ -138,7 +137,7 @@ class HUD {
 
         this.cardLimiter.set(data.id, new Date().getTime());
 
-        console.log('enqueued card', data.title);
+        // console.log('enqueued card', data.title);
     }
 
     // this is invoked everytime we age.
@@ -236,7 +235,7 @@ class HUD {
         // delete the card after {cardDefaultDuration} seconds.
         for (const [key, card] of this.currentCard) {
             if ((new Date().getTime() - card.timer) > (card.data.duration * SECOND)) {
-                console.log('deleting ', card.data, ' after ', card.data.duration * SECOND, 'ms');
+                // console.log('deleting ', card.data, ' after ', card.data.duration * SECOND, 'ms');
                 this.currentCard.delete(card.uid);
             }
         }

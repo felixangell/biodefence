@@ -3,7 +3,6 @@ class Engine {
         const evt = new CustomEvent(name, {
             detail: detail,
         });
-        console.log('yo', name);
         window.dispatchEvent(evt);
     }
 

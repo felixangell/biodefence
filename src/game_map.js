@@ -8,6 +8,7 @@ import Spawner from './spawner';
 import DefenceTurret from './defence_turret';
 import Engine from './engine';
 import { ShieldPowerup } from './powerup';
+import PhagocyteBacteria from './phagocyte';
 
 const TileSize = 192;
 
@@ -102,7 +103,6 @@ export class GameMap {
         const spawnerBoxCount = 4;
         const size = spawnerBoxCount / 2;
         
-        console.log(viewport);
         const mapWidth = this.width * TileSize;
         const regionSize = mapWidth / size;
 
@@ -114,7 +114,6 @@ export class GameMap {
 
         for (let y = 0; y < size; y++) {
             for (let x = 0; x < size; x++) {
-                console.log(x, y, regionSize);
                 this.spawners.push(new Spawner(x * regionSize + offs, y * regionSize + offs, this));
             }
         }
@@ -158,9 +157,11 @@ export class GameMap {
         // default to focus on the CIS.
         this.focusOnCIS();
 
-        this.addEntity(new DefenceTurret(cisX + 400, cisY - 400));
+        /*
+                this.addEntity(new DefenceTurret(cisX + 400, cisY - 400));
         this.addEntity(new DefenceTurret(cisX - 400, cisY - 400));
         this.addEntity(new DefenceTurret(cisX - 400, cisY + 400));
+*/
 
         Engine.listenFor('cisTakenDamage', () => {
             this.nutrition -= Math.min(20, this.nutrition);
@@ -173,6 +174,9 @@ export class GameMap {
         this.deployKillerT = this.deployKillerT.bind(this);
         Engine.listenFor('deployKillerT', this.deployKillerT);
         
+        this.deployPhagocyte = this.deployPhagocyte.bind(this);
+        Engine.listenFor('deployPhagocyte', this.deployPhagocyte);
+
         this.deployMucousMembranes = this.deployMucousMembranes.bind(this);
         Engine.listenFor('deployMucousMembranes', this.deployMucousMembranes);
     }
@@ -200,6 +204,16 @@ export class GameMap {
         if (!this.tryUseLipids(cost)) {
             return;
         }
+    }
+
+    deployPhagocyte() {
+        const cost = event.detail;
+        if (!this.tryUseLipids(cost)) {
+            return;
+        }
+
+        const { x, y } = this.cis.body.position;
+        this.addEntity(new PhagocyteBacteria(x, y));
     }
 
     deployAntibody() {

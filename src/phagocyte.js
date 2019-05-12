@@ -21,15 +21,14 @@ function randDirection() {
 const damageWhenUnidentified = 2;
 const damageWhenIdentified = 1;
 
-// WanderingBacteria will travel aimlessly 
-// through the map
-class WanderingBacteria extends Entity {
+// PhagocyteBacteria
+class PhagocyteBacteria extends Entity {
     constructor(x, y) {
-        super(x, y, 48, 43, {
+        super(x, y, 154, 154, {
             isStatic: false,
-            tag: 'germ',
+            tag: 'phagocyte',
         });
-        this.identified = false;
+        this.identified = true;
 
         this.baseDamage = damageWhenUnidentified;
         this.size = 1.0; // size multiplier.
@@ -45,8 +44,7 @@ class WanderingBacteria extends Entity {
 
         this.deathSound = bacteriaSound;
 
-        this.defaultImage = getResource('bacteria.png');
-        this.imgSil = getResource('bacteria_s.png');
+        this.defaultImage = getResource('phagocyte.png');
 
         this.dirTimer = new Date().getTime();
         this.changePath();
@@ -58,54 +56,24 @@ class WanderingBacteria extends Entity {
         this.health = 0;
     }
 
-    grow() {
-        if (this.scaleCount >= this.maxScale) {
-            // we're too big!
+    hit(other) {
+        // TODO handle the diseases.
+        switch (other.body.tag) {
+        case 'germ':
+            break;
+        default:
+            // anything that isn't in this switch case doesn't do anything
+            console.log('phagocyte', other.body.tag);
             return;
         }
 
-        // we only play the merge sound after
-        // the first merge. 
-        if (this.scaleCount > 1) {
-            bacteriaMergeSound.play();
-        }
+        console.log('phagocyte hit by ', other.health, ' dealing ', other.damage);
 
-        this.size += 0.15;
-
-        this.width *= this.size;
-        this.height *= this.size;
-        Body.scale(this.body, this.size, this.size);
-        this.scaleCount++;
-    }
-
-    hit(other) {
-        switch (other.body.tag) {
-        case 'cis':
-            this.silentlyDie();
-            break;
-        case 'germ':
-            if (this.size >= other.size && this.timeAlive > other.timeAlive) {
-                other.silentlyDie();
-                this.grow();
-            } else if (this.timeAlive >= other.timeAlive) {
-                other.silentlyDie();
-                this.grow();
-            }
-            break;
-        case 'turret':
-            // the turret will shoot a bullet at this bacteria
-            // so we dont deal damage here.
-            break;
-        case 'phagocyte':
-            this.health = 0;
-            break;
-        default:
-            alert(`unimplemented tag ${other.body.tag}...`);
-        }
-    }
-
-    attack(entity) {
-        // TODO gravitate them towards the CIS.
+        // kill the entity that hit us.
+        other.die();
+        
+        // take some damage
+        this.damaged(Math.min(other.damage, 1));
     }
 
     // move in a random path
@@ -139,23 +107,24 @@ class WanderingBacteria extends Entity {
 
         const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
         if ((new Date().getTime() - this.dirTimer) > moveChangeTime * SECOND) {
+            // regenerate some health
+            if (this.health < 100) {
+                this.health += 0.001;
+            }
+
             this.changePath();
             this.dirTimer = new Date().getTime();
         }
     }
 
     render(cam, ctx) {
-        if (this.showHealthBar) {
-            this.renderHealthBar(cam, ctx);
-        }
+        this.renderHealthBar(cam, ctx);
         
-        this.img = this.identified ? this.defaultImage : this.imgSil;
-
         const { x, y } = this.body.position;
         
         const xPos = (x - (this.width / 2)) - cam.pos.x;
         const yPos = (y - (this.height / 2)) - cam.pos.y;
-        ctx.drawImage(this.img, xPos, yPos, this.width, this.height);
+        ctx.drawImage(this.defaultImage, xPos, yPos, this.width, this.height);
         
         if (window.sessionStorage.getItem('debug') === 'true') {
             ctx.fillStyle = "#ff00ff";
@@ -165,4 +134,4 @@ class WanderingBacteria extends Entity {
     }
 }
 
-export default WanderingBacteria;
+export default PhagocyteBacteria;
