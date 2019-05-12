@@ -3,6 +3,8 @@ import { GameMap } from './game_map';
 import HUD from './hud';
 import { ShieldPowerup } from './powerup';
 
+const RELEASE_MODE = false;
+
 // return true if the rectangle and circle are colliding
 // this is used for the camera movement
 function circleIntersectsRect(circle,rect){
@@ -31,8 +33,8 @@ class GameState extends State {
     }
 
     init() {
-        window.sessionStorage.setItem('debug', 'true');
-        window.sessionStorage.setItem('secondDuration', '1000');
+        window.sessionStorage.setItem('debug', RELEASE_MODE ? 'false' : 'true');
+        window.sessionStorage.setItem('secondDuration', RELEASE_MODE ? '1000' : '50');
 
         Howler.volume(0.6);
         

@@ -5,6 +5,7 @@ import getResource from './image_loader';
 import GameOverState from './game_over_state';
 import WanderingBacteria from './bacteria';
 import Spawner from './spawner';
+import DefenceTurret from './defence_turret';
 
 const TileSize = 192;
 
@@ -134,7 +135,9 @@ export class GameMap {
         // added.
         this.entities = new Map();
 
-        this.cis = new CentralImmuneSystem(mapDimension.width / 2, mapDimension.height / 2);
+        const cisX = mapDimension.width / 2;
+        const cisY = mapDimension.height / 2;
+        this.cis = new CentralImmuneSystem(cisX, cisY);
         this.addEntity(this.cis);
 
         Events.on(this.engine, 'collisionActive', (event) => {
@@ -151,6 +154,8 @@ export class GameMap {
 
         // default to focus on the CIS.
         this.focusOnCIS();
+
+        this.addEntity(new DefenceTurret(cisX + 400, cisY - 400));
     }
 
     onAgeIncrease(newAge) {

@@ -26,6 +26,8 @@ class Entity {
         this.height = height;
         this.damage = 1;
         this.identified = true;
+        this.options = options;
+        this.showHealthBar = false;
 
         // by default this our death sound.
         this.deathSound = deathSound;
@@ -43,6 +45,9 @@ class Entity {
         if (this.shielded) {
             return;
         }
+
+        this.showHealthBar = true;
+
         this.health -= amount;
         if (this.health == 0) {
             this.deathSound.play();

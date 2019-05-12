@@ -90,7 +90,12 @@ class WanderingBacteria extends Entity {
                 this.grow();
             }
             break;
+        case 'turret':
+            // the turret will shoot a bullet at this bacteria
+            // so we dont deal damage here.
+            break;
         default:
+            console.log('unimplemented tag!', other.body.tag);
             this.damaged(other.damage);
         }
     }
@@ -142,8 +147,9 @@ class WanderingBacteria extends Entity {
     }
 
     render(cam, ctx) {
-        // TODO only render healthbar when we hover or click an entity?
-        // this.renderHealthBar(cam, ctx);
+        if (this.showHealthBar) {
+            this.renderHealthBar(cam, ctx);
+        }
         
         this.img = this.identified ? this.defaultImage : this.imgSil;
 
