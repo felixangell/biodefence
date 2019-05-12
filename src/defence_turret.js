@@ -79,6 +79,10 @@ class DefenceTurret extends Entity {
                 this.currentTarget = null;
             } else {
                 target.damaged(this.damage);
+
+                // todo as a turret ages it could become
+                // immune?
+                this.health -= 0.025;
             }
         }
     }
@@ -106,6 +110,14 @@ class DefenceTurret extends Entity {
             
             // delete the target every iteration
             this.currentTarget = null;
+        } else {
+            // NOTE This is a very gross hack to stop the weird line rendering
+            // when we have no target.
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, 0);
+            ctx.lineWidth = 0;
+            ctx.stroke();
         }
         ctx.lineWidth = 1;
 

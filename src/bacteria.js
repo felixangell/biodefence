@@ -18,6 +18,9 @@ function randDirection() {
     };
 }
 
+const damageWhenUnidentified = 2;
+const damageWhenIdentified = 1;
+
 // WanderingBacteria will travel aimlessly 
 // through the map
 class WanderingBacteria extends Entity {
@@ -28,7 +31,7 @@ class WanderingBacteria extends Entity {
         });
         this.identified = false;
 
-        this.damage = 6;
+        this.baseDamage = damageWhenUnidentified;
         this.size = 1.0; // size multiplier.
         this.speed = 0.05;
         this.scaleCount = 0;
@@ -122,16 +125,14 @@ class WanderingBacteria extends Entity {
     update() {
         super.update();
         
-        // a bit gross, but the bacteria slows down
-        // when identified + does less damage
         if (this.identified) {
-            // TODO rather than set this, scale it and
-            // do it once.
-            // probably invoke a identify() function
-            // once that does this for us.
+            this.baseDamage = this.damageWhenIdentified;
             this.speed = 0.03;
-            this.damage = 4;
         }
+        // 2x1, 2x2, 2x3, 2x4
+        // when identified
+        // 1x1, 1x2, 1x3, 1x4
+        this.damage = this.baseDamage * this.scaleCount;
 
         const moveChangeTime = 0.3;
 
