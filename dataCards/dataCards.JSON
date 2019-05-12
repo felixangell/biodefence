@@ -119,5 +119,35 @@
     "duration": 10,
     "type": "educational",
     "comment": "Should be shown once user has bought first shield"
+  },
+  {
+    "id": "cmc1",
+    "imgSource": "",
+    "cardTitle": "Common Cold",
+    "desc": "A cold is a mild viral infection of the nose, throat and sinuses. If you have a healthy life sytle and keep well rested a cold should clear up in 4 or 5 days. Symptoms include a blocked or runny nose, headache, a cough and a high temperature.",
+    "showOnce": true,
+    "duration": 10,
+    "type": "educational",
+    "comment": "Should be shown when the user first identifies this bacteria"
+  },
+  {
+    "id": "slm1",
+    "imgSource": "",
+    "cardTitle": "Salmonella",
+    "desc": "Salmonella is a type of bacteria that can be found on raw meat such as chicken and pork and in eggs. If salmonella gets inside your body this can cause food poising. Symptoms include: nausea, vomiting, diarrhoea and a fever. The best way to avoid Salmonella is to ensure food is cooked properly.",
+    "showOnce": true,
+    "duration": 10,
+    "type": "educational",
+    "comment": "Should be shown when the user first identifies this bacteria"
+  },
+  {
+    "id": "tbc1",
+    "imgSource": "",
+    "cardTitle": "Tuberculosis",
+    "desc": "Tuberculosis is a bacteria that can be found in the lungs that can cause chest pains and a bad cough. The immune system normally can deal with this bacteria istelf but also can de deadly.",
+    "showOnce": true,
+    "duration": 10,
+    "type": "educational",
+    "comment": "Should be shown when the user first identifies this bacteria"
   }
 ]
