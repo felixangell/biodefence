@@ -7,17 +7,6 @@ import getResource from './image_loader';
 let bacteriaSound = new Howl({src:'./res/sfx/bacteria_die1.ogg', volume: 0.6});
 let bacteriaMergeSound = new Howl({src:'./res/sfx/merge_sound.ogg', volume: 0.15});
 
-function randRange(min, max) {
-    return (Math.random() * (max - min)) + min;
-}
-
-function randDirection() {
-    return {
-        x: randRange(-1.0, 1.0),
-        y: randRange(-1.0, 1.0),
-    };
-}
-
 const damageWhenUnidentified = 2;
 const damageWhenIdentified = 1;
 
@@ -49,7 +38,7 @@ class NeutrophilsBacteria extends Entity {
         this.imgSil = getResource('bacteria_s.png');
 
         this.dirTimer = new Date().getTime();
-        this.changePath();
+        super.changePath();
 
         this.img = this.imgSil;
     }
@@ -106,21 +95,6 @@ class NeutrophilsBacteria extends Entity {
         // TODO gravitate them towards the CIS.
     }
 
-    // move in a random path
-    changePath() {
-        // generate a random direction -1, to 1
-        const dir = randDirection();
-
-        // slow it down a bit!
-        let xf = (this.body.mass * (dir.x * this.speed)) * randRange(-0.1, 0.1);
-        let yf = (this.body.mass * (dir.y * this.speed)) * randRange(-0.1, 0.1);
-        // apply the force
-        Body.applyForce(this.body, this.body.position, {
-            x: xf,
-            y: yf,
-        });
-    }
-
     update() {
         super.update();
         
@@ -137,15 +111,13 @@ class NeutrophilsBacteria extends Entity {
 
         const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
         if ((new Date().getTime() - this.dirTimer) > moveChangeTime * SECOND) {
-            this.changePath();
+            super.changePath();
             this.dirTimer = new Date().getTime();
         }
     }
 
     render(cam, ctx) {
-        if (this.showHealthBar) {
-            this.renderHealthBar(cam, ctx);
-        }
+        super.renderHealthBar(cam, ctx);
         
         this.img = this.identified ? this.defaultImage : this.imgSil;
 

@@ -1,4 +1,4 @@
-import Matter from 'matter-js';
+import Matter, {Body} from 'matter-js';
 import getResource from './image_loader';
 import {Howl} from 'howler';
 import {Engine} from './engine';
@@ -12,6 +12,17 @@ let shieldUpSound = new Howl({src:'./res/sfx/shield_up.ogg'});
 let shieldDownSound = new Howl({src:'./res/sfx/shield_down.ogg'});
 
 let entityId = 0;
+
+function randRange(min, max) {
+    return (Math.random() * (max - min)) + min;
+}
+
+function randDirection() {
+    return {
+        x: randRange(-1.0, 1.0),
+        y: randRange(-1.0, 1.0),
+    };
+}
 
 class Entity {
 
@@ -69,6 +80,23 @@ class Entity {
     // was hit (collided) with the
     // entity other.
     hit(other) {}
+
+    // move in a random path
+    changePath() {
+        // generate a random direction -1, to 1
+        const dir = randDirection();
+
+        // slow it down a bit
+        let xf = (this.body.mass * (dir.x * this.speed)) * randRange(-0.1, 0.1);
+        let yf = (this.body.mass * (dir.y * this.speed)) * randRange(-0.1, 0.1);
+
+        // apply the force
+        Body.applyForce(this.body, this.body.position, {
+            x: xf,
+            y: yf,
+        });
+    }
+    
 
     update() {
         const { x, y } = this.body.position;

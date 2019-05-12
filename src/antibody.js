@@ -6,17 +6,6 @@ import { GameInfo } from './engine';
 
 let deadAntibodySound = new Howl({src:'./res/sfx/antibody_die.ogg'})
 
-function randRange(min, max) {
-    return (Math.random() * (max - min)) + min;
-}
-
-function randDirection() {
-    return {
-        x: randRange(-1.0, 1.0),
-        y: randRange(-1.0, 1.0),
-    };
-}
-
 class Antibody extends Entity {
     constructor(x, y) {
         super(x, y, 154, 154, {
@@ -34,21 +23,7 @@ class Antibody extends Entity {
         this.img = getResource('antibody.png');
     
         this.dirTimer = new Date().getTime();
-        this.changePath();    
-    }
-
-    changePath() {
-        // generate a random direction -1, to 1
-        const dir = randDirection();
-
-        // slow it down a bit!
-        let xf = (this.body.mass * (dir.x * this.speed)) * randRange(-0.1, 0.1);
-        let yf = (this.body.mass * (dir.y * this.speed)) * randRange(-0.1, 0.1);
-        // apply the force
-        Body.applyForce(this.body, this.body.position, {
-            x: xf,
-            y: yf,
-        });
+        super.changePath();    
     }
 
     update() {
@@ -58,7 +33,7 @@ class Antibody extends Entity {
 
         const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
         if ((new Date().getTime() - this.dirTimer) > moveChangeTime * SECOND) {
-            this.changePath();
+            super.changePath();
             this.dirTimer = new Date().getTime();
         }
     }
@@ -84,7 +59,7 @@ class Antibody extends Entity {
     }
 
     render(cam, ctx) {
-        this.renderHealthBar(cam, ctx);
+        super.renderHealthBar(cam, ctx);
 
         const { x, y } = this.body.position;
         

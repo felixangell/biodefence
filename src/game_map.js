@@ -1,15 +1,15 @@
 import Matter, {Events} from 'matter-js';
+import Antibody from './antibody';
 import CentralImmuneSystem from "./cis";
 import Camera from './camera';
 import getResource from './image_loader';
 import GameOverState from './game_over_state';
 import WanderingBacteria from './bacteria';
 import Spawner from './spawner';
-import DefenceTurret from './defence_turret';
 import {Engine} from './engine';
 import { ShieldPowerup } from './powerup';
 import PhagocyteBacteria from './phagocyte';
-import Antibody from './antibody';
+import DefenceTurret from './defence_turret';
 
 const TileSize = 192;
 
@@ -61,6 +61,12 @@ function lookupTile(id) {
 
 let useActionSound = new Howl({src:'./res/sfx/use_action.wav', volume:0.6});
 
+const PlacingObjectType = Object.freeze({
+    Antibody: {image: getResource('antibody.png')},
+    KillerT: {image: getResource('defence_turret.png')},
+    Nothing: {},
+});
+
 export class GameMap {
     constructor(stateManager) {
         this.stateManager = stateManager;
@@ -99,30 +105,21 @@ export class GameMap {
 
         this.spawners = [];
 
-        // this could be changed depending on the difficulty
-        // of the game, i.e. the more spawners the harder!
-        const spawnerBoxCount = 4;
-        const size = spawnerBoxCount / 2;
-        
-        const mapWidth = this.width * TileSize;
-        const regionSize = mapWidth / size;
-
-        let offs = 0;
-        if (window.sessionStorage.getItem('debug') === 'true') {
-            // move the spawners closer in when debugging
-            offs = (2 * TileSize);
-        }
-
-        for (let y = 0; y < size; y++) {
-            for (let x = 0; x < size; x++) {
-                this.spawners.push(new Spawner(x * regionSize + offs, y * regionSize + offs, this));
-            }
-        }
+        // add spawners in top left, right, bottom left, bottom right
+        // TODO 'automate' this so that X and Y amount of spawners
+        // can be placed around the _perimiter_
+        const tl = new Spawner(10, 10, this);
+        const tr = new Spawner(mapDimension.width, 10, this);
+        const bl = new Spawner(10, mapDimension.height, this);
+        const br = new Spawner(mapDimension.width, mapDimension.height, this);
+        this.spawners.push(tl, tr, bl, br);
 
         // fill the map up with 0 tiles
         for (let i = 0; i < this.width * this.height; i++) {
             this.tileData[i] = 0;
         }
+
+        this.placing = PlacingObjectType.Nothing;
 
         // our physics engine is created here,
         // and we disable the gravity as the game
@@ -169,6 +166,12 @@ export class GameMap {
             this.hydration -= Math.min(20, this.hydration);
         });
 
+        Engine.listenFor('cheatmode', () => {
+            this.lipids = 1000000;
+            this.hydration = 100000;
+            this.nutrition = 10000;
+        });
+
         this.deployAntibody = this.deployAntibody.bind(this);
         Engine.listenFor('deployAntibody', this.deployAntibody);
 
@@ -180,10 +183,45 @@ export class GameMap {
 
         this.deployMucousMembranes = this.deployMucousMembranes.bind(this);
         Engine.listenFor('deployMucousMembranes', this.deployMucousMembranes);
+
+        this.handleMouseClick = this.handleMouseClick.bind(this);
+        window.addEventListener('click', this.handleMouseClick);
+    }
+
+    handleMouseClick() {
+        if (!this.mouseBounds) {
+            return;
+        }
+
+        const { x, y } = this.mouseBounds;
+
+        switch (this.placing) {
+        case PlacingObjectType.Nothing:
+            break;
+        case PlacingObjectType.Antibody:
+            this.addEntity(new Antibody(x + this.cam.pos.x, y + this.cam.pos.y));
+            this.placing = PlacingObjectType.Nothing;
+            return;
+        case PlacingObjectType.KillerT:
+            // this is because of the gross bounding box hack that needs to be fixed but cba
+            const dummyTurret = new DefenceTurret(0, 0);
+            const rad = (dummyTurret.radius / 2);
+            this.addEntity(new DefenceTurret(x + this.cam.pos.x + rad, y + this.cam.pos.y + rad));
+            this.placing = PlacingObjectType.Nothing;
+            return;
+        }
+
+        // we're not placing something.
+    }
+    
+    handleMouseMove(event, x, y) {
+        this.mouseBounds = {
+            x: x, y: y, r: 15,
+        };
     }
 
     tryUseLipids(cost) {
-        if (this.lipids < cost) {
+        if (this.placing != PlacingObjectType.Nothing || this.lipids < cost) {
             return false;
         }
         this.lipids -= cost;
@@ -205,6 +243,8 @@ export class GameMap {
         if (!this.tryUseLipids(cost)) {
             return;
         }
+
+        this.placing = PlacingObjectType.KillerT;
     }
 
     deployPhagocyte() {
@@ -213,6 +253,7 @@ export class GameMap {
             return;
         }
 
+        // TODO spawn this around the CIS rather than on top of
         const { x, y } = this.cis.body.position;
         this.addEntity(new PhagocyteBacteria(x, y));
     }
@@ -223,9 +264,7 @@ export class GameMap {
             return;
         }
 
-        const { x, y } = this.cis.body.position;
-        this.addEntity(new Antibody(x, y));
-        this.placing = true;
+        this.placing = PlacingObjectType.Antibody;
     }
 
     onAgeIncrease(newAge) {
@@ -366,6 +405,15 @@ export class GameMap {
         // the entity to be able to see them!
         for (const spawner of this.spawners) {
             spawner.render(this.cam, ctx);
+        }
+
+        if (this.placing != PlacingObjectType.Nothing) {
+            const { x, y } = this.mouseBounds;
+
+            const image = this.placing.image;
+
+            ctx.fillStyle = "#ff00ff";
+            ctx.drawImage(image, x - (image.width / 2), y - (image.height / 2));
         }
 
         ctx.fillStyle = "#ffff00";

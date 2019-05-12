@@ -2,6 +2,7 @@ import { State } from './state';
 import { GameMap } from './game_map';
 import HUD from './hud';
 import { ShieldPowerup } from './powerup';
+import { Engine } from './engine';
 
 const RELEASE_MODE = false;
 
@@ -46,6 +47,9 @@ class GameState extends State {
             case 'm':
                 this.bgMusic.playing() ? this.bgMusic.pause() : this.bgMusic.play();
                 break;
+            case 'l':
+                Engine.emit('cheatmode');
+                break;
             case 'd':
                 // lol
                 const opp = window.sessionStorage.getItem('debug') === 'true' ? 'false' : 'true';
@@ -73,6 +77,7 @@ class GameState extends State {
 
     handleMouseMove(event, x, y) {
         super.handleMouseMove(event, x, y);
+        this.map.handleMouseMove(event, x, y);
         this.hud.handleMouseMove(event, x, y);
     }
 

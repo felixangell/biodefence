@@ -7,17 +7,6 @@ import getResource from './image_loader';
 let bacteriaSound = new Howl({src:'./res/sfx/bacteria_die1.ogg', volume: 0.6});
 let bacteriaMergeSound = new Howl({src:'./res/sfx/merge_sound.ogg', volume: 0.15});
 
-function randRange(min, max) {
-    return (Math.random() * (max - min)) + min;
-}
-
-function randDirection() {
-    return {
-        x: randRange(-1.0, 1.0),
-        y: randRange(-1.0, 1.0),
-    };
-}
-
 const damageWhenUnidentified = 2;
 const damageWhenIdentified = 1;
 
@@ -47,7 +36,7 @@ class PhagocyteBacteria extends Entity {
         this.defaultImage = getResource('phagocyte.png');
 
         this.dirTimer = new Date().getTime();
-        this.changePath();
+        super.changePath();
 
         this.img = this.imgSil;
     }
@@ -67,28 +56,13 @@ class PhagocyteBacteria extends Entity {
             return;
         }
 
-        console.log('phagocyte hit by ', other.health, ' dealing ', other.damage);
+        console.log('phagocyte hit by ', other.body.tag, other.health, ' dealing ', other.damage);
 
         // kill the entity that hit us.
         other.die();
         
         // take some damage
         this.damaged(Math.min(other.damage, 1));
-    }
-
-    // move in a random path
-    changePath() {
-        // generate a random direction -1, to 1
-        const dir = randDirection();
-
-        // slow it down a bit!
-        let xf = (this.body.mass * (dir.x * this.speed)) * randRange(-0.1, 0.1);
-        let yf = (this.body.mass * (dir.y * this.speed)) * randRange(-0.1, 0.1);
-        // apply the force
-        Body.applyForce(this.body, this.body.position, {
-            x: xf,
-            y: yf,
-        });
     }
 
     update() {
@@ -112,13 +86,13 @@ class PhagocyteBacteria extends Entity {
                 this.health += 0.001;
             }
 
-            this.changePath();
+            super.changePath();
             this.dirTimer = new Date().getTime();
         }
     }
 
     render(cam, ctx) {
-        this.renderHealthBar(cam, ctx);
+        super.renderHealthBar(cam, ctx);
         
         const { x, y } = this.body.position;
         

@@ -115,7 +115,7 @@ class CentralImmuneSystem extends Entity {
     }
 
     render(cam, ctx) {
-        this.renderHealthBar(cam, ctx);
+        super.renderHealthBar(cam, ctx);
 
         const { x, y } = this.body.position;
         ctx.fillStyle = "#00ff00";
