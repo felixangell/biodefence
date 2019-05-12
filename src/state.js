@@ -62,6 +62,9 @@ class State {
         };
     }
 
+    handleMouseClick(event, x, y) {
+    }
+
     pollEvents() {
         // the events from the event listeners
         // are added to this queue and polled
@@ -83,7 +86,7 @@ class State {
 
                 case 'click': {
                     const { x, y } = getCursorPosition(container, event);
-                    // TODO handle click
+                    this.handleMouseClick(event, x, y);
                     break;
                 }
 

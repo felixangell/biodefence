@@ -25,8 +25,8 @@ class Antibody extends Entity {
         super.update();
     }
 
-    attack(what) {
-
+    hit(other) {
+        
     }
 
     render(cam, ctx) {

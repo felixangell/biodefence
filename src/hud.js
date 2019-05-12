@@ -1,6 +1,6 @@
-import { ShieldPowerup, ReviveCISPowerup } from "./powerup";
 import InfoCard from './info_card';
-import EntityPreview from './entity_preview';
+import ActionBar from './action_bar';
+import Engine from './engine';
 
 // card duration in seconds
 // how long it will be in the notif bar for.
@@ -45,17 +45,10 @@ class HUD {
         this.map = gameMap;
 
         this.entityAdded = this.entityAdded.bind(this);
-        this.map.on.set('entityAdd', this.entityAdded);
+        Engine.listenFor('entityAdd', this.entityAdded);
 
         this.gainedPowerup = this.gainedPowerup.bind(this);
-        this.map.on.set('powerupGained', this.gainedPowerup);
-
-        // we have zero lipids to start with?
-        this.lipids = 0;
-
-        // we start at 25.
-        this.hydration = 25;
-        this.nutrition = 25;
+        Engine.listenFor('powerupGained', this.gainedPowerup);
 
         this.ageTimer = new Date().getTime();
         this.lipidTimer = new Date().getTime();
@@ -72,13 +65,23 @@ class HUD {
         this.cardLimiter = new Map();
 
         this.preview = null;
+        this.actionBar = new ActionBar();
+
+        this.actionBar.registerAction(25, 'Antibody', 'deployAntibody');
+        this.actionBar.registerAction(100, 'Phagocyte', 'deployPhagocyte');
+        this.actionBar.registerAction(75, 'Killer T', 'deployKillerT');
+        this.actionBar.registerAction(100, 'Mucous Membranes', 'deployMucousMembranes');
+        this.actionBar.registerAction(25, 'Neutrophils', 'deployNeutrophils');
 
         this.initNewLevel();
     }
 
-    entityAdded(e) {
-        console.log('FIRED!');
-        // just to test we preview the most recently added entity.
+    handleMouseMove(evt, x, y) {
+        this.actionBar.handleMouseMove(evt, x, y);
+    }
+
+    entityAdded(event) {
+        // console.log('FIRED!', event.detail);
     }
 
     gainedPowerup(powerup) {
@@ -176,11 +179,11 @@ class HUD {
     // gets how many lipids to generate
     // based off the nutrition level.
     getLipidGenerationCount() {
-        if (this.nutrition >= 75) {
+        if (this.map.nutrition >= 75) {
             return 20;
-        } else if (this.nutrition >= 50) {
+        } else if (this.map.nutrition >= 50) {
             return 15;
-        } else if (this.nutrition >= 25) {
+        } else if (this.map.nutrition >= 25) {
             return 10;
         }
         // 0 - 24.
@@ -190,11 +193,11 @@ class HUD {
     // gets the generation rate of the lipds
     // in seconds.
     getLipidGenRate() {
-        if (this.hydration >= 75) {
+        if (this.map.hydration >= 75) {
             return 2;
-        } else if (this.hydration >= 50) {
+        } else if (this.map.hydration >= 50) {
             return 4;
-        } else if (this.hydration >= 25) {
+        } else if (this.map.hydration >= 25) {
             return 6;
         }
         // 0 - 24.
@@ -209,7 +212,7 @@ class HUD {
 
         const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
         if ((new Date().getTime() - this.lipidTimer) > lipidGenerationRate * SECOND) {
-            this.lipids += lipidAmount;
+            this.map.lipids += lipidAmount;
             this.lipidTimer = new Date().getTime();
         }
     }
@@ -220,12 +223,12 @@ class HUD {
     live() {
         // for now we just deteriorate by a random ish 
         // small value.
-        this.hydration -= Math.random();
-        this.nutrition -= Math.random() * 0.01;
+        this.map.hydration -= Math.random();
+        this.map.nutrition -= Math.random() * 0.01;
 
         // clamp the values so they can't go below zero.
-        this.hydration = Math.max(0, this.hydration);
-        this.nutrition = Math.max(0, this.nutrition);
+        this.map.hydration = Math.max(0, this.map.hydration);
+        this.map.nutrition = Math.max(0, this.map.nutrition);
     }
 
     infoCardTriggers() {
@@ -244,6 +247,7 @@ class HUD {
         this.generateLipids();
         this.live();
         this.infoCardTriggers();
+        this.actionBar.update();
         if (this.preview) {
             this.preview.update();
         }
@@ -265,9 +269,9 @@ class HUD {
 
         let properties = {
             'age': this.age,
-            'hydration': this.hydration.toFixed(2),
-            'nutrition': this.nutrition.toFixed(2),
-            'lipids': this.lipids,
+            'hydration': this.map.hydration.toFixed(2),
+            'nutrition': this.map.nutrition.toFixed(2),
+            'lipids': this.map.lipids,
         };
 
         let accumWidth = 0;
@@ -294,6 +298,8 @@ class HUD {
             card.render(ctx, width - card.width - pad, (height) - ((card.height + pad) * iter));
             iter++;
         }
+
+        this.actionBar.render(ctx);
 
         if (this.preview) {
             this.preview.render(ctx);

@@ -119,7 +119,7 @@ class Entity {
         ctx.fillRect(xPos, yPos, barWidth, barHeight);
 
         // add a nice outline to the healthbar
-        ctx.fillStyle = "#ff00ff";
+        ctx.strokeStyle = "#000";
         ctx.strokeRect(xPos, yPos, barWidth, barHeight);
         ctx.stroke();
 

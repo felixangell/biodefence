@@ -6,6 +6,8 @@ import GameOverState from './game_over_state';
 import WanderingBacteria from './bacteria';
 import Spawner from './spawner';
 import DefenceTurret from './defence_turret';
+import Engine from './engine';
+import { ShieldPowerup } from './powerup';
 
 const TileSize = 192;
 
@@ -25,11 +27,10 @@ export class Tile {
     render(cam, ctx, x, y) {
         ctx.drawImage(this.img, x - cam.pos.x, y - cam.pos.y);
 
-        if (window.sessionStorage.getItem('debug') === 'true') {
-            ctx.fillStyle = "#ff00ff";
-            ctx.strokeRect(x - cam.pos.x, y - cam.pos.y, this.img.width, this.img.height);
-            ctx.stroke();
-        }
+        // TODO should the tile stroke be on or off?
+        ctx.strokeStyle = "#fff";
+        ctx.strokeRect(x - cam.pos.x, y - cam.pos.y, this.img.width, this.img.height);
+        ctx.stroke();
     }
 }
 
@@ -56,6 +57,8 @@ function lookupTile(id) {
     return tileRegister.get(id);
 }
 
+let useActionSound = new Howl({src:'./res/sfx/use_action.wav', volume:0.6});
+
 export class GameMap {
     constructor(stateManager) {
         this.stateManager = stateManager;
@@ -68,6 +71,10 @@ export class GameMap {
         // would represent a 4x2 map.
         this.tileData = [];
 
+        this.lipids = 0;
+        this.hydration = 25;
+        this.nutrition = 25;
+
         this.bodies = new Map();
 
         // how many tiles in size the game map is.
@@ -75,10 +82,6 @@ export class GameMap {
         this.height = 16;
 
         this.activePowerups = new Map();
-
-        // TODO allow this to support multiple
-        // event listeners
-        this.on = new Map();
 
         const { width, height } = document.getElementById('game-container');
 
@@ -158,10 +161,57 @@ export class GameMap {
         this.addEntity(new DefenceTurret(cisX + 400, cisY - 400));
         this.addEntity(new DefenceTurret(cisX - 400, cisY - 400));
         this.addEntity(new DefenceTurret(cisX - 400, cisY + 400));
+
+        Engine.listenFor('cisTakenDamage', () => {
+            this.nutrition -= Math.min(20, this.nutrition);
+            this.hydration -= Math.min(20, this.hydration);
+        });
+
+        this.deployAntibody = this.deployAntibody.bind(this);
+        Engine.listenFor('deployAntibody', this.deployAntibody);
+
+        this.deployKillerT = this.deployKillerT.bind(this);
+        Engine.listenFor('deployKillerT', this.deployKillerT);
+        
+        this.deployMucousMembranes = this.deployMucousMembranes.bind(this);
+        Engine.listenFor('deployMucousMembranes', this.deployMucousMembranes);
+    }
+
+    tryUseLipids(cost) {
+        if (this.lipids < cost) {
+            return false;
+        }
+        this.lipids -= cost;
+        useActionSound.play();
+        return true;
+    }
+
+    deployMucousMembranes(event) {
+        const cost = event.detail;
+        if (!this.tryUseLipids(cost)) {
+            return;
+        }
+        // TODO shield duration?
+        this.addPowerup(new ShieldPowerup(5));
+    }
+
+    deployKillerT() {
+        const cost = event.detail;
+        if (!this.tryUseLipids(cost)) {
+            return;
+        }
+    }
+
+    deployAntibody() {
+        const cost = event.detail;
+        if (!this.tryUseLipids(cost)) {
+            return;
+        }
+        
+        this.placing = true;
     }
 
     onAgeIncrease(newAge) {
-        // TODO
     }
 
     spawnBacteria() {
@@ -204,10 +254,7 @@ export class GameMap {
         }
 
         this.activePowerups.get(powerup.title).push(powerup);
-        // trigger any listeners
-        if (this.on.has('powerupGained')) {
-            this.on.get('powerupGained')(powerup);
-        }
+        Engine.emit('powerupGained');
         powerup.onInvoke(this);
         // FIXME
         this.activePowerups.delete(powerup.title);
@@ -218,10 +265,7 @@ export class GameMap {
     // but most importantly it adds the entities physics
     // body to the physics engines world register.
     addEntity(e) {
-        if (this.on.has('entityAdd')) {
-            this.on.get('entityAdd')(e);
-        }
-
+        Engine.emit('entityAdd', e);
         Matter.World.addBody(this.engine.world, e.body);
         this.entities.set(e.body, e);
     }

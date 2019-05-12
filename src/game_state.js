@@ -73,6 +73,7 @@ class GameState extends State {
 
     handleMouseMove(event, x, y) {
         super.handleMouseMove(event, x, y);
+        this.hud.handleMouseMove(event, x, y);
     }
 
     handleCameraPan() {

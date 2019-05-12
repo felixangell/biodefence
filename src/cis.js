@@ -1,6 +1,7 @@
 import Entity from './entity';
 
 import getResource from './image_loader';
+import Engine from './engine';
 
 let cisHitSound = new Howl({src:'./res/sfx/cis_hit_sound.wav', volume:0.8});
 
@@ -65,14 +66,22 @@ class CentralImmuneSystem extends Entity {
         cisHitSound.play();
     }
 
+    // when this is called, we are _being_ hit, not hitting
+    // another object per se. that being said we sitll want
+    // to damage germs, etc.
     hit(other) {
-        // only germs will damage the health of
-        // the CIS.
-        if (other.body.tag === 'germ') {
-            this.damaged(other.damage);
-        }
         if (this.shielded) {
             this.hitShieldSound.play();
+            return;
+        }
+
+        Engine.emit('cisTakenDamage');
+
+        const hostile = [ 'germ' ];
+        if (hostile.find((tag) => {
+            return tag === other.body.tag;
+        }) !== -1) {
+            this.damaged(other.damage);
         }
     }
 
