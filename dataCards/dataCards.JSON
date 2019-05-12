@@ -26,7 +26,7 @@
   "imgSource": ,
   "cardTitle": "Nutrition",
   "desc": ,
-  "showOnce": ,
-  "duration": ,
+  "showOnce": false,
+  "duration": 10,
 
 }]
