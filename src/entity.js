@@ -10,6 +10,8 @@ let deathSound = new Howl({src:'./res/sfx/default_death_sound.ogg'});
 let shieldUpSound = new Howl({src:'./res/sfx/shield_up.ogg'});
 let shieldDownSound = new Howl({src:'./res/sfx/shield_down.ogg'});
 
+let entityId = 0;
+
 class Entity {
 
     // creates a new entity,
@@ -18,6 +20,8 @@ class Entity {
     // will move at all.
     constructor(x, y, width, height, options) {
         this.health = DefaultEntityHealth;
+
+        this.id = entityId++;
 
         // we have to store the size since for
         // some reason the physics engine doesnt

@@ -2,6 +2,8 @@ import Entity from './entity';
 
 import getResource from './image_loader';
 
+let cisHitSound = new Howl({src:'./res/sfx/cis_hit_sound.wav', volume:0.8});
+
 // This is where units are generated from by the player.
 class CentralImmuneSystem extends Entity {
     constructor(x, y) {
@@ -58,11 +60,16 @@ class CentralImmuneSystem extends Entity {
         }
     }
 
+    damaged(damage) {
+        super.damaged(damage);
+        cisHitSound.play();
+    }
+
     hit(other) {
         // only germs will damage the health of
         // the CIS.
         if (other.body.tag === 'germ') {
-            super.damaged(other.damage);
+            this.damaged(other.damage);
         }
         if (this.shielded) {
             this.hitShieldSound.play();

@@ -28,10 +28,10 @@ class Spawner {
         this.radiusIncreaseCount = 0;
         
         // how many times we increase the radius
-        this.radiusIncreaseLimit = 5;
+        this.radiusIncreaseLimit = 8;
 
         // increase by 32 pixels
-        this.radiusIncreaseSize = 32;
+        this.radiusIncreaseSize = 64;
 
         // assign the spawner an ID
         this.id = spawnerCount++;

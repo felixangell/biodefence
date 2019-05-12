@@ -2,7 +2,7 @@ import Entity from "./entity";
 import getResource from './image_loader';
 import Matter from 'matter-js';
 
-const turretNoise = new Howl({src:'./res/sfx/turret_shoot.wav', volume: 0.4});
+const turretNoise = new Howl({src:'./res/sfx/turret_select.wav', volume: 0.4});
 
 function euclidean(a, b) {
     const ax = a.body.position.x;
@@ -67,7 +67,6 @@ class DefenceTurret extends Entity {
         } else {
             this.currentTarget = other;
         }
-        turretNoise.play();
     }
 
     update() {

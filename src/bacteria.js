@@ -81,8 +81,7 @@ class WanderingBacteria extends Entity {
     hit(other) {
         switch (other.body.tag) {
         case 'cis':
-            // we die!
-            super.damaged(this.health);
+            this.silentlyDie();
             break;
         case 'germ':
             if (this.size >= other.size && this.timeAlive > other.timeAlive) {
