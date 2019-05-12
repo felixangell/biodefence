@@ -156,6 +156,8 @@ export class GameMap {
         this.focusOnCIS();
 
         this.addEntity(new DefenceTurret(cisX + 400, cisY - 400));
+        this.addEntity(new DefenceTurret(cisX - 400, cisY - 400));
+        this.addEntity(new DefenceTurret(cisX - 400, cisY + 400));
     }
 
     onAgeIncrease(newAge) {

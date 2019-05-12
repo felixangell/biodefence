@@ -97,8 +97,6 @@ class DefenceTurret extends Entity {
         ctx.drawImage(this.img, xPos, yPos, this.width, this.height);
 
         const target = this.currentTarget;
-        ctx.fillText(target ? target.body.tag : 'no target', 400, 400);
-
         if (target && target.health > 0) {
             const { x, y } = target.body.position;
 
@@ -128,7 +126,9 @@ class DefenceTurret extends Entity {
             // this is the radius bounding box
             const halfRad = this.radius * 0.5;
             ctx.strokeRect(xPos-halfRad, yPos-halfRad, this.width+(this.radius), this.height+(this.radius));
+        }
 
+        if (window.sessionStorage.getItem('debug') === 'true') {
             ctx.strokeStyle = "#fff";
             ctx.strokeRect(xPos, yPos, this.width, this.height);
             ctx.stroke();

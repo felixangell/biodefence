@@ -79,7 +79,6 @@ class HUD {
     entityAdded(e) {
         console.log('FIRED!');
         // just to test we preview the most recently added entity.
-        this.preview = new EntityPreview(e);
     }
 
     gainedPowerup(powerup) {
