@@ -63,6 +63,9 @@ class Action {
             ctx.fillStyle = "#ff00ff";
         }
         ctx.fillRect(x, y, ACTION_ICON_SIZE, ACTION_ICON_SIZE);
+
+        ctx.fillStyle = "#fff";
+        ctx.fillText(this.cost, x, y);
     }
 }
 

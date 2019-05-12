@@ -5,6 +5,22 @@ import Engine from './engine';
 
 let cisHitSound = new Howl({src:'./res/sfx/cis_hit_sound.wav', volume:0.8});
 
+class HashSet {
+    constructor() {
+        this.data = new Map();
+    }
+
+    add(...values) {
+        for (const value of values) {
+            this.data.set(value, true); 
+        }
+    }
+
+    has(value) {
+        return this.data.has(value);
+    }
+}
+
 // This is where units are generated from by the player.
 class CentralImmuneSystem extends Entity {
     constructor(x, y) {
@@ -13,6 +29,18 @@ class CentralImmuneSystem extends Entity {
             isStatic: true,
             tag: 'cis',
         });
+
+        // all of the _tags_ that the CIS is immune to.
+        this.immunities = new HashSet();
+
+        Engine.listenFor('addImmunity', (evt) => {
+            const immunity = evt.detail;
+            this.immunities.add(immunity);
+        });
+
+        // by default, these are all friendly
+        // so they dont cause damage to the cis
+        this.immunities.add('antibody');
 
         this.image = getResource('cis.png');
         this.shieldedImage = getResource('cis_shielded.png');
@@ -77,10 +105,7 @@ class CentralImmuneSystem extends Entity {
 
         Engine.emit('cisTakenDamage');
 
-        const hostile = [ 'germ' ];
-        if (hostile.find((tag) => {
-            return tag === other.body.tag;
-        }) !== -1) {
+        if (!this.immunities.has(other.body.tag)) {
             this.damaged(other.damage);
         }
     }

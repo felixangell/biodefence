@@ -1,6 +1,7 @@
 import Matter from 'matter-js';
 import getResource from './image_loader';
 import {Howl} from 'howler';
+import Engine from './engine';
 
 // by default, _all_ entities have
 // a health of 100 unless specified otherwise.
@@ -40,6 +41,12 @@ class Entity {
         // the icon image that will be shown
         // when the entity is clicked.
         this.iconImage = getResource('default_icon.png');
+
+        window.addEventListener('click', (event) => {
+            // if mouse intersects this entities bounds:
+
+            Engine.emit('setPreview', this);
+        });
     }
 
     // will damage this entity by amount, though
