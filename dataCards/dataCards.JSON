@@ -1,32 +1,46 @@
 [{
-  "id": "hyd1",
-  "imgSource": "",
-  "cardTitle": "Hydration",
-  "desc": "Staying hydrated is important for being healthy and maintaining bodily functions. Without water your body is unable to pass nutrients around the body, your muscles wouldn't be able to function and your brain and heart would stop working! Some pretty serious stuff! It is recommended to drink 1 - 1.5 litres of water a day depending on the air temperature and the amount of exercise you've done! But be careful, drinking too much water can have some pretty bad consequences too.",
-  "showOnce": true,
-  "duration": 30,
-  "type": "educational",
-} {
-  "id": "hyd2",
-  "imgSource": "",
-  "cardTitle": "De-hydrated",
-  "desc": "Your hydration levels are at zero, drink some water!",
-  "showOnce": false,
-  "duration": 10,
-  "type": "help"
-} {
-  "id": "hyd3",
-  "imgSource": "Thirsty",
-  "cardTitle": "Hydration levels are low, drink some water to prevent de-hydration!",
-  "showOnce": false,
-  "duration": 10,
-  "type": "help"
-} {
-  "id": "nut1",
-  "imgSource": ,
-  "cardTitle": "Nutrition",
-  "desc": ,
-  "showOnce": false,
-  "duration": 10,
+    "id": "hyd1",
+    "imgSource": "",
+    "cardTitle": "Hydration",
+    "desc": "Staying hydrated is important for being healthy and maintaining bodily functions. Without water your body is unable to pass nutrients around the body, your muscles wouldn't be able to function and your brain and heart would stop working! Some pretty serious stuff! It is recommended to drink 1 - 1.5 litres of water a day depending on the air temperature and the amount of exercise you've done! But be careful, drinking too much water can have some pretty bad consequences too.",
+    "showOnce": true,
+    "duration": 30,
+    "type": "educational",
+  },
+  {
+    "id": "hyd2",
+    "imgSource": "",
+    "cardTitle": "De-hydrated",
+    "desc": "Your hydration levels are at zero, drink some water!",
+    "showOnce": false,
+    "duration": 10,
+    "type": "help"
+  },
+  {
+    "id": "hyd3",
+    "imgSource": "",
+    "cardTitle": "Thirsty",
+    "desc": "Hydration levels are low, drink some water to prevent de-hydration!",
+    "showOnce": false,
+    "duration": 10,
+    "type": "help"
+  },
+  {
+    "id": "nut1",
+    "imgSource": ,
+    "cardTitle": "Nutrition",
+    "desc": ,
+    "showOnce": false,
+    "duration": 10,
 
-}]
+  },
+  {
+    "id": "str1",
+    "imgSource": ,
+    "cardTitle": "Hungry",
+    "desc": "Your nutrition levels are getting low, eat something to prevent starvation!",
+    "showOnce": "false",
+    "duration": 10,
+    "type": "help",
+  },
+]
