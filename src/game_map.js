@@ -13,6 +13,8 @@ import DefenceTurret from './defence_turret';
 
 const TileSize = 192;
 
+let placeTurretSound = new Howl({src:'./res/sfx/place_turret.wav'});
+
 // This is likely to change. We store
 // the id of the tile and the image that
 // the tile uses.
@@ -208,6 +210,7 @@ export class GameMap {
             const rad = (dummyTurret.radius / 2);
             this.addEntity(new DefenceTurret(x + this.cam.pos.x + rad, y + this.cam.pos.y + rad));
             this.placing = PlacingObjectType.Nothing;
+            placeTurretSound.play();
             return;
         }
 
