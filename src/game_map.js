@@ -6,7 +6,7 @@ import getResource from './image_loader';
 import GameOverState from './game_over_state';
 import WanderingBacteria from './bacteria';
 import Spawner from './spawner';
-import {Engine} from './engine';
+import {Engine, GameInfo} from './engine';
 import { ShieldPowerup } from './powerup';
 import PhagocyteBacteria from './phagocyte';
 import DefenceTurret from './defence_turret';
@@ -81,7 +81,7 @@ export class GameMap {
         // would represent a 4x2 map.
         this.tileData = [];
 
-        this.lipids = 0;
+        this.lipids = 100;
         this.hydration = 25;
         this.nutrition = 25;
 
@@ -142,11 +142,15 @@ export class GameMap {
         this.cis = new CentralImmuneSystem(cisX, cisY);
         this.addEntity(this.cis);
 
+        // gross hack but it works.
+        // we set the center of the map
+        // which is used for the random pathing
+        GameInfo.setCenterMap(cisX, cisY);
+
         Events.on(this.engine, 'collisionActive', (event) => {
             for (const body of event.pairs) {
                 const a = this.entities.get(body.bodyA);
                 const b = this.entities.get(body.bodyB);
-
                 a.hit(b);
                 b.hit(a);
             }
@@ -351,7 +355,7 @@ export class GameMap {
     }
 
     update() {
-        for (const [body, e] of this.entities) {
+        for (const [_, e] of this.entities) {
             // if we've died we want to remove the entity
             // from the game.
             if (e.health <= 0) {
@@ -398,7 +402,7 @@ export class GameMap {
 
         // we have to render the entities _after_
         // we render the tilemap.
-        for (const [body, e] of this.entities) {
+        for (const [_, e] of this.entities) {
             e.render(this.cam, ctx);
         }
 
@@ -406,7 +410,8 @@ export class GameMap {
         // we dothis since the spawners are only ever
         // rendered in debug so they must be visible over
         // the entity to be able to see them!
-        for (const spawner of this.spawners) {
+        for (let i = 0; i < this.spawners.length; i++) {
+            let spawner = this.spawners[i];
             spawner.render(this.cam, ctx);
         }
 

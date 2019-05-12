@@ -7,9 +7,9 @@ function breakText(ctx, text, x, y) {
     const lines = text.split('\n');
 
     const lineHeight = 30;
-    let i = 0;
-    for (const line of lines) {
-        ctx.fillText(line, x, y + (lineHeight * (i++)));
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        ctx.fillText(line, x, y + (lineHeight * i));
     }
 }
 

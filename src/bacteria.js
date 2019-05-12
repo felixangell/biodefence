@@ -39,7 +39,7 @@ class WanderingBacteria extends Entity {
         this.imgSil = getResource('bacteria_s.png');
 
         this.dirTimer = new Date().getTime();
-        super.changePath();
+        super.changePathHoming();
 
         this.img = this.imgSil;
     }
@@ -119,7 +119,7 @@ class WanderingBacteria extends Entity {
 
         const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
         if ((new Date().getTime() - this.dirTimer) > moveChangeTime * SECOND) {
-            super.changePath();
+            super.changePathHoming();
             this.dirTimer = new Date().getTime();
         }
     }

@@ -5,11 +5,7 @@ import Matter from 'matter-js';
 const turretNoise = new Howl({src:'./res/sfx/turret_select.wav', volume: 0.4});
 
 function euclidean(a, b) {
-    const ax = a.body.position.x;
-    const ay = a.body.position.y;
-    const bx = b.body.position.x;
-    const by = b.body.position.y;
-    return Math.sqrt((bx - ax) + (by - ay));
+    return Math.sqrt((b.x - a.x) + (b.y - a.y));
 }
 
 class DefenceTurret extends Entity {
@@ -61,7 +57,7 @@ class DefenceTurret extends Entity {
         if (this.currentTarget) {
             // work out the euclidean distance between the targets
             // and target the closest entity.
-            if (euclidean(this, this.currentTarget) > euclidean(this, other)) {
+            if (euclidean(this.body.position, this.currentTarget.body.position) > euclidean(this.body.position, other.body.position)) {
                 this.currentTarget = other;
             }
         } else {

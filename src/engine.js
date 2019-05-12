@@ -13,9 +13,23 @@ class Engine {
 
 let discovered = new Map();
 
+// the center x, y coords of the map
+let cx, cy;
 
 // global state is bad
 class GameInfo {
+    static setCenterMap(x, y) {
+        cx = x;
+        cy = y;
+    }
+
+    static getCenterMap() {
+        return {
+            x: cx,
+            y: cy,
+        };
+    }
+
     static isDiseaseIdentified(val) {
         return discovered.has(val);
     }

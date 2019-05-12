@@ -1,7 +1,7 @@
 import Matter, {Body} from 'matter-js';
 import getResource from './image_loader';
 import {Howl} from 'howler';
-import {Engine} from './engine';
+import {Engine, GameInfo} from './engine';
 
 // by default, _all_ entities have
 // a health of 100 unless specified otherwise.
@@ -12,6 +12,10 @@ let shieldUpSound = new Howl({src:'./res/sfx/shield_up.ogg'});
 let shieldDownSound = new Howl({src:'./res/sfx/shield_down.ogg'});
 
 let entityId = 0;
+
+function dist(a, b) {
+    return Math.sqrt((b.x - a.x) + (b.y - a.y));
+}
 
 function randRange(min, max) {
     return (Math.random() * (max - min)) + min;
@@ -81,14 +85,38 @@ class Entity {
     // entity other.
     hit(other) {}
 
-    // move in a random path
     changePath() {
-        // generate a random direction -1, to 1
-        const dir = randDirection();
+        let dir = randDirection();
+        // slow it down a bit
+        let xf = (this.body.mass * (dir.x * this.speed)) * 0.1;
+        let yf = (this.body.mass * (dir.y * this.speed)) * 0.1;
+
+        // apply the force
+        Body.applyForce(this.body, this.body.position, {
+            x: xf,
+            y: yf,
+        });
+    }
+
+    // move in a random path
+    changePathHoming() {
+        const center = GameInfo.getCenterMap();
+        const { x, y } = this.body.position;
+        
+        let dir = randDirection();
+        if (randRange(0, 100) > 90) {
+            let xd = Math.sign(center.x - x);
+            let yd = Math.sign(center.y - y);
+
+            dir = {
+                x: xd,
+                y: yd,
+            };
+        }
 
         // slow it down a bit
-        let xf = (this.body.mass * (dir.x * this.speed)) * randRange(-0.1, 0.1);
-        let yf = (this.body.mass * (dir.y * this.speed)) * randRange(-0.1, 0.1);
+        let xf = (this.body.mass * (dir.x * this.speed)) * 0.1;
+        let yf = (this.body.mass * (dir.y * this.speed)) * 0.1;
 
         // apply the force
         Body.applyForce(this.body, this.body.position, {
@@ -146,7 +174,7 @@ class Entity {
         const { x, y } = this.body.position;
 
         // maybe the bar height should be relative to the size of the entity?
-        const barHeight = 8;
+        const barHeight = 18;
         const barWidth = this.health;
 
         // calculate the x position for the bar to be rendered at
@@ -157,7 +185,13 @@ class Entity {
         const yPos = (y - (this.height / 2)) - cam.pos.y - (barHeight * 2);
         ctx.fillRect(xPos, yPos, barWidth, barHeight);
 
-        ctx.fillText(this.health, xPos, yPos);
+        // this is stupid but the api only returns the text
+        // width, apparently the letter 'M' is a good approximation
+        // of the height of all characters in the font set.
+        const metrics = ctx.measureText('M');
+
+        ctx.fillStyle = "#fff";
+        ctx.fillText(this.health.toFixed(2), xPos, yPos + barHeight - 2);
 
         // add a nice outline to the healthbar
         ctx.strokeStyle = "#000";

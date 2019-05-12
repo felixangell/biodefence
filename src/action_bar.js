@@ -90,7 +90,8 @@ class ActionBar {
     }
 
     update() {
-        for (const action of this.actions) {
+        for (let i = 0; i < this.actions.length; i++) {
+            const action = this.actions[i];
             action.update(this.mouseBounds);
         }
     }
@@ -113,9 +114,9 @@ class ActionBar {
         ctx.fillStyle = "#999";
         ctx.fillRect(xPos, yPos, barWidth, barHeight);
 
-        let i = 0;
-        for (const action of this.actions) {
-            const xOff = ((ACTION_ICON_SIZE + pad) * i++); 
+        for (let i = 0; i < this.actions.length; i++) {
+            const action = this.actions[i];
+            const xOff = ((ACTION_ICON_SIZE + pad) * i); 
             action.render(ctx, xPos + xOff + pad, yPos + pad);
         }
     }
