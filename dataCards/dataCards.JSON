@@ -32,8 +32,8 @@
     "id": "nut1",
     "imgSource": "",
     "cardTitle": "Nutrition",
-    "desc": "",
-    "showOnce": false,
+    "desc": "Keeping your body fed is an important part of being healthy! You should aim to have a mixed diet to ensure your body has all the nutrients. This means eating plenty of fruits and vegetables which provide vitamins, ensuring you eat carbohydrates like bread, potatoes, rice and pasta so your body has energy and eating foods that are high in protein like chicken, cheese and beans.",
+    "showOnce": true,
     "duration": 10,
     "type": "educational",
     "comment": "Should be activated near the beginning of the game"
@@ -44,7 +44,7 @@
     "imgSource": "",
     "cardTitle": "Hungry",
     "desc": "Your nutrition levels are getting low, eat something to prevent starvation!",
-    "showOnce": "false",
+    "showOnce": false,
     "duration": 10,
     "type": "help",
     "comment": "Should be activated when nutrition levels are considered low",
@@ -54,6 +54,7 @@
     "imgSource": "",
     "cardTitle": "Starving",
     "desc": "Your nutrition levels have reached zero! Your body is now starving and is unable to produce lipids. You need to eat something!",
+    "showOnce": false,
     "duration": 10,
     "type": "help",
     "comment": "Should be activated when nutrition == 0"
@@ -63,6 +64,7 @@
     "imgSource": "",
     "cardTitle": "Lipids",
     "desc": "Lipids are a type of molecule that your body uses as to construct cells. These cells are then used to repair your body and protect itself against bacteria caused by infection! Your body gains lipids by consuming foods that contain fat. Water is needed by the body to breakdown these fats so that lipids can be stored.",
+    "showOnce": true,
     "duration": 10,
     "type": "educational",
     "comment": "should be shown once the user has worked out how to drink water and eat food, could be based on age?"
@@ -72,8 +74,50 @@
     "imgSource": "",
     "cardTitle": "Auto Generated Lipids",
     "desc": "Lipids are gained automatically as long as the body is hydrated and has a good source of nutrients. The rate that lipids are generated are effected by how hydrated and nourished your body is, so make sure you're looking out for water and fat molecules around the map!",
+    "showOnce": true,
     "duration": 10,
     "type": "tutorial",
     "comment": "should be shown near the beginning of the game"
+  },
+  {
+    "id": "trt1",
+    "imgSource": "",
+    "cardTitle": "Turret",
+    "desc": "Turrets will fire a beam to zap and kill the nearest bacteria! Turrets cost lipids to build and can be placed anywhere on the map! Use these to protect the Central Immune System.",
+    "showOnce": true,
+    "duration": 10,
+    "type": "tutorial",
+    "comment": "should be shown once turrets are unlocked"
+  },
+  {
+    "id": "trt2",
+    "imgSource": "",
+    "cardTitle": "Killer T Cells",
+    "desc": "T Cells are produced by turrets. Often called Cytotoxic T Cells they are a type of white blood cells produced by the body that target infected cells, viruses and other damaged parts of the body. When paired with antigens they become particularly effective are removing infections and viruses!",
+    "showOnce": true,
+    "duration": 10,
+    "type": "educational",
+    "comment": "should be shown once user has placed first turret"
+  },
+  {
+    "id": "sld1",
+    "imgSource": "",
+    "cardTitle": "Shield",
+    "desc": "The shield is a buff that is placed on the Central Immune System. It grants the CIS 50 additional health points. Has a cost of 100 lipids.",
+    "showOnce": true,
+    "duration": 10,
+    "type": "tutorial",
+    "comment": "Should be shown once shields have been unlocked by the user"
+
+  },
+  {
+    "id": "sld2",
+    "imgSource": "",
+    "cardTitle": "Mucous Membranes",
+    "desc": "Mucous Membranes is a membrane that lines internal organs of the body and openings. The function of the membrane is to stop infections and dirt from entering the body and to prevent bodily tissues from becoming dehydrated. As well as around internal organs it can be found around the eyes, mouth and nostrils.",
+    "showOnce": true,
+    "duration": 10,
+    "type": "educational",
+    "comment": "Should be shown once user has bought first shield"
   }
 ]
