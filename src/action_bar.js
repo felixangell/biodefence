@@ -18,7 +18,7 @@ function circleIntersectsRect(circle,rect){
 const ACTION_ICON_SIZE = 64;
 
 class Action {
-    constructor(cost, name, eventTrigger) {
+    constructor(cost, name, eventTrigger, keyBind) {
         this.cost = cost;
         this.name = name;
         this.eventTrigger = eventTrigger;
@@ -26,6 +26,12 @@ class Action {
         
         this.handleClick = this.handleClick.bind(this);
         window.addEventListener('click', this.handleClick);
+
+        window.addEventListener('keypress', (evt) => {
+            if (String.fromCharCode(evt.keyCode) == keyBind) {
+                this.handleInvocation();
+            }
+        })
     }
 
     handleClick() {
@@ -78,8 +84,8 @@ class ActionBar {
         this.actions = [];
     }
     
-    registerAction(cost, name, eventTrigger) {
-        const action = new Action(cost, name, eventTrigger);
+    registerAction(cost, name, eventTrigger, keyBind) {
+        const action = new Action(cost, name, eventTrigger, keyBind);
         this.actions.push(action);
     };
     

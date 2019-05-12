@@ -67,11 +67,11 @@ class HUD {
         this.preview = null;
         this.actionBar = new ActionBar();
 
-        this.actionBar.registerAction(25, 'Antibody', 'deployAntibody');
-        this.actionBar.registerAction(100, 'Phagocyte', 'deployPhagocyte');
-        this.actionBar.registerAction(75, 'Killer T', 'deployKillerT');
-        this.actionBar.registerAction(100, 'Mucous Membranes', 'deployMucousMembranes');
-        this.actionBar.registerAction(25, 'Neutrophils', 'deployNeutrophils');
+        this.actionBar.registerAction(25, 'Antibody', 'deployAntibody', 'q');
+        this.actionBar.registerAction(100, 'Phagocyte', 'deployPhagocyte', 'w');
+        this.actionBar.registerAction(75, 'Killer T', 'deployKillerT', 'e');
+        this.actionBar.registerAction(100, 'Mucous Membranes', 'deployMucousMembranes', 'r');
+        this.actionBar.registerAction(25, 'Neutrophils', 'deployNeutrophils', 't');
 
         this.initNewLevel();
     }

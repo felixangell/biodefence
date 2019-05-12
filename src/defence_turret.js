@@ -34,7 +34,7 @@ class DefenceTurret extends Entity {
         // time alive + a slightly random offset
         // this is how we base the merging of bacteria
         this.timeAlive = new Date().getTime() - Math.random();
-        this.deathSound = null;
+        this.deathSound = new Howl({src:'./res/sfx/killert_death.wav'});
         this.img = getResource('defence_turret.png');
     }
 
@@ -91,27 +91,33 @@ class DefenceTurret extends Entity {
         const yPos = (y - (this.height / 2)) - cam.pos.y;
         ctx.drawImage(this.img, xPos, yPos, this.width, this.height);
 
-        const target = this.currentTarget;
-        if (target && target.health > 0) {
-            const { x, y } = target.body.position;
-
-            ctx.beginPath();
-            ctx.moveTo(xPos + (this.width / 2), yPos + (this.height / 2));
-            ctx.lineTo(x - cam.pos.x, y - cam.pos.y);
-            ctx.lineWidth = 4;
-            ctx.stroke();
-            
-            // delete the target every iteration
-            this.currentTarget = null;
-        } else {
+        ctx.fillStyle = "#ff0000";
+        {
             // NOTE This is a very gross hack to stop the weird line rendering
             // when we have no target.
             ctx.beginPath();
             ctx.moveTo(0, 0);
             ctx.lineTo(0, 0);
-            ctx.lineWidth = 0;
-            ctx.stroke();
+            ctx.closePath();
+            ctx.fill();
         }
+
+        const target = this.currentTarget;
+        if (target && target.health > 0) {
+            const { x, y } = target.body.position;
+
+            ctx.fillStyle = "#ff0000";
+
+            ctx.beginPath();
+            ctx.moveTo(xPos + (this.width / 2), yPos + (this.height / 2));
+            ctx.lineTo(x - cam.pos.x, y - cam.pos.y);
+            ctx.closePath();
+            ctx.fill();
+            
+            // delete the target every iteration
+            this.currentTarget = null;
+        }
+
         ctx.lineWidth = 1;
 
         // render the radius bounding box
