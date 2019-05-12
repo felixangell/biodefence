@@ -1,8 +1,21 @@
 import {Howl} from 'howler';
 import Entity from "./entity";
+import {Body} from 'matter-js';
 import getResource from './image_loader';
+import { GameInfo } from './engine';
 
 let deadAntibodySound = new Howl({src:'./res/sfx/antibody_die.ogg'})
+
+function randRange(min, max) {
+    return (Math.random() * (max - min)) + min;
+}
+
+function randDirection() {
+    return {
+        x: randRange(-1.0, 1.0),
+        y: randRange(-1.0, 1.0),
+    };
+}
 
 class Antibody extends Entity {
     constructor(x, y) {
@@ -19,14 +32,55 @@ class Antibody extends Entity {
         this.timeAlive = new Date().getTime() - Math.random();
         this.deathSound = deadAntibodySound;
         this.img = getResource('antibody.png');
+    
+        this.dirTimer = new Date().getTime();
+        this.changePath();    
+    }
+
+    changePath() {
+        // generate a random direction -1, to 1
+        const dir = randDirection();
+
+        // slow it down a bit!
+        let xf = (this.body.mass * (dir.x * this.speed)) * randRange(-0.1, 0.1);
+        let yf = (this.body.mass * (dir.y * this.speed)) * randRange(-0.1, 0.1);
+        // apply the force
+        Body.applyForce(this.body, this.body.position, {
+            x: xf,
+            y: yf,
+        });
     }
 
     update() {
         super.update();
+
+        const moveChangeTime = 0.3;
+
+        const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
+        if ((new Date().getTime() - this.dirTimer) > moveChangeTime * SECOND) {
+            this.changePath();
+            this.dirTimer = new Date().getTime();
+        }
     }
 
     hit(other) {
-        
+        const { tag } = other.body;
+        if (!tag) {
+            throw new Error('no such tag on body', other.body);
+        }
+
+        // friendly.
+        switch (tag) {
+        case 'turret':
+        case 'cis':
+        case 'phagocyte':
+            return;
+        }
+
+        if (!GameInfo.isDiseaseIdentified(tag)) {
+            GameInfo.discoverDisease(tag);
+        }
+        this.die();
     }
 
     render(cam, ctx) {

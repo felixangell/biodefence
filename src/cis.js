@@ -1,7 +1,7 @@
 import Entity from './entity';
 
 import getResource from './image_loader';
-import Engine from './engine';
+import {Engine} from './engine';
 
 let cisHitSound = new Howl({src:'./res/sfx/cis_hit_sound.wav', volume:0.8});
 

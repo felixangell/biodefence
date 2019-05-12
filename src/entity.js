@@ -1,7 +1,7 @@
 import Matter from 'matter-js';
 import getResource from './image_loader';
 import {Howl} from 'howler';
-import Engine from './engine';
+import {Engine} from './engine';
 
 // by default, _all_ entities have
 // a health of 100 unless specified otherwise.

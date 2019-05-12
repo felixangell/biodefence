@@ -1,6 +1,6 @@
 import InfoCard from './info_card';
 import ActionBar from './action_bar';
-import Engine from './engine';
+import {Engine} from './engine';
 
 // card duration in seconds
 // how long it will be in the notif bar for.

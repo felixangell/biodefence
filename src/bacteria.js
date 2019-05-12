@@ -3,6 +3,7 @@ import Entity from './entity';
 import {Body} from 'matter-js';
 import {Howl} from 'howler';
 import getResource from './image_loader';
+import { GameInfo } from './engine';
 
 let bacteriaSound = new Howl({src:'./res/sfx/bacteria_die1.ogg', volume: 0.6});
 let bacteriaMergeSound = new Howl({src:'./res/sfx/merge_sound.ogg', volume: 0.15});
@@ -97,7 +98,10 @@ class WanderingBacteria extends Entity {
             // so we dont deal damage here.
             break;
         case 'phagocyte':
-            this.health = 0;
+            this.die();
+            break;
+        case 'antibody':
+            this.die();
             break;
         default:
             alert(`unimplemented tag ${other.body.tag}...`);
@@ -125,6 +129,8 @@ class WanderingBacteria extends Entity {
 
     update() {
         super.update();
+
+        this.identified = GameInfo.isDiseaseIdentified(this.body.tag);
         
         if (this.identified) {
             this.baseDamage = this.damageWhenIdentified;

@@ -6,9 +6,10 @@ import GameOverState from './game_over_state';
 import WanderingBacteria from './bacteria';
 import Spawner from './spawner';
 import DefenceTurret from './defence_turret';
-import Engine from './engine';
+import {Engine} from './engine';
 import { ShieldPowerup } from './powerup';
 import PhagocyteBacteria from './phagocyte';
+import Antibody from './antibody';
 
 const TileSize = 192;
 
@@ -221,7 +222,9 @@ export class GameMap {
         if (!this.tryUseLipids(cost)) {
             return;
         }
-        
+
+        const { x, y } = this.cis.body.position;
+        this.addEntity(new Antibody(x, y));
         this.placing = true;
     }
 

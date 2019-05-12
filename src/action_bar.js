@@ -1,4 +1,4 @@
-import Engine from "./engine";
+import {Engine} from "./engine";
 
 function circleIntersectsRect(circle,rect){
     var distX = Math.abs(circle.x - rect.x-rect.w/2);
