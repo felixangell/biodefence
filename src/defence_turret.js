@@ -121,7 +121,8 @@ class DefenceTurret extends Entity {
         }
         ctx.lineWidth = 1;
 
-        if (window.sessionStorage.getItem('debug') === 'true') {
+        // render the radius bounding box
+        {
             ctx.strokeStyle = "#ff0000";
 
             // this is the radius bounding box

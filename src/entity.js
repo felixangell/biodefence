@@ -114,11 +114,14 @@ class Entity {
         const yPos = (y - (this.height / 2)) - cam.pos.y - (barHeight * 2);
         ctx.fillRect(xPos, yPos, barWidth, barHeight);
 
-        if (window.sessionStorage.getItem('debug') === 'true') {
-            ctx.fillStyle = "#ff00ff";
-            ctx.strokeRect(xPos, yPos, barWidth, barHeight);
-            ctx.stroke();
-        }
+        // add a nice outline to the healthbar
+        ctx.fillStyle = "#ff00ff";
+        ctx.strokeRect(xPos, yPos, barWidth, barHeight);
+        ctx.stroke();
+
+        // TODO(Felix): render the health vlaue
+        // health/max health
+        // inside the bar
     }
 }
 

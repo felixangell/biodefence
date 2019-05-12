@@ -138,10 +138,6 @@ class WanderingBacteria extends Entity {
 
         const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
         if ((new Date().getTime() - this.dirTimer) > moveChangeTime * SECOND) {
-            if (randRange(0, 500) > 450) {
-                this.identified = true;
-            }
-
             this.changePath();
             this.dirTimer = new Date().getTime();
         }
