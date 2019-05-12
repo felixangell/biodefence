@@ -5,7 +5,8 @@
     "desc": "Staying hydrated is important for being healthy and maintaining bodily functions. Without water your body is unable to pass nutrients around the body, your muscles wouldn't be able to function and your brain and heart would stop working! Some pretty serious stuff! It is recommended to drink 1 - 1.5 litres of water a day depending on the air temperature and the amount of exercise you've done! But be careful, drinking too much water can have some pretty bad consequences too.",
     "showOnce": true,
     "duration": 30,
-    "type": "educational"
+    "type": "educational",
+    "comment": "Should be activated near the beginning of the game"
   },
   {
     "id": "hyd2",
@@ -14,7 +15,8 @@
     "desc": "Your hydration levels are at zero, drink some water!",
     "showOnce": false,
     "duration": 10,
-    "type": "help"
+    "type": "help",
+    "comment": "Should be activated every time hydration == 0"
   },
   {
     "id": "hyd3",
@@ -23,7 +25,8 @@
     "desc": "Hydration levels are low, drink some water to prevent de-hydration!",
     "showOnce": false,
     "duration": 10,
-    "type": "help"
+    "type": "help",
+    "comment": "Should be activated when hydration levels are considered low"
   },
   {
     "id": "nut1",
@@ -31,7 +34,9 @@
     "cardTitle": "Nutrition",
     "desc": "",
     "showOnce": false,
-    "duration": 10
+    "duration": 10,
+    "type": "educational",
+    "comment": "Should be activated near the beginning of the game"
 
   },
   {
@@ -41,7 +46,8 @@
     "desc": "Your nutrition levels are getting low, eat something to prevent starvation!",
     "showOnce": "false",
     "duration": 10,
-    "type": "help"
+    "type": "help",
+    "comment": "Should be activated when nutrition levels are considered low",
   },
   {
     "id": "str2",
@@ -49,6 +55,25 @@
     "cardTitle": "Starving",
     "desc": "Your nutrition levels have reached zero! Your body is now starving and is unable to produce lipids. You need to eat something!",
     "duration": 10,
-    "type": "help"
+    "type": "help",
+    "comment": "Should be activated when nutrition == 0"
+  },
+  {
+    "id": "lip1",
+    "imgSource": "",
+    "cardTitle": "Lipids",
+    "desc": "Lipids are a type of molecule that your body uses as to construct cells. These cells are then used to repair your body and protect itself against bacteria caused by infection! Your body gains lipids by consuming foods that contain fat. Water is needed by the body to breakdown these fats so that lipids can be stored.",
+    "duration": 10,
+    "type": "educational",
+    "comment": "should be shown once the user has worked out how to drink water and eat food, could be based on age?"
+  },
+  {
+    "id": "lip2",
+    "imgSource": "",
+    "cardTitle": "Auto Generated Lipids",
+    "desc": "Lipids are gained automatically as long as the body is hydrated and has a good source of nutrients. The rate that lipids are generated are effected by how hydrated and nourished your body is, so make sure you're looking out for water and fat molecules around the map!",
+    "duration": 10,
+    "type": "tutorial",
+    "comment": "should be shown near the beginning of the game"
   }
 ]
