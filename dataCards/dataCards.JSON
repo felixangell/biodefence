@@ -47,7 +47,7 @@
     "showOnce": false,
     "duration": 10,
     "type": "help",
-    "comment": "Should be activated when nutrition levels are considered low",
+    "comment": "Should be activated when nutrition levels are considered low"
   },
   {
     "id": "str2",
@@ -144,10 +144,42 @@
     "id": "tbc1",
     "imgSource": "",
     "cardTitle": "Tuberculosis",
-    "desc": "Tuberculosis is a bacteria that can be found in the lungs that can cause chest pains and a bad cough. The immune system normally can deal with this bacteria istelf but also can de deadly.",
+    "desc": "Tuberculosis is a bacteria that can be found in the lungs that can cause chest pains and a bad cough. The immune system normally can deal with this bacteria itself but also can de deadly.",
     "showOnce": true,
     "duration": 10,
     "type": "educational",
     "comment": "Should be shown when the user first identifies this bacteria"
+  },
+  {
+    "id": "atb1",
+    "imgSource": "",
+    "cardTitle": "Antibody",
+    "desc": "Antibodies are units that can be purchased with 10 lipids and can patrol part of the map. They are used to identify unknown types of bacteria. Once a type of bacteria is identified by an antibody all bacteria of the same type are shown on the map. Sending an antibody to a known bacteria will destroy the bacteria. The antibody unit will die when it destroys or identifies a type of bacteria.",
+    "showOnce": true,
+    "duration": 10,
+    "type": "tutorial",
+    "comment": "Should be shown when antibodies are first unlocked"
+  },
+  {
+    "id": "pgy1",
+    "imgSource": "",
+    "cardTitle": "Phagocyte",
+    "desc": "Deployed by the Central Immune System, this unit patrols an area looking for any known bacteria. If it comes into contact with any known bacteria it eats the bacteria. This causes both the Phagocyte to take damage and grow inside. Costs 100 lipids to create.",
+    "showOnce": true,
+    "duration": 10,
+    "type": "tutorial",
+    "comment": "Should be shown when phagocyte is first unlocked"
+
+  },
+  {
+    "id": "ntp1",
+    "imgSource": "",
+    "cardTitle": "Neutrophils",
+    "desc": "Basic unit that attacks bacteria on the map. It dies after killing 5 bacteria and costs 10 lipids to create.",
+    "showOnce": true,
+    "duration": 10,
+    "type": "tutorial",
+    "comment": "Should be shown when neutrophils is first unlocked"
   }
+
 ]
