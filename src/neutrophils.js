@@ -85,6 +85,8 @@ class NeutrophilsBacteria extends Entity {
             // the turret will shoot a bullet at this bacteria
             // so we dont deal damage here.
             break;
+        case 'water_droplet': break;
+        case 'food_droplet': break;
         default:
             console.log('unimplemented tag!', other.body.tag);
             this.damaged(other.damage);

@@ -84,7 +84,9 @@ class SalmonellaBacteria extends Entity {
         case 'salmonella': break;
         case 'tuberculosis': break;
         case 'chickenpox': break;
-        
+        case 'water_droplet': break;
+        case 'food_droplet': break;
+
         case 'turret':
             // the turret will shoot a bullet at this bacteria
             // so we dont deal damage here.

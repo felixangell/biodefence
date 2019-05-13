@@ -64,6 +64,8 @@ class CommonColdBacteria extends Entity {
         case 'common_cold': break;
         case 'salmonella': break;
         case 'tuberculosis': break;
+        case 'water_droplet': break;
+        case 'food_droplet': break;
 
         case 'turret':
             // the turret will shoot a bullet at this bacteria

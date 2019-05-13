@@ -132,7 +132,8 @@ window.onload = async () => {
         'default_icon.png', 'unidentified_icon.png',
         'phagocyte.png',
         'salmonella.png', 'salmonella_s.png',
-        'tuberculosis.png', 'tuberculosis_s.png'
+        'tuberculosis.png', 'tuberculosis_s.png', 'water.png',
+        'food.png'
     ];
 
     await Engine.loadCards();

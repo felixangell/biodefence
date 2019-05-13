@@ -10,10 +10,15 @@ import {Engine, GameInfo} from './engine';
 import { ShieldPowerup } from './powerup';
 import PhagocyteBacteria from './phagocyte';
 import DefenceTurret from './defence_turret';
+import WaterDroplet from './water_droplet';
+import FoodDroplet from './food_droplet';
 
 const TileSize = 192;
 
 let placeTurretSound = new Howl({src:'./res/sfx/place_turret.wav'});
+
+const waterDropletMax = 50;
+const foodDropletMax = 50;
 
 // This is likely to change. We store
 // the id of the tile and the image that
@@ -104,6 +109,7 @@ export class GameMap {
             width: this.width * TileSize,
             height: this.height * TileSize,
         };
+        this.mapDimension = mapDimension;
         this.cam = new Camera(viewport, mapDimension);
 
         this.spawners = [];
@@ -162,11 +168,7 @@ export class GameMap {
         // default to focus on the CIS.
         this.focusOnCIS();
 
-        /*
-                this.addEntity(new DefenceTurret(cisX + 400, cisY - 400));
-        this.addEntity(new DefenceTurret(cisX - 400, cisY - 400));
-        this.addEntity(new DefenceTurret(cisX - 400, cisY + 400));
-*/
+        this.dropletTimer = new Date().getTime();
 
         Engine.listenFor('cisTakenDamage', () => {
             this.decreaseNutrition(20);
@@ -191,8 +193,37 @@ export class GameMap {
         this.deployMucousMembranes = this.deployMucousMembranes.bind(this);
         Engine.listenFor('deployMucousMembranes', this.deployMucousMembranes);
 
+        this.eatFood = this.eatFood.bind(this);
+        Engine.listenFor('eatFood', this.eatFood);
+        this.drinkWater = this.drinkWater.bind(this);
+        Engine.listenFor('drinkWater', this.drinkWater);
+
         this.handleMouseClick = this.handleMouseClick.bind(this);
         window.addEventListener('click', this.handleMouseClick);
+
+        this.foodCount = 0;
+        this.waterCount = 0;
+
+        // spawn rand 0 to 50 droplets.
+        for (let i = 0; i < randRange(0, 50); i++) {
+            this.spawnDroplets();
+        }
+    }
+
+    drinkWater() {
+        const amount = 15;
+        this.hydration += amount;
+        if (this.hydration >= 100) {
+            this.hydration = 100;
+        }
+    }
+
+    eatFood() {
+        const amount = 15;
+        this.nutrition += amount;
+        if (this.nutrition >= 100) {
+            this.nutrition = 100;
+        }
     }
 
     decreaseHydration(by) {
@@ -202,7 +233,10 @@ export class GameMap {
         } else if (this.hydration <= 50) {
             Engine.emit('queueInfoCard', 'hyd3');
         }
-        this.hydration -= Math.min(by, this.hydration);
+        this.hydration -= by;
+        if (this.hydration <= 0) {
+            this.hydration = 0;
+        }
     }
 
     decreaseNutrition(by) {
@@ -212,7 +246,10 @@ export class GameMap {
         } else if (this.nutrition <= 50) {
             Engine.emit('queueInfoCard', 'str1');
         }
-        this.nutrition -= Math.min(by, this.nutrition);
+        this.nutrition -= by;
+        if (this.nutrition <= 0) {
+            this.nutrition = 0;
+        }
     }
 
     handleMouseClick() {
@@ -360,13 +397,20 @@ export class GameMap {
     }
 
     removeEntity(e) {
+        if (e.body.tag == 'water_droplet') {
+            this.waterCount--;
+        }
+        if (e.body.tag == 'food_droplet') {
+            this.foodCount--;            
+        }
+        
         // NASTY ISH HACK.
         // gross check here to see if the CIS died.
         // 
         // basically when the CIS dies, we start a timer
         // to let the explosion sound finish
         // before we jump right into the death state.
-        if (e.constructor.name === 'CentralImmuneSystem') {
+        if (e.body.tag === 'cis') {
             this.gameOverTimer = new Date().getTime();
         }
 
@@ -377,6 +421,21 @@ export class GameMap {
     tickSpawners() {
         for (let spawner of this.spawners) {
             spawner.doTick();
+        }
+    }
+
+    spawnDroplets() {
+        if (this.waterCount < waterDropletMax) {
+            const x = randRange(0, this.mapDimension.width);
+            const y = randRange(0, this.mapDimension.height);
+            this.addEntity(new WaterDroplet(x, y));
+            this.waterCount++;
+        }
+        if (this.foodCount < foodDropletMax) {
+            const x = randRange(0, this.mapDimension.width);
+            const y = randRange(0, this.mapDimension.height);
+            this.addEntity(new FoodDroplet(x, y));
+            this.foodCount++;
         }
     }
 
@@ -393,11 +452,18 @@ export class GameMap {
             }
         }
 
+        const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
+
+        const dur = 1.5;
+        if ((new Date().getTime() - this.dropletTimer) > dur * SECOND) {
+            this.spawnDroplets();
+            this.dropletTimer = new Date().getTime();
+        }
+
         // if we have a gameover timer set,
         // wait for 15 seconds to pass and then
         // transition into the gameover state.
         if (this.gameOverTimer) {
-            const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
             if ((new Date().getTime() - this.gameOverTimer) > 5 * SECOND) {
                 this.stateManager.requestState(new GameOverState());
             }
@@ -452,7 +518,9 @@ export class GameMap {
             ctx.drawImage(image, x - (image.width / 2), y - (image.height / 2));
         }
 
-        ctx.fillStyle = "#ffff00";
-        ctx.fillText(`${camTx}, ${camTy}, entities: ${this.entities.size}, bodies: ${this.engine.world.bodies.length}`, 128, 128);
+        if (window.sessionStorage.getItem('debug') === 'true') {
+            ctx.fillStyle = "#ffff00";
+            ctx.fillText(`${camTx}, ${camTy}, entities: ${this.entities.size}, bodies: ${this.engine.world.bodies.length}`, 128, 128);
+        }
     }
 }

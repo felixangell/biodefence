@@ -112,9 +112,8 @@ class CentralImmuneSystem extends Entity {
             GameInfo.contractDisease(tag);
         }
 
-        Engine.emit('cisTakenDamage');
-
         if (!this.immunities.has(tag)) {
+            Engine.emit('cisTakenDamage');
             this.damaged(other.damage);
         }
     }

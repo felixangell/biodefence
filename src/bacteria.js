@@ -78,6 +78,9 @@ class WanderingBacteria extends Entity {
         case 'common_cold': break;
         case 'tuberculosis': break;
         case 'salmonella': break;
+        case 'water_droplet': break;
+        case 'food_droplet': break;
+
         case 'germ':
             if (this.size >= other.size && this.timeAlive > other.timeAlive) {
                 other.silentlyDie();

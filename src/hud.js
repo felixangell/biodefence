@@ -1,4 +1,3 @@
-import InfoCard from './info_card';
 import ActionBar from './action_bar';
 import {Engine} from './engine';
 
@@ -15,7 +14,7 @@ const DEFAULT_CARD_DURATION = 4;
 // cards which pop up on the screen to explain something to the player.
 
 function lookupAgeInterval(age) {
-    const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
+    const SECOND = 500;
     if (age > 40) {
         return 10 * SECOND;
     }
