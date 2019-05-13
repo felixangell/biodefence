@@ -99,7 +99,6 @@ class Spawner {
                 if (this.map.age < 5) {
                     this.spawn(new ChickenPoxBacteria(x, y));
                 } else if (randRange(0, 100000) > 99000) {
-                    alert('spawning chicken pox');
                     this.spawn(new ChickenPoxBacteria(x, y));
                 }
             }

@@ -64,8 +64,8 @@ function lookupTile(id) {
 let useActionSound = new Howl({src:'./res/sfx/use_action.wav', volume:0.6});
 
 const PlacingObjectType = Object.freeze({
-    Antibody: {image: getResource('antibody.png')},
-    KillerT: {image: getResource('defence_turret.png')},
+    Antibody: {image: 'antibody.png'},
+    KillerT: {image: 'defence_turret.png'},
     Nothing: {},
 });
 
@@ -169,8 +169,8 @@ export class GameMap {
 */
 
         Engine.listenFor('cisTakenDamage', () => {
-            this.nutrition -= Math.min(20, this.nutrition);
-            this.hydration -= Math.min(20, this.hydration);
+            this.decreaseNutrition(20);
+            this.decreaseHydration(20);
         });
 
         Engine.listenFor('cheatmode', () => {
@@ -195,6 +195,26 @@ export class GameMap {
         window.addEventListener('click', this.handleMouseClick);
     }
 
+    decreaseHydration(by) {
+        if (this.hydration <= 0) {
+            Engine.emit('queueInfoCard', 'hyd2');
+            return;
+        } else if (this.hydration <= 50) {
+            Engine.emit('queueInfoCard', 'hyd3');
+        }
+        this.hydration -= Math.min(by, this.hydration);
+    }
+
+    decreaseNutrition(by) {
+        if (this.nutrition <= 0) {
+            Engine.emit('queueInfoCard', 'str2');
+            return;
+        } else if (this.nutrition <= 50) {
+            Engine.emit('queueInfoCard', 'str1');
+        }
+        this.nutrition -= Math.min(by, this.nutrition);
+    }
+
     handleMouseClick() {
         if (!this.mouseBounds) {
             return;
@@ -208,6 +228,7 @@ export class GameMap {
         case PlacingObjectType.Antibody:
             this.addEntity(new Antibody(x + this.cam.pos.x, y + this.cam.pos.y));
             this.placing = PlacingObjectType.Nothing;
+            Engine.emit('queueInfoCard', 'atb1');
             return;
         case PlacingObjectType.KillerT:
             // this is because of the gross bounding box hack that needs to be fixed but cba
@@ -216,6 +237,7 @@ export class GameMap {
             this.addEntity(new DefenceTurret(x + this.cam.pos.x + rad, y + this.cam.pos.y + rad));
             this.placing = PlacingObjectType.Nothing;
             placeTurretSound.play();
+            Engine.emit('queueInfoCard', 'trt2');
             return;
         }
 
@@ -244,6 +266,7 @@ export class GameMap {
         }
         // TODO shield duration?
         this.addPowerup(new ShieldPowerup(5));
+        Engine.emit('queueInfoCard', 'sld2');
     }
 
     deployKillerT() {
@@ -264,6 +287,7 @@ export class GameMap {
         // TODO spawn this around the CIS rather than on top of
         const { x, y } = this.cis.body.position;
         this.addEntity(new PhagocyteBacteria(x, y));
+        Engine.emit('queueInfoCard', 'pgy1');
     }
 
     deployAntibody() {
@@ -276,6 +300,7 @@ export class GameMap {
     }
 
     onAgeIncrease(newAge) {
+        
     }
 
     spawnBacteria() {
@@ -356,6 +381,8 @@ export class GameMap {
     }
 
     update() {
+        Engine.emit('queueInfoCard', 'hyd1');
+
         for (const [_, e] of this.entities) {
             // if we've died we want to remove the entity
             // from the game.
@@ -419,7 +446,7 @@ export class GameMap {
         if (this.placing != PlacingObjectType.Nothing) {
             const { x, y } = this.mouseBounds;
 
-            const image = this.placing.image;
+            const image = getResource(this.placing.image);
 
             ctx.fillStyle = "#ff00ff";
             ctx.drawImage(image, x - (image.width / 2), y - (image.height / 2));

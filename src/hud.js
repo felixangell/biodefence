@@ -70,6 +70,9 @@ class HUD {
         this.actionBar.registerAction(100, 'Mucous Membranes', 'deployMucousMembranes', 'r');
         this.actionBar.registerAction(25, 'Neutrophils', 'deployNeutrophils', 't');
 
+        this.queueInfoCard = this.queueInfoCard.bind(this);
+        Engine.listenFor('queueInfoCard', this.queueInfoCard);
+
         this.initNewLevel();
     }
 
@@ -82,18 +85,20 @@ class HUD {
     }
 
     gainedPowerup(powerup) {
-        this.queueInfoCard(new InfoCard({
-            id: 6969,
-            title: 'Gained a powerup!!',
-            desc: '',
-            duration: DEFAULT_CARD_DURATION,
-        }));
+        // queue info card
     }
 
-    queueInfoCard(card) {
-        const { data } = card;
+    queueInfoCard(event) {
+        const key = event.detail;
 
-        const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
+        const cardInfo = Engine.getInfoCard(key);
+        if (!cardInfo) {
+            throw new Error('no such info card', key);
+        }
+
+        const { data } = cardInfo;
+
+        const SECOND = 1000;
 
         // this is for rate limiting the cards just incase
         // we spam the queue.
@@ -114,11 +119,11 @@ class HUD {
         // card is only supposed to be shown once
         // and has already been seen...
         if (data.showOnce && this.seenCards.has(data.id)) {
-            // let's get outta here!
+            // console.log('card', card.data.id, ' has already been shown');
             return;
         }
 
-        this.infoCards.push(card);
+        this.infoCards.push(cardInfo);
         // register card as seen ONLY if it's shown once
         // so we dont keep track of useless cards
         if (data.showOnce) {
@@ -161,13 +166,6 @@ class HUD {
             this.initNewLevel();
             
             this.map.age++;
-            this.queueInfoCard(new InfoCard({
-                id: randRange(0, 10000),
-                title: 'older!',
-                desc: `Happy ${this.map.age} birthday!`,
-                duration: DEFAULT_CARD_DURATION,
-            }));
-
             this.ageTimer = new Date().getTime();
         }
     }
@@ -209,6 +207,11 @@ class HUD {
         const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
         if ((new Date().getTime() - this.lipidTimer) > lipidGenerationRate * SECOND) {
             this.map.lipids += lipidAmount;
+            
+            if (this.map.lipids > 150) {
+                Engine.emit('queueInfoCard', 'lip2');
+            }
+
             this.lipidTimer = new Date().getTime();
         }
     }
@@ -219,8 +222,8 @@ class HUD {
     live() {
         // for now we just deteriorate by a random ish 
         // small value.
-        this.map.hydration -= Math.random();
-        this.map.nutrition -= Math.random() * 0.01;
+        this.map.decreaseHydration(Math.random());
+        this.map.decreaseNutrition(Math.random());
 
         // clamp the values so they can't go below zero.
         this.map.hydration = Math.max(0, this.map.hydration);
@@ -228,11 +231,10 @@ class HUD {
     }
 
     infoCardTriggers() {
-        const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
+        const SECOND = 1000;
         // delete the card after {cardDefaultDuration} seconds.
         for (const [key, card] of this.currentCard) {
-            if ((new Date().getTime() - card.timer) > (card.data.duration * SECOND)) {
-                // console.log('deleting ', card.data, ' after ', card.data.duration * SECOND, 'ms');
+            if ((new Date().getTime() - card.timer) > (card.duration * SECOND)) {
                 this.currentCard.delete(card.uid);
             }
         }
@@ -288,11 +290,14 @@ class HUD {
 
         this.renderStats(ctx);
 
-        let iter = 0;
+        const pad = 50;
+        let accumHeight = 0;
         for (const [uid, card] of this.currentCard) {
-            const pad = 50;
-            card.render(ctx, width - card.width - pad, (height) - ((card.height + pad) * iter));
-            iter++;
+            accumHeight += card.height + pad;
+
+            const xPos = width - card.width - pad;
+            const yPos = height - accumHeight;
+            card.render(ctx, xPos, yPos);
         }
 
         this.actionBar.render(ctx);

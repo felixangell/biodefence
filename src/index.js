@@ -1,6 +1,8 @@
 import MenuState from './menu_state';
 import { StateManager, State } from './state';
 import GameState from './game_state';
+import { Engine } from './engine';
+import { loadResource } from './image_loader';
 
 const debug = true;
 
@@ -120,27 +122,27 @@ class Game {
     }
 }
 
-window.onload = () => {
-    // FIXME this can be cleaner!
-    Promise.resolve(() => {
-        getResource('cis.png');
-        getResource('cis_shielded.png');
-        getResource('ground_tile.jpg');
-        getResource('bacteria.png');
-        getResource('bacteria_s.png');
+window.onload = async () => {
+    const resources = [
+        'cis.png', 'cis_shielded.png', 'ground_tile.jpg',
+        'bacteria.png', 'bacteria_s.png',
+        'chickenpox.png', 'chickenpox_s.png',
+        'defence_turret.png', 'antibody.png', 'antibody_deploy.png',
+        'common_cold.png', 'common_cold_s.png',
+        'default_icon.png', 'unidentified_icon.png',
+        'phagocyte.png',
+        'salmonella.png', 'salmonella_s.png',
+        'tuberculosis.png', 'tuberculosis_s.png'
+    ];
+
+    await Engine.loadCards();
+
+    return Promise.all(
+        resources.map((res) => loadResource(res)),
+    ).then(() => {
+        let game = new Game();
+        game.start();
+    }, (fail) => {
+        console.log(fail);
     });
-
-    let game = new Game();
-    game.start();
-
-    /*
-
-    gameContainer.addEventListener('click', () => {
-        if (game != null) {
-            return;
-        }
-
-        console.log('starting game!');
-        context.resume();
-    });*/
 };
