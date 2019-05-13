@@ -23,7 +23,6 @@ function randRange(min, max) {
  */
 class Spawner {
     constructor(x, y, map) {
-        this.spawnRate = 0.1;
         this.x = x;
         this.y = y;
         this.map = map;
@@ -49,7 +48,7 @@ class Spawner {
 
         // the most amount of bacteria we can spawn
         // in the current tick
-        this.currSpawnLimit = 1;
+        this.currSpawnLimit = 3;
         this.maxSpawnLimit = 10;
     }
 

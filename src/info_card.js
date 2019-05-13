@@ -110,10 +110,7 @@ class InfoCard {
         // 8 sentences average? 6 words per sentence?
         // 3 is words per second
         this.duration = (((data.desc.length / 8)) / 6) * 3;
-
-        // timestamp when this card was initialized.
-        // this is used for clearing the notification queue
-        this.timer = new Date().getTime();
+        this.duration = Math.max(6, this.duration);
 
         const { width, height } = document.querySelector('#game-container');
         this.width = width / 4;

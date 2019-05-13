@@ -1,4 +1,5 @@
 import {Engine} from "./engine";
+import getImage from './image_loader';
 
 function circleIntersectsRect(circle,rect){
     var distX = Math.abs(circle.x - rect.x-rect.w/2);
@@ -18,11 +19,12 @@ function circleIntersectsRect(circle,rect){
 const ACTION_ICON_SIZE = 64;
 
 class Action {
-    constructor(cost, name, eventTrigger, keyBind) {
+    constructor(cost, name, eventTrigger, keyBind, iconImage='defence_turret.png') {
         this.cost = cost;
         this.name = name;
         this.eventTrigger = eventTrigger;
         this.selected = false;
+        this.iconImage = iconImage;
         
         this.handleClick = this.handleClick.bind(this);
         window.addEventListener('click', this.handleClick);
@@ -70,6 +72,8 @@ class Action {
         }
         ctx.fillRect(x, y, ACTION_ICON_SIZE, ACTION_ICON_SIZE);
 
+        ctx.drawImage(getImage(this.iconImage), x, y, ACTION_ICON_SIZE, ACTION_ICON_SIZE);
+
         ctx.fillStyle = "#fff";
         ctx.fillText(this.cost, x, y);
     }
@@ -84,8 +88,8 @@ class ActionBar {
         this.actions = [];
     }
     
-    registerAction(cost, name, eventTrigger, keyBind) {
-        const action = new Action(cost, name, eventTrigger, keyBind);
+    registerAction(cost, name, eventTrigger, keyBind, iconImage) {
+        const action = new Action(cost, name, eventTrigger, keyBind, iconImage);
         this.actions.push(action);
     };
     

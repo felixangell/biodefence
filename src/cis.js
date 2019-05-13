@@ -25,7 +25,7 @@ class HashSet {
 class CentralImmuneSystem extends Entity {
     constructor(x, y) {
         // gross hardcoded width, but hey ho
-        super(x, y, 213, 227, {
+        super(x, y, 213, 213, {
             isStatic: true,
             tag: 'cis',
         });

@@ -64,11 +64,11 @@ class HUD {
         this.preview = null;
         this.actionBar = new ActionBar();
 
-        this.actionBar.registerAction(25, 'Antibody', 'deployAntibody', 'q');
-        this.actionBar.registerAction(100, 'Phagocyte', 'deployPhagocyte', 'w');
-        this.actionBar.registerAction(75, 'Killer T', 'deployKillerT', 'e');
-        this.actionBar.registerAction(100, 'Mucous Membranes', 'deployMucousMembranes', 'r');
-        this.actionBar.registerAction(25, 'Neutrophils', 'deployNeutrophils', 't');
+        this.actionBar.registerAction(25, 'Antibody', 'deployAntibody', 'q', 'antibody.png');
+        this.actionBar.registerAction(100, 'Phagocyte', 'deployPhagocyte', 'w', 'phagocyte.png');
+        this.actionBar.registerAction(75, 'Killer T', 'deployKillerT', 'e', 'defence_turret.png');
+        this.actionBar.registerAction(100, 'Mucous Membranes', 'deployMucousMembranes', 'r', 'cis_shielded.png');
+        // this.actionBar.registerAction(25, 'Neutrophils', 'deployNeutrophils', 't', 'neutro');
 
         this.queueInfoCard = this.queueInfoCard.bind(this);
         Engine.listenFor('queueInfoCard', this.queueInfoCard);
@@ -130,9 +130,6 @@ class HUD {
             this.seenCards.set(data.id, true);
         }
 
-        // force clear the queue
-        const newCard = this.infoCards.shift();
-        this.currentCard.set(newCard.uid, newCard);
 
         // set the timer to start!
         this.infoCardTimer = new Date().getTime();
@@ -241,6 +238,15 @@ class HUD {
     }
 
     update() {
+        if ((this.infoCards.length > 0 && this.currentCard.size == 0) || this.infoCards.length >= 1 && this.currentCard.size < 2) {
+            // force clear the queue
+            const newCard = this.infoCards.shift();
+            // timestamp when this card was initialized.
+            // this is used for clearing the notification queue
+            newCard.timer = new Date().getTime();
+            this.currentCard.set(newCard.uid, newCard);
+        }
+        
         this.agePlayer();
         this.generateLipids();
         this.live();
