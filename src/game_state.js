@@ -35,7 +35,7 @@ class GameState extends State {
 
     init() {
         window.sessionStorage.setItem('debug', RELEASE_MODE ? 'false' : 'true');
-        window.sessionStorage.setItem('secondDuration', RELEASE_MODE ? '1000' : '50');
+        window.sessionStorage.setItem('secondDuration', RELEASE_MODE ? '1000' : '1000');
 
         Howler.volume(0.6);
         

@@ -83,8 +83,8 @@ export class GameMap {
 
         this.age = 0;
         this.lipids = 100;
-        this.hydration = 25;
-        this.nutrition = 25;
+        this.hydration = 70;
+        this.nutrition = 70;
 
         this.bodies = new Map();
 

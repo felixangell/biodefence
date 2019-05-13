@@ -222,8 +222,8 @@ class HUD {
     live() {
         // for now we just deteriorate by a random ish 
         // small value.
-        this.map.decreaseHydration(Math.random());
-        this.map.decreaseNutrition(Math.random());
+        this.map.decreaseHydration(Math.random() * 0.005);
+        this.map.decreaseNutrition(Math.random() * 0.005);
 
         // clamp the values so they can't go below zero.
         this.map.hydration = Math.max(0, this.map.hydration);
