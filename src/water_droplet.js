@@ -1,3 +1,4 @@
+import {Howl} from 'howler';
 import Entity from './entity';
 
 import {Body} from 'matter-js';
@@ -10,6 +11,8 @@ function getCursorPosition(canvas, event) {
     let y = event.clientY - rect.top;
     return {x:x, y:y, r: 15};
 }
+
+let dropSound = new Howl({src:'./res/sfx/droplet.wav', volume:0.4});
 
 function circleIntersectsRect(circle,rect){
     var distX = Math.abs(circle.x - rect.x-rect.w/2);
@@ -63,6 +66,7 @@ class WaterDroplet extends Entity {
         };
         if (circleIntersectsRect(pos, bounds)) {
             Engine.emit('drinkWater');
+            dropSound.play();
             this.die();
         }
     }

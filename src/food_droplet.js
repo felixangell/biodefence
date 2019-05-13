@@ -1,8 +1,11 @@
+import {Howl} from 'howler';
 import Entity from './entity';
 
 import {Body} from 'matter-js';
 import getResource from './image_loader';
 import { Engine } from './engine';
+
+let dropSound = new Howl({src:'./res/sfx/droplet.wav', volume:0.4});
 
 function getCursorPosition(canvas, event) {
     let rect = canvas.getBoundingClientRect();
@@ -63,6 +66,7 @@ class FoodDroplet extends Entity {
         };
         if (circleIntersectsRect(pos, bounds)) {
             Engine.emit('eatFood');
+            dropSound.play();
             this.die();
         }
     }

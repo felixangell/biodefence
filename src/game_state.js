@@ -4,7 +4,7 @@ import HUD from './hud';
 import { ShieldPowerup } from './powerup';
 import { Engine } from './engine';
 
-const RELEASE_MODE = false;
+const RELEASE_MODE = true;
 
 // return true if the rectangle and circle are colliding
 // this is used for the camera movement

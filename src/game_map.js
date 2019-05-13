@@ -216,6 +216,7 @@ export class GameMap {
         if (this.hydration >= 100) {
             this.hydration = 100;
         }
+        Engine.emit('queueInfoCard', 'lip1');
     }
 
     eatFood() {
@@ -224,6 +225,7 @@ export class GameMap {
         if (this.nutrition >= 100) {
             this.nutrition = 100;
         }
+        Engine.emit('queueInfoCard', 'lip1');
     }
 
     decreaseHydration(by) {
