@@ -45,8 +45,11 @@ class DefenceTurret extends Entity {
         // to attack.
         switch (other.body.tag) {
         // these are ok to kill!
-        case 'germ':
-            break;
+        case 'germ': break;
+        case 'chickenpox': break;
+        case 'salmonella': break;
+        case 'tuberculosis': break;
+        case 'common_cold': break;
 
         // any that aren't caught above we return from this
         // function

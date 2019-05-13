@@ -12,6 +12,7 @@ class Engine {
 };
 
 let discovered = new Map();
+let diseases = new Map();
 
 // the center x, y coords of the map
 let cx, cy;
@@ -30,7 +31,17 @@ class GameInfo {
         };
     }
 
+    static hasContractedDisease(val) {
+        return diseases.has(val);
+    }
+    static contractDisease(disease) {
+        return diseases.set(disease, true);
+    }
+
     static isDiseaseIdentified(val) {
+        if (window.sessionStorage.getItem('debug') === 'true') {
+            return true;
+        }
         return discovered.has(val);
     }
 

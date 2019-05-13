@@ -35,7 +35,7 @@ class GameState extends State {
 
     init() {
         window.sessionStorage.setItem('debug', RELEASE_MODE ? 'false' : 'true');
-        window.sessionStorage.setItem('secondDuration', RELEASE_MODE ? '1000' : '250');
+        window.sessionStorage.setItem('secondDuration', RELEASE_MODE ? '1000' : '50');
 
         Howler.volume(0.6);
         
@@ -49,6 +49,7 @@ class GameState extends State {
                 break;
             case 'l':
                 Engine.emit('cheatmode');
+                this.map.addPowerup(new ShieldPowerup(1000000000000000000));
                 break;
             case 'd':
                 // lol

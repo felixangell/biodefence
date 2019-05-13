@@ -11,13 +11,17 @@ let bacteriaMergeSound = new Howl({src:'./res/sfx/merge_sound.ogg', volume: 0.15
 const damageWhenUnidentified = 2;
 const damageWhenIdentified = 1;
 
-// WanderingBacteria will travel aimlessly 
-// through the map
-class WanderingBacteria extends Entity {
+const bacteriaSize = 36;
+
+/*
+    25% spawn rate?
+    increase the spawn rate of bacteria.
+*/
+class CommonColdBacteria extends Entity {
     constructor(x, y) {
-        super(x, y, 48, 43, {
+        super(x, y, bacteriaSize, bacteriaSize, {
             isStatic: false,
-            tag: 'germ',
+            tag: 'common_cold',
         });
         this.identified = false;
 
@@ -35,8 +39,8 @@ class WanderingBacteria extends Entity {
 
         this.deathSound = bacteriaSound;
 
-        this.defaultImage = getResource('bacteria.png');
-        this.imgSil = getResource('bacteria_s.png');
+        this.defaultImage = getResource('common_cold.png');
+        this.imgSil = getResource('common_cold_s.png');
 
         this.dirTimer = new Date().getTime();
         super.changePathHoming();
@@ -48,45 +52,19 @@ class WanderingBacteria extends Entity {
         this.health = 0;
     }
 
-    grow() {
-        if (this.scaleCount >= this.maxScale) {
-            // we're too big!
-            return;
-        }
-
-        // we only play the merge sound after
-        // the first merge. 
-        if (this.scaleCount > 1) {
-            bacteriaMergeSound.play();
-        }
-
-        this.size += 0.15;
-
-        this.width *= this.size;
-        this.height *= this.size;
-        Body.scale(this.body, this.size, this.size);
-        this.scaleCount++;
-    }
-
     hit(other) {
         switch (other.body.tag) {
         case 'cis':
             this.silentlyDie();
             break;
 
+        // NOOP for 'friendlies'
         case 'chickenpox': break;
+        case 'germ': break;
         case 'common_cold': break;
-        case 'tuberculosis': break;
         case 'salmonella': break;
-        case 'germ':
-            if (this.size >= other.size && this.timeAlive > other.timeAlive) {
-                other.silentlyDie();
-                this.grow();
-            } else if (this.timeAlive >= other.timeAlive) {
-                other.silentlyDie();
-                this.grow();
-            }
-            break;
+        case 'tuberculosis': break;
+
         case 'turret':
             // the turret will shoot a bullet at this bacteria
             // so we dont deal damage here.
@@ -150,4 +128,4 @@ class WanderingBacteria extends Entity {
     }
 }
 
-export default WanderingBacteria;
+export default CommonColdBacteria;

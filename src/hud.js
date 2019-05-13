@@ -39,9 +39,6 @@ function randRange(min, max) {
 
 class HUD {
     constructor(gameMap) {
-        // age starts at 0
-        this.age = 0;
-
         this.map = gameMap;
 
         this.entityAdded = this.entityAdded.bind(this);
@@ -143,13 +140,13 @@ class HUD {
     // this is invoked everytime we age.
     // on age, we spawn more enemies, etc.
     initNewLevel() {
-        this.map.onAgeIncrease(this.age);
+        this.map.onAgeIncrease(this.map.age);
         this.map.tickSpawners();    
     }
 
     agePlayer() {
         // get the interval for the current age.
-        const ageInterval = lookupAgeInterval(this.age);
+        const ageInterval = lookupAgeInterval(this.map.age);
 
         // TODO/DOCS spawn this at random times
         // and then pick a random duration for the shield
@@ -163,11 +160,11 @@ class HUD {
         if ((new Date().getTime() - this.ageTimer) > (ageInterval)) {
             this.initNewLevel();
             
-            this.age++;
+            this.map.age++;
             this.queueInfoCard(new InfoCard({
                 id: randRange(0, 10000),
                 title: 'older!',
-                desc: `Happy ${this.age} birthday!`,
+                desc: `Happy ${this.map.age} birthday!`,
                 duration: DEFAULT_CARD_DURATION,
             }));
 
@@ -267,7 +264,7 @@ class HUD {
         ctx.fillRect(0, 0, width, panelHeight);
 
         let properties = {
-            'age': this.age,
+            'age': this.map.age,
             'hydration': this.map.hydration.toFixed(2),
             'nutrition': this.map.nutrition.toFixed(2),
             'lipids': this.map.lipids,

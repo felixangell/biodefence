@@ -11,13 +11,17 @@ let bacteriaMergeSound = new Howl({src:'./res/sfx/merge_sound.ogg', volume: 0.15
 const damageWhenUnidentified = 2;
 const damageWhenIdentified = 1;
 
-// WanderingBacteria will travel aimlessly 
-// through the map
-class WanderingBacteria extends Entity {
+const bacteriaSize = 36 * 2;
+
+/*
+    Can spawn bad foods/waters that take away
+    hydration/nutrition
+*/
+class SalmonellaBacteria extends Entity {
     constructor(x, y) {
-        super(x, y, 48, 43, {
+        super(x, y, bacteriaSize, bacteriaSize, {
             isStatic: false,
-            tag: 'germ',
+            tag: 'salmonella',
         });
         this.identified = false;
 
@@ -35,8 +39,8 @@ class WanderingBacteria extends Entity {
 
         this.deathSound = bacteriaSound;
 
-        this.defaultImage = getResource('bacteria.png');
-        this.imgSil = getResource('bacteria_s.png');
+        this.defaultImage = getResource('salmonella.png');
+        this.imgSil = getResource('salmonella_s.png');
 
         this.dirTimer = new Date().getTime();
         super.changePathHoming();
@@ -73,20 +77,14 @@ class WanderingBacteria extends Entity {
         case 'cis':
             this.silentlyDie();
             break;
-
-        case 'chickenpox': break;
+        
+        // NOOP for 'friendlies'
+        case 'germ': break;
         case 'common_cold': break;
-        case 'tuberculosis': break;
         case 'salmonella': break;
-        case 'germ':
-            if (this.size >= other.size && this.timeAlive > other.timeAlive) {
-                other.silentlyDie();
-                this.grow();
-            } else if (this.timeAlive >= other.timeAlive) {
-                other.silentlyDie();
-                this.grow();
-            }
-            break;
+        case 'tuberculosis': break;
+        case 'chickenpox': break;
+        
         case 'turret':
             // the turret will shoot a bullet at this bacteria
             // so we dont deal damage here.
@@ -150,4 +148,4 @@ class WanderingBacteria extends Entity {
     }
 }
 
-export default WanderingBacteria;
+export default SalmonellaBacteria;

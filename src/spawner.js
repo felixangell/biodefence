@@ -1,5 +1,10 @@
 import WanderingBacteria from "./bacteria";
 import Antibody from './antibody';
+import CommonColdBacteria from "./common_cold";
+import SalmonellaBacteria from "./salmonella_bacteria";
+import TuberCulosisBacteria from "./tuberculosis";
+import ChickenPoxBacteria from './chickenpox';
+import {GameInfo} from './engine';
 
 let spawnerCount = 0;
 
@@ -70,7 +75,38 @@ class Spawner {
         // console.log('spawner', this.id, 'ticked!');
         for (let i = 0; i < this.currSpawnLimit; i++) {
             let { x, y } = this.generateSpawnPoint();
-            this.spawn(new WanderingBacteria(x, y));
+
+            const diceRoll = randRange(0, 100);
+            
+            // you can get TB at ages 15 to 40.
+            if (this.map.age > 15 && this.map.age < 40 && diceRoll > 95) {
+                this.spawn(new TuberCulosisBacteria(x, y));
+            } 
+            
+            // you can only get salmonella at age > 10
+            else if (this.map.age > 10 && diceRoll > 85) {
+                this.spawn(new SalmonellaBacteria(x, y));
+            }
+            
+            // common cold is possible whenever
+            else if (diceRoll > 70) {
+                this.spawn(new CommonColdBacteria(x, y));
+            }
+
+            // we've NEVER had chickenpox
+            else if (!GameInfo.hasContractedDisease('chickenpox') && diceRoll > 30) {
+                // younger than 5, or we have a VERY SLIM chance of getting chickenpox
+                if (this.map.age < 5) {
+                    this.spawn(new ChickenPoxBacteria(x, y));
+                } else if (randRange(0, 100000) > 99000) {
+                    alert('spawning chicken pox');
+                    this.spawn(new ChickenPoxBacteria(x, y));
+                }
+            }
+
+            else {
+                this.spawn(new WanderingBacteria(x, y));
+            }
         }
         
         // increase the spawn limit every tick

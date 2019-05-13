@@ -11,13 +11,13 @@ let bacteriaMergeSound = new Howl({src:'./res/sfx/merge_sound.ogg', volume: 0.15
 const damageWhenUnidentified = 2;
 const damageWhenIdentified = 1;
 
-// WanderingBacteria will travel aimlessly 
-// through the map
-class WanderingBacteria extends Entity {
+const bacteriaSize = 48 * 2;
+
+class ChickenPoxBacteria extends Entity {
     constructor(x, y) {
-        super(x, y, 48, 43, {
+        super(x, y, bacteriaSize, bacteriaSize, {
             isStatic: false,
-            tag: 'germ',
+            tag: 'chickenpox',
         });
         this.identified = false;
 
@@ -35,8 +35,8 @@ class WanderingBacteria extends Entity {
 
         this.deathSound = bacteriaSound;
 
-        this.defaultImage = getResource('bacteria.png');
-        this.imgSil = getResource('bacteria_s.png');
+        this.defaultImage = getResource('chickenpox.png');
+        this.imgSil = getResource('chickenpox_s.png');
 
         this.dirTimer = new Date().getTime();
         super.changePathHoming();
@@ -78,15 +78,8 @@ class WanderingBacteria extends Entity {
         case 'common_cold': break;
         case 'tuberculosis': break;
         case 'salmonella': break;
-        case 'germ':
-            if (this.size >= other.size && this.timeAlive > other.timeAlive) {
-                other.silentlyDie();
-                this.grow();
-            } else if (this.timeAlive >= other.timeAlive) {
-                other.silentlyDie();
-                this.grow();
-            }
-            break;
+        case 'germ': break;
+
         case 'turret':
             // the turret will shoot a bullet at this bacteria
             // so we dont deal damage here.
@@ -150,4 +143,4 @@ class WanderingBacteria extends Entity {
     }
 }
 
-export default WanderingBacteria;
+export default ChickenPoxBacteria;

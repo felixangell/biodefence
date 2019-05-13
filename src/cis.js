@@ -1,7 +1,7 @@
 import Entity from './entity';
 
 import getResource from './image_loader';
-import {Engine} from './engine';
+import {GameInfo, Engine} from './engine';
 
 let cisHitSound = new Howl({src:'./res/sfx/cis_hit_sound.wav', volume:0.8});
 
@@ -38,7 +38,7 @@ class CentralImmuneSystem extends Entity {
         // so they dont cause damage to the cis
         this.immunities.add(
             'antibody',
-            'phagocyte'
+            'phagocyte',
         );
 
         Engine.listenFor('addImmunity', (evt) => {
@@ -107,9 +107,14 @@ class CentralImmuneSystem extends Entity {
             return;
         }
 
+        const tag = other.body.tag;
+        if (!GameInfo.hasContractedDisease(tag)) {
+            GameInfo.contractDisease(tag);
+        }
+
         Engine.emit('cisTakenDamage');
 
-        if (!this.immunities.has(other.body.tag)) {
+        if (!this.immunities.has(tag)) {
             this.damaged(other.damage);
         }
     }

@@ -81,6 +81,7 @@ export class GameMap {
         // would represent a 4x2 map.
         this.tileData = [];
 
+        this.age = 0;
         this.lipids = 100;
         this.hydration = 25;
         this.nutrition = 25;
