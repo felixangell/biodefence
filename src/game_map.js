@@ -10,6 +10,7 @@ import {Engine, GameInfo} from './engine';
 import { ShieldPowerup } from './powerup';
 import PhagocyteBacteria from './phagocyte';
 import DefenceTurret from './defence_turret';
+import BetterDefenceTurret from './defence_turret_tier2';
 import WaterDroplet from './water_droplet';
 import FoodDroplet from './food_droplet';
 
@@ -71,6 +72,7 @@ let useActionSound = new Howl({src:'./res/sfx/use_action.wav', volume:0.6});
 const PlacingObjectType = Object.freeze({
     Antibody: {image: 'antibody.png'},
     KillerT: {image: 'defence_turret.png'},
+    KillerT2: {image: 'defence_turret.png'},
     Nothing: {},
 });
 
@@ -122,6 +124,9 @@ export class GameMap {
         const bl = new Spawner(10, mapDimension.height, this);
         const br = new Spawner(mapDimension.width, mapDimension.height, this);
         this.spawners.push(tl, tr, bl, br);
+
+        this.dummyTurret = new DefenceTurret(0, 0);
+        this.dtRad = (this.dummyTurret.radius / 2);
 
         // fill the map up with 0 tiles
         for (let i = 0; i < this.width * this.height; i++) {
@@ -186,7 +191,10 @@ export class GameMap {
 
         this.deployKillerT = this.deployKillerT.bind(this);
         Engine.listenFor('deployKillerT', this.deployKillerT);
-        
+
+        this.deployKillerT2 = this.deployKillerT2.bind(this);
+        Engine.listenFor('deployKillerT2', this.deployKillerT2);
+
         this.deployPhagocyte = this.deployPhagocyte.bind(this);
         Engine.listenFor('deployPhagocyte', this.deployPhagocyte);
 
@@ -270,13 +278,15 @@ export class GameMap {
             Engine.emit('queueInfoCard', 'atb1');
             return;
         case PlacingObjectType.KillerT:
-            // this is because of the gross bounding box hack that needs to be fixed but cba
-            const dummyTurret = new DefenceTurret(0, 0);
-            const rad = (dummyTurret.radius / 2);
-            this.addEntity(new DefenceTurret(x + this.cam.pos.x + rad, y + this.cam.pos.y + rad));
+            this.addEntity(new DefenceTurret(x + this.cam.pos.x + this.dtRad, y + this.cam.pos.y + this.dtRad));
             this.placing = PlacingObjectType.Nothing;
             placeTurretSound.play();
             Engine.emit('queueInfoCard', 'trt2');
+            return;
+        case PlacingObjectType.KillerT2:    
+            this.addEntity(new BetterDefenceTurret(x + this.cam.pos.x + this.dtRad, y + this.cam.pos.y + this.dtRad));
+            this.placing = PlacingObjectType.Nothing;
+            placeTurretSound.play();
             return;
         }
 
@@ -315,6 +325,15 @@ export class GameMap {
         }
 
         this.placing = PlacingObjectType.KillerT;
+    }
+
+    deployKillerT2() {
+        const cost = event.detail;
+        if (!this.tryUseLipids(cost)) {
+            return;
+        }
+
+        this.placing = PlacingObjectType.KillerT2;
     }
 
     deployPhagocyte() {

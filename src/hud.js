@@ -162,6 +162,9 @@ class HUD {
             this.initNewLevel();
             
             this.map.age++;
+            if (this.map.age == 10) {
+                this.actionBar.registerAction(175, 'Killer T 2', 'deployKillerT2', 't', 'defence_turret.png');
+            }
             this.ageTimer = new Date().getTime();
         }
     }
