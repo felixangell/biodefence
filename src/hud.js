@@ -56,12 +56,17 @@ class HUD {
         // we start at 25.
         this.hydration = 25;
         this.nutrition = 25;
-
-        this.clock = 0;
+        // Clock starts at zero
+        this.clock = {
+          'hours': 0,
+          'minutes': 0,
+          'seconds': 0
+        };
 
         this.ageTimer = new Date().getTime();
         this.lipidTimer = new Date().getTime();
         this.infoCardTimer = new Date().getTime();
+        this.clockTimer = new Date().getTime();
 
         // a list of info cards to render
         // these are stored in a list,
@@ -242,11 +247,32 @@ class HUD {
         }
     }
 
+    incrementClock() {
+      const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
+      if(new Date().getTime() - this.clockTimer >= SECOND){
+        this.clock.seconds++
+        if(this.clock.seconds % 60 === 0){
+          this.clock.minutes++;
+          this.clock.seconds = 0;
+          if (this.clock.minutes % 60 === 0){
+            this.clock.hours++;
+            this.clock.minutes = 0;
+          }
+        }
+
+
+        this.clockTimer = new Date().getTime();
+      }
+    }
+    /**
+    * When called the clock should increase by one second
+    */
     update() {
         this.agePlayer();
         this.generateLipids();
         this.live();
         this.infoCardTriggers();
+        this.incrementClock();
         if (this.preview) {
             this.preview.update();
         }
@@ -271,7 +297,7 @@ class HUD {
             'hydration': this.hydration.toFixed(2),
             'nutrition': this.nutrition.toFixed(2),
             'lipids': this.lipids,
-            'clock': this.timer,
+            'clock': `${this.clock.hours}:${this.clock.minutes}:${this.clock.seconds}`,
         };
 
         let accumWidth = 0;
