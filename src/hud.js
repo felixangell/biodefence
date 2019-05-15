@@ -49,12 +49,19 @@ class HUD {
         this.ageTimer = new Date().getTime();
         this.lipidTimer = new Date().getTime();
         this.infoCardTimer = new Date().getTime();
+        this.clockTimer = new Date().getTime();
+
+        this.clock = {
+            hours: 0,
+            minutes: 0,
+            seconds: 0
+        };
 
         // a list of info cards to render
         // these are stored in a list,
         // dequeued by insertion order (i.e. queue)
         this.infoCards = [];
-        
+
         this.currentCard = new Map();
 
         this.seenCards = new Map();
@@ -142,7 +149,7 @@ class HUD {
     // on age, we spawn more enemies, etc.
     initNewLevel() {
         this.map.onAgeIncrease(this.map.age);
-        this.map.tickSpawners();    
+        this.map.tickSpawners();
     }
 
     agePlayer() {
@@ -153,14 +160,14 @@ class HUD {
         // and then pick a random duration for the shield
         // between how long?
         // this.spawnPowerup(new ShieldPowerup(2.5));
-        
-        // An average game based off of these values should 
+
+        // An average game based off of these values should
         // take around 21 minutes if the user reaches age 80.
 
         // Every n seconds we ages.
         if ((new Date().getTime() - this.ageTimer) > (ageInterval)) {
             this.initNewLevel();
-            
+
             this.map.age++;
             if (this.map.age == 10) {
                 this.actionBar.registerAction(175, 'Killer T 2', 'deployKillerT2', 't', 'defence_turret.png');
@@ -206,7 +213,7 @@ class HUD {
         const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
         if ((new Date().getTime() - this.lipidTimer) > lipidGenerationRate * SECOND) {
             this.map.lipids += lipidAmount;
-            
+
             if (this.map.lipids > 150) {
                 Engine.emit('queueInfoCard', 'lip2');
             }
@@ -219,7 +226,7 @@ class HUD {
     // this function deteriorates the nutrition
     // and the hydration of the player.
     live() {
-        // for now we just deteriorate by a random ish 
+        // for now we just deteriorate by a random ish
         // small value.
         this.map.decreaseHydration(Math.random() * 0.005);
         this.map.decreaseNutrition(Math.random() * 0.005);
@@ -239,6 +246,25 @@ class HUD {
         }
     }
 
+    /**
+    * When called the clock should increase by one second
+    */
+    incrementClock() {
+        const SECOND = parseInt(window.sessionStorage.getItem('secondDuration'));
+        if(new Date().getTime() - this.clockTimer >= SECOND){
+            this.clock.seconds++
+            if(this.clock.seconds % 60 === 0){
+                this.clock.minutes++;
+                this.clock.seconds = 0;
+                if (this.clock.minutes % 60 === 0){
+                    this.clock.hours++;
+                    this.clock.minutes = 0;
+                }
+            }
+            this.clockTimer = new Date().getTime();
+        }
+    }
+
     update() {
         if ((this.infoCards.length > 0 && this.currentCard.size == 0) || this.infoCards.length >= 1 && this.currentCard.size < 2) {
             // force clear the queue
@@ -248,12 +274,13 @@ class HUD {
             newCard.timer = new Date().getTime();
             this.currentCard.set(newCard.uid, newCard);
         }
-        
+
         this.agePlayer();
         this.generateLipids();
         this.live();
         this.infoCardTriggers();
         this.actionBar.update();
+        this.incrementClock();
         if (this.preview) {
             this.preview.update();
         }
@@ -278,6 +305,7 @@ class HUD {
             'hydration': this.map.hydration.toFixed(2),
             'nutrition': this.map.nutrition.toFixed(2),
             'lipids': this.map.lipids,
+            'clock': `${this.clock.hours}:${this.clock.minutes}:${this.clock.seconds}`
         };
 
         let accumWidth = 0;
